@@ -53,15 +53,17 @@ const Service = ({ icon, name, description, delay = 0 }: { icon: React.ReactNode
     
     return (
         <motion.div
-            drag
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-            dragElastic={0.15}
-            dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+            drag="x"
+            dragConstraints={{ left: -20, right: 20 }}
+            dragElastic={0.2}
+            dragSnapToOrigin
+            dragTransition={{ bounceStiffness: 400, bounceDamping: 25 }}
+            dragDirectionLock
             whileDrag={{ 
-                scale: 1.08, 
+                scale: 1.05, 
                 cursor: 'grabbing', 
                 zIndex: 50,
-                rotateZ: 2,
+                rotateZ: 1,
                 boxShadow: "0 25px 50px -12px rgba(255, 255, 255, 0.15)"
             }}
             initial={{ opacity: 0, y: 50, scale: 0.9, rotateX: -10 }}
