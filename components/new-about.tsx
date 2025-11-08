@@ -131,6 +131,7 @@ export default function NewAbout() {
                     ? 500
                     : 300,
                 scale: 0.85,
+                filter: "blur(12px)",
               },
               visible: {
                 y:
@@ -138,11 +139,12 @@ export default function NewAbout() {
                     ? -6
                     : 0,
                 scale: 1,
+                filter: "blur(0px)",
               },
             }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="relative backdrop-blur-2xl bg-gradient-to-br from-black/40 via-black/30 to-black/20 rounded-3xl md:rounded-[2.5rem] px-4 py-12 sm:px-10 sm:py-18 md:px-8 md:py-20 lg:px-10 lg:py-20 xl:px-10 xl:py-20 shadow-2xl shadow-black/50">
+            <div className="relative backdrop-blur-2xl bg-gradient-to-br from-black/80 via-black/70 to-black/60 rounded-3xl md:rounded-[2.5rem] px-4 py-12 sm:px-10 sm:py-18 md:px-8 md:py-20 lg:px-10 lg:py-20 xl:px-10 xl:py-20 shadow-2xl shadow-black/50">
               {/* Multiple glass layers for depth */}
               <div className="absolute inset-0 rounded-3xl md:rounded-[2.5rem] bg-gradient-to-br from-accent/10 via-transparent to-accent/5 pointer-events-none" />
               <div className="absolute inset-0 rounded-3xl md:rounded-[2.5rem] bg-[radial-gradient(circle_at_top_right,rgba(74,222,128,0.15),transparent_50%)] pointer-events-none" />
@@ -246,8 +248,9 @@ export default function NewAbout() {
                   : 200,
               opacity: 0,
               scale: 0.8,
+              filter: "blur(10px)",
             },
-            visible: { y: 0, opacity: 1, scale: 1 },
+            visible: { y: 0, opacity: 1, scale: 1, filter: "blur(0px)" },
           }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >

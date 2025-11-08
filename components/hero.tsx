@@ -194,8 +194,8 @@ const FloatingIcon = ({
     <motion.div
       ref={ref}
       style={{ x: springX, y: springY, willChange: 'transform' }}
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, scale: 0.5, filter: "blur(8px)" }}
+      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={{
         delay: 0.2 + index * 0.05,
         duration: 0.5,
@@ -266,12 +266,16 @@ export default function Hero() {
     if (!containerRef.current) return
 
     const ctx = gsap.context(() => {
-      // Set initial states
-      gsap.set([decorStarsRef.current, logoRef.current, titleRef.current, subheadlineRef.current, ctaRef.current], { opacity: 0 })
+      // Set initial states with blur
+      gsap.set([decorStarsRef.current, logoRef.current, titleRef.current, subheadlineRef.current, ctaRef.current], { 
+        opacity: 0,
+        filter: "blur(10px)"
+      })
 
       // Decorative stars at top - simplified
       gsap.to(decorStarsRef.current, {
         opacity: 1,
+        filter: "blur(0px)",
         duration: 0.3,
         ease: "power2.out",
       })
@@ -287,38 +291,39 @@ export default function Hero() {
       
       // Logo animation
       tl.fromTo(logoRef.current, 
-        { opacity: 0, y: -25, scale: 0.85 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.5 },
+        { opacity: 0, y: -25, scale: 0.85, filter: "blur(10px)" },
+        { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.5 },
         0.1
       )
       
       // Title animation
       tl.fromTo(titleRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.6 },
+        { opacity: 0, y: 30, filter: "blur(12px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6 },
         0.25
       )
       
       // Subheadline animation
       tl.fromTo(subheadlineRef.current,
-        { opacity: 0, y: 25 },
-        { opacity: 1, y: 0, duration: 0.5 },
+        { opacity: 0, y: 25, filter: "blur(8px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5 },
         0.4
       )
       
       // CTA container fade in
       tl.to(ctaRef.current, 
-        { opacity: 1, duration: 0.3 },
+        { opacity: 1, filter: "blur(0px)", duration: 0.3 },
         0.55
       )
       
       // CTA buttons stagger
       tl.fromTo(ctaRef.current?.children || [],
-        { opacity: 0, y: 15, scale: 0.95 },
+        { opacity: 0, y: 15, scale: 0.95, filter: "blur(6px)" },
         { 
           opacity: 1, 
           y: 0, 
-          scale: 1, 
+          scale: 1,
+          filter: "blur(0px)",
           duration: 0.4,
           stagger: 0.08,
           ease: "back.out(1.3)"
