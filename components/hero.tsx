@@ -179,7 +179,7 @@ const FloatingIcon = ({
       className={`absolute ${className}`}
     >
       <motion.div
-        className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 p-2 md:p-2.5 rounded-2xl md:rounded-3xl bg-white/10 backdrop-blur-md border border-white/15"
+        className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 p-2 md:p-2.5 rounded-2xl md:rounded-3xl bg-[#1b1b1b] backdrop-blur-md border border-border/10"
         style={{
           boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
           willChange: 'transform',
