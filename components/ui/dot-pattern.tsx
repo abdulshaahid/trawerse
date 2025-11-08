@@ -33,6 +33,7 @@ export function DotPattern({
   const animationFrameId = useRef<number | undefined>(undefined)
   const dotsRef = useRef<Dot[]>([])
   const timeRef = useRef(0)
+  const isTouchDevice = useRef(false)
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
     const canvas = canvasRef.current
@@ -43,6 +44,24 @@ export function DotPattern({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     }
+  }, [])
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    // Don't prevent default to allow normal scrolling
+    const touch = e.touches[0]
+    if (touch) {
+      mousePos.current = {
+        x: touch.clientX,
+        y: touch.clientY,
+      }
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    // Smoothly move cursor off-screen when touch ends
+    setTimeout(() => {
+      mousePos.current = { x: -1000, y: -1000 }
+    }, 300)
   }, [])
 
   useEffect(() => {
@@ -66,7 +85,17 @@ export function DotPattern({
     window.addEventListener("resize", setCanvasSize)
 
     if (interactive) {
+      // Detect if touch device
+      isTouchDevice.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      
       window.addEventListener("pointermove", handlePointerMove)
+      
+      // Add touch-specific handlers for mobile on window level (since canvas has pointer-events-none)
+      if (isTouchDevice.current) {
+        window.addEventListener("touchmove", handleTouchMove, { passive: true })
+        window.addEventListener("touchend", handleTouchEnd, { passive: true })
+        window.addEventListener("touchcancel", handleTouchEnd, { passive: true })
+      }
     }
 
     // Responsive dot spacing - closer on mobile
@@ -103,11 +132,14 @@ export function DotPattern({
           const dx = mousePos.current.x - dot.x
           const dy = mousePos.current.y - dot.y
           const distance = Math.sqrt(dx * dx + dy * dy)
-          const maxDistance = 150
+          // Larger interaction radius on mobile for better touch response
+          const maxDistance = isTouchDevice.current ? 200 : 150
 
           if (distance < maxDistance) {
-            // Push dots away from cursor
-            const force = (1 - distance / maxDistance) * 0.5
+            // Push dots away from cursor/touch
+            // Stronger force on mobile for more noticeable effect
+            const forceMultiplier = isTouchDevice.current ? 0.8 : 0.5
+            const force = (1 - distance / maxDistance) * forceMultiplier
             const angle = Math.atan2(dy, dx)
             dot.vx -= Math.cos(angle) * force
             dot.vy -= Math.sin(angle) * force
@@ -155,26 +187,32 @@ export function DotPattern({
       window.removeEventListener("resize", setCanvasSize)
       if (interactive) {
         window.removeEventListener("pointermove", handlePointerMove)
+        if (isTouchDevice.current) {
+          window.removeEventListener("touchmove", handleTouchMove)
+          window.removeEventListener("touchend", handleTouchEnd)
+          window.removeEventListener("touchcancel", handleTouchEnd)
+        }
       }
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current)
       }
     }
-  }, [dotSize, dotSpacing, interactive, handlePointerMove, color])
+  }, [dotSize, dotSpacing, interactive, handlePointerMove, handleTouchMove, handleTouchEnd, color])
 
   return (
     <canvas
       ref={canvasRef}
       className={cn(
-        "pointer-events-none fixed inset-0 z-0",
+        "fixed inset-0 z-0 pointer-events-none",
         className
       )}
       style={{ 
-        touchAction: "none",
+        touchAction: "pan-y pan-x",
         width: '100vw',
         height: '100vh',
         top: 0,
         left: 0,
+        pointerEvents: 'none', // Allow events to pass through to elements below
       }}
     />
   )

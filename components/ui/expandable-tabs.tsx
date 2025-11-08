@@ -122,7 +122,7 @@ export function ExpandableTabs({
             className={cn(
               "relative flex items-center rounded-3xl px-4 py-2 text-sm font-medium transition-all duration-300 flex-shrink-0",
               selected === index
-                ? "text-white bg-white/20 backdrop-blur-sm shadow-md"
+                ? "text-white bg-white/0 backdrop-blur-sm shadow-md"
                 : "text-gray-300 hover:text-white hover:bg-white/15"
             )}
           >

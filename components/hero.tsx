@@ -130,37 +130,61 @@ const FloatingIcon = ({
 
   useEffect(() => {
     let rafId: number;
-    const handleMouseMove = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      
-      rafId = requestAnimationFrame(() => {
-        if (ref.current) {
-          const rect = ref.current.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-          const distance = Math.sqrt(
-            Math.pow(mouseX.current - centerX, 2) + Math.pow(mouseY.current - centerY, 2)
-          );
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const maxDistance = isTouchDevice ? 150 : 120; // Larger radius on mobile
+    const forceMultiplier = isTouchDevice ? 40 : 30; // Stronger force on mobile
+    
+    const updatePosition = () => {
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.sqrt(
+          Math.pow(mouseX.current - centerX, 2) + Math.pow(mouseY.current - centerY, 2)
+        );
 
-          if (distance < 120) {
-            const angle = Math.atan2(
-              mouseY.current - centerY,
-              mouseX.current - centerX
-            );
-            const force = (1 - distance / 120) * 30;
-            x.set(-Math.cos(angle) * force);
-            y.set(-Math.sin(angle) * force);
-          } else {
-            x.set(0);
-            y.set(0);
-          }
+        if (distance < maxDistance) {
+          const angle = Math.atan2(
+            mouseY.current - centerY,
+            mouseX.current - centerX
+          );
+          const force = (1 - distance / maxDistance) * forceMultiplier;
+          x.set(-Math.cos(angle) * force);
+          y.set(-Math.sin(angle) * force);
+        } else {
+          x.set(0);
+          y.set(0);
         }
-      });
+      }
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    // Continuous animation loop for smooth interaction
+    const animate = () => {
+      updatePosition();
+      rafId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    const handleTouchEnd = () => {
+      // Reset mouse position off-screen when touch ends
+      setTimeout(() => {
+        mouseX.current = -1000;
+        mouseY.current = -1000;
+      }, 100);
+    };
+    
+    // Add touch end handlers for mobile
+    if (isTouchDevice) {
+      window.addEventListener('touchend', handleTouchEnd, { passive: true });
+      window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+    }
+    
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      if (isTouchDevice) {
+        window.removeEventListener('touchend', handleTouchEnd);
+        window.removeEventListener('touchcancel', handleTouchEnd);
+      }
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, [x, y, mouseX, mouseY]);
@@ -311,10 +335,19 @@ export default function Hero() {
     mouseY.current = event.clientY;
   };
 
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    if (touch) {
+      mouseX.current = touch.clientX;
+      mouseY.current = touch.clientY;
+    }
+  };
+
   return (
     <section
       ref={containerRef}
       onMouseMove={handleMouseMove}
+      onTouchMove={handleTouchMove}
       className="relative w-full h-full flex items-center justify-center overflow-hidden"
     >
       {/* Background decorative elements */}
