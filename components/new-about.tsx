@@ -237,7 +237,7 @@ export default function NewAbout() {
 
         {/* Curved Loop Marquee - Full Width */}
         <motion.div
-          className="absolute bottom-14 md:bottom-40 lg:bottom-14 left-0 right-0 w-full px-0 overflow-visible origin-center"
+          className="absolute bottom-14 md:bottom-20 lg:bottom-14 left-0 right-0 w-full px-0 overflow-visible origin-center"
           variants={{
             hidden: {
               y:
