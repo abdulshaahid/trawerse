@@ -7,6 +7,7 @@ import { motion, useMotionValue } from "framer-motion"
 import { DotPattern } from "@/components/ui/dot-pattern"
 import Header from "@/components/header"
 import Hero from "@/components/hero"
+import NewAbout from "@/components/new-about"
 import SlideInSection from "@/components/slide-in-section"
 import LogoSlider from "@/components/logo-slider"
 import About from "@/components/about"
@@ -78,17 +79,8 @@ export default function Home() {
           heroContent={<Hero />}
           restContent={
             <>
-              {/* New section placeholder */}
-              <section className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                  <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
-                    New Section
-                  </h2>
-                  <p className="text-lg md:text-xl text-foreground/70">
-                    This is the new page that slides in from the right
-                  </p>
-                </div>
-              </section>
+              {/* New About Section */}
+              <NewAbout />
               
               {/* Rest of the pages */}
               <LogoSlider />

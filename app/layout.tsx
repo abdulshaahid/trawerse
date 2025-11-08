@@ -1,11 +1,15 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Plus_Jakarta_Sans } from "next/font/google"
+import { Bricolage_Grotesque } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
-const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"] })
+const bricolageGrotesque = Bricolage_Grotesque({ 
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  variable: "--font-bricolage"
+})
 
 export const metadata: Metadata = {
   title: "Trawerse - Premium Web Development Studio",
@@ -20,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${plusJakarta.className} font-sans antialiased`}>
+      <body className={`${bricolageGrotesque.className} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

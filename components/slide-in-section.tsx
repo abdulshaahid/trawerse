@@ -164,32 +164,22 @@ export default function SlideInSection({ heroContent, restContent, className }: 
       {/* New page section - slides in from right, becomes relative after transition */}
       <div
         ref={newPageRef}
-        className={`${transitionComplete ? 'relative' : 'fixed'} ${transitionComplete ? '' : 'top-0'} min-h-screen ${className || ''}`}
+        className={`${transitionComplete ? 'relative' : 'fixed'} ${transitionComplete ? '' : 'top-0 left-0'} min-h-screen ${className || ''}`}
         style={{
-          width: transitionComplete ? '100%' : 'calc(100vw + 2px)',
+          width: transitionComplete ? '100%' : '100vw',
           transform: transitionComplete 
             ? 'none' 
-            : (scrolled ? "translate3d(0, 0, 0) scale(1) rotateY(0deg)" : "translate3d(100vw, 0, 0) scale(0.90) rotateY(-8deg)"),
-          opacity: transitionComplete ? 1 : (scrolled ? 1 : 0.6),
-          filter: transitionComplete ? 'none' : (scrolled ? 'blur(0px) brightness(1)' : 'blur(3px) brightness(1.1)'),
-          transformOrigin: 'center left',
-          left: transitionComplete ? 'auto' : '-1px',
+            : (scrolled ? "translate3d(0, 0, 0)" : "translate3d(100%, 0, 0)"),
+          opacity: transitionComplete ? 1 : (scrolled ? 1 : 0),
           zIndex: scrolled && !transitionComplete ? 5 : 1,
           transition: transitionComplete 
             ? 'none' 
-            : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), filter 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-          willChange: transitionComplete ? 'auto' : 'transform, opacity, filter',
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
-          transformStyle: 'preserve-3d',
-          WebkitTransformStyle: 'preserve-3d',
-          WebkitFontSmoothing: 'antialiased',
-          border: 'none',
-          outline: 'none',
-          perspective: '1000px',
+            : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-out',
+          willChange: transitionComplete ? 'auto' : 'transform, opacity',
+          pointerEvents: scrolled || transitionComplete ? 'auto' : 'none',
         }}
       >
-        {restContent}
+        {(scrolled || transitionComplete) && restContent}
       </div>
 
       {/* Spacer to allow scroll trigger - only show when on hero */}

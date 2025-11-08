@@ -7,6 +7,7 @@ import gsap from "gsap"
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { GooeyText } from "@/components/ui/gooey-text-morphing";
 import TrueFocus from "@/components/ui/true-focus";
+import { ArrowDown, Eye } from 'lucide-react';
 
 // --- Company Logo SVG Components ---
 
@@ -411,12 +412,18 @@ export default function Hero() {
             </p>
 
             {/* CTA Buttons */}
-            <div ref={ctaRef} className="flex flex-row gap-3 sm:gap-4 items-center justify-center lg:justify-start mb-12 opacity-0" style={{ willChange: 'opacity' }}>
-              <button className="bg-accent text-background px-4 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-base lg:text-lg hover:shadow-lg hover:shadow-accent/50 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-1 sm:gap-2">
-                <span className="whitespace-nowrap">Start Your Project</span>
+            <div ref={ctaRef} className="flex flex-row gap-3 items-center justify-center lg:justify-start mb-12 opacity-0" style={{ willChange: 'opacity' }}>
+              <button className="group relative bg-accent hover:bg-accent/80 text-white pl-1.5 pr-4 sm:pr-5 py-1.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 sm:gap-2.5 shadow-md ">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black flex items-center justify-center transition-transform duration-300 group-hover:rotate-180">
+                  <ArrowDown className="w-4 h-4 sm:w-4 sm:h-4 text-accent" strokeWidth={2.5} />
+                </div>
+                <span className="whitespace-nowrap text-black ">Join Waitlist</span>
               </button>
-              <button className="border-2 border-accent/30 text-foreground px-4 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-base lg:text-lg hover:border-accent hover:bg-accent/5 transition-all duration-300 hover:scale-105 active:scale-95">
-                <span className="whitespace-nowrap">View Our Work</span>
+              <button className="group relative bg-accent hover:bg-accent/80 text-white pl-1.5 pr-4 sm:pr-5 py-1.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 sm:gap-2.5 shadow-md ">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                  <Eye className="w-4 h-4 sm:w-4 sm:h-4 text-accent" strokeWidth={2.5} />
+                </div>
+                <span className="whitespace-nowrap text-black font-semibold">View Our Work</span>
               </button>
             </div>
             

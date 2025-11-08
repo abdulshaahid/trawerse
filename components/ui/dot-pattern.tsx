@@ -74,10 +74,12 @@ export function DotPattern({
     // Set canvas size
     const setCanvasSize = () => {
       const dpr = window.devicePixelRatio || 1
+      // Use the larger of viewport height or document height to ensure full coverage
+      const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
       canvas.width = window.innerWidth * dpr
-      canvas.height = window.innerHeight * dpr
+      canvas.height = height * dpr
       canvas.style.width = `${window.innerWidth}px`
-      canvas.style.height = `${window.innerHeight}px`
+      canvas.style.height = `${height}px`
       ctx.scale(dpr, dpr)
     }
 
@@ -103,8 +105,9 @@ export function DotPattern({
     const responsiveSpacing = isMobile ? dotSpacing * 0.8 : dotSpacing
 
     // Initialize dots with positions and velocities
+    const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
     const cols = Math.ceil(window.innerWidth / responsiveSpacing)
-    const rows = Math.ceil(window.innerHeight / responsiveSpacing)
+    const rows = Math.ceil(height / responsiveSpacing)
     
     dotsRef.current = []
     for (let row = 0; row < rows; row++) {
@@ -125,7 +128,8 @@ export function DotPattern({
 
     // Animation loop
     const animate = () => {
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
+      const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
+      ctx.clearRect(0, 0, window.innerWidth, height)
 
       dotsRef.current.forEach((dot) => {
         if (interactive) {
