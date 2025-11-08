@@ -126,8 +126,8 @@ const FloatingIcon = ({
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 150, damping: 25, restSpeed: 0.5 });
-  const springY = useSpring(y, { stiffness: 150, damping: 25, restSpeed: 0.5 });
+  const springX = useSpring(x, { stiffness: 200, damping: 30, mass: 0.5, restSpeed: 0.2 });
+  const springY = useSpring(y, { stiffness: 200, damping: 30, mass: 0.5, restSpeed: 0.2 });
 
   useEffect(() => {
     let rafId: number;
@@ -194,12 +194,14 @@ const FloatingIcon = ({
     <motion.div
       ref={ref}
       style={{ x: springX, y: springY, willChange: 'transform' }}
-      initial={{ opacity: 0, scale: 0.5, filter: "blur(8px)" }}
-      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{
         delay: 0.2 + index * 0.05,
-        duration: 0.5,
-        ease: [0.34, 1.2, 0.64, 1],
+        duration: 0.6,
+        type: "spring",
+        stiffness: 120,
+        damping: 18
       }}
       className={`absolute ${className}`}
     >
@@ -210,13 +212,13 @@ const FloatingIcon = ({
           willChange: 'transform',
         }}
         animate={{
-          y: [0, -5, 0],
+          y: [0, -8, 0],
         }}
         transition={{
-          duration: 2.5 + Math.random() * 1.5,
+          duration: 3 + Math.random() * 2,
           repeat: Infinity,
-          repeatType: 'reverse',
-          ease: 'linear',
+          repeatType: 'mirror',
+          ease: 'easeInOut',
         }}
       >
         <Icon className="w-5 h-5 md:w-8 md:h-8" style={{ filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4))' }} />
@@ -266,24 +268,22 @@ export default function Hero() {
     if (!containerRef.current) return
 
     const ctx = gsap.context(() => {
-      // Set initial states with blur
+      // Set initial states
       gsap.set([decorStarsRef.current, logoRef.current, titleRef.current, subheadlineRef.current, ctaRef.current], { 
-        opacity: 0,
-        filter: "blur(10px)"
+        opacity: 0
       })
 
-      // Decorative stars at top - simplified
+      // Decorative stars at top
       gsap.to(decorStarsRef.current, {
         opacity: 1,
-        filter: "blur(0px)",
-        duration: 0.3,
-        ease: "power2.out",
+        duration: 0.4,
+        ease: "power1.out",
       })
       gsap.from(decorStarsRef.current?.children || [], {
         scale: 0,
-        duration: 0.4,
+        duration: 0.5,
         stagger: 0.08,
-        ease: "back.out(1.5)",
+        ease: "back.out(1.7)",
       })
 
       // Create a timeline for smooth sequencing
@@ -291,44 +291,43 @@ export default function Hero() {
       
       // Logo animation
       tl.fromTo(logoRef.current, 
-        { opacity: 0, y: -25, scale: 0.85, filter: "blur(10px)" },
-        { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.5 },
+        { opacity: 0, y: -20, scale: 0.85 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power1.out" },
         0.1
       )
       
       // Title animation
       tl.fromTo(titleRef.current,
-        { opacity: 0, y: 30, filter: "blur(12px)" },
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6 },
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power1.out" },
         0.25
       )
       
       // Subheadline animation
       tl.fromTo(subheadlineRef.current,
-        { opacity: 0, y: 25, filter: "blur(8px)" },
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5 },
+        { opacity: 0, y: 25 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power1.out" },
         0.4
       )
       
       // CTA container fade in
       tl.to(ctaRef.current, 
-        { opacity: 1, filter: "blur(0px)", duration: 0.3 },
+        { opacity: 1, duration: 0.4, ease: "power1.out" },
         0.55
       )
       
       // CTA buttons stagger
       tl.fromTo(ctaRef.current?.children || [],
-        { opacity: 0, y: 15, scale: 0.95, filter: "blur(6px)" },
+        { opacity: 0, y: 15, scale: 0.95 },
         { 
           opacity: 1, 
           y: 0, 
           scale: 1,
-          filter: "blur(0px)",
-          duration: 0.4,
-          stagger: 0.08,
-          ease: "back.out(1.3)"
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "back.out(1.4)"
         },
-        0.6
+        0.65
       )
 
     }, containerRef)

@@ -76,7 +76,7 @@ export default function NewAbout() {
     [0.8, 1, 1, 0.8]
   );
 
-  const smoothY = useSpring(y, { stiffness: 100, damping: 30 });
+  const smoothY = useSpring(y, { stiffness: 80, damping: 25, mass: 0.8 });
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -130,21 +130,24 @@ export default function NewAbout() {
                   typeof window !== "undefined" && window.innerWidth < 768
                     ? 500
                     : 300,
-                scale: 0.85,
-                filter: "blur(12px)",
+                scale: 0.9
               },
               visible: {
                 y:
                   typeof window !== "undefined" && window.innerWidth < 768
                     ? -6
                     : 0,
-                scale: 1,
-                filter: "blur(0px)",
+                scale: 1
               },
             }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ 
+              duration: 0.8,
+              type: "spring",
+              stiffness: 80,
+              damping: 20
+            }}
           >
-            <div className="relative backdrop-blur-2xl bg-gradient-to-br from-black/80 via-black/70 to-black/60 rounded-3xl md:rounded-[2.5rem] px-4 py-12 sm:px-10 sm:py-18 md:px-8 md:py-20 lg:px-10 lg:py-20 xl:px-10 xl:py-20 shadow-2xl shadow-black/50">
+            <div className="relative backdrop-blur-2xl bg-gradient-to-br from-black/40 via-black/30 to-black/20 rounded-3xl md:rounded-[2.5rem] px-4 py-12 sm:px-10 sm:py-18 md:px-8 md:py-20 lg:px-10 lg:py-20 xl:px-10 xl:py-20 shadow-2xl shadow-black/50">
               {/* Multiple glass layers for depth */}
               <div className="absolute inset-0 rounded-3xl md:rounded-[2.5rem] bg-gradient-to-br from-accent/10 via-transparent to-accent/5 pointer-events-none" />
               <div className="absolute inset-0 rounded-3xl md:rounded-[2.5rem] bg-[radial-gradient(circle_at_top_right,rgba(74,222,128,0.15),transparent_50%)] pointer-events-none" />
@@ -153,11 +156,11 @@ export default function NewAbout() {
               <motion.div
                 className="absolute top-0 left-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-accent/20 blur-3xl pointer-events-none"
                 animate={{
-                  opacity: [0.3, 0.6, 0.3],
-                  scale: [1, 1.2, 1],
+                  opacity: [0.2, 0.5, 0.2],
+                  scale: [1, 1.15, 1],
                 }}
                 transition={{
-                  duration: 4,
+                  duration: 5,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
@@ -165,14 +168,14 @@ export default function NewAbout() {
               <motion.div
                 className="absolute bottom-0 right-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-accent/20 blur-3xl pointer-events-none"
                 animate={{
-                  opacity: [0.3, 0.6, 0.3],
-                  scale: [1, 1.2, 1],
+                  opacity: [0.2, 0.5, 0.2],
+                  scale: [1, 1.15, 1],
                 }}
                 transition={{
-                  duration: 4,
+                  duration: 5,
                   repeat: Infinity,
                   ease: "easeInOut",
-                  delay: 2,
+                  delay: 2.5,
                 }}
               />
 
@@ -247,12 +250,17 @@ export default function NewAbout() {
                   ? 400
                   : 200,
               opacity: 0,
-              scale: 0.8,
-              filter: "blur(10px)",
+              scale: 0.85
             },
-            visible: { y: 0, opacity: 1, scale: 1, filter: "blur(0px)" },
+            visible: { y: 0, opacity: 1, scale: 1 },
           }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ 
+            duration: 0.8,
+            delay: 0.15,
+            type: "spring",
+            stiffness: 80,
+            damping: 20
+          }}
         >
           <div className="scale-50 sm:scale-65 md:scale-100">
             <CurvedLoop
