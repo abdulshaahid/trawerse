@@ -9,6 +9,7 @@ import Header from "@/components/header"
 import Hero from "@/components/hero"
 import NewAbout from "@/components/new-about"
 import SlideInSection from "@/components/slide-in-section"
+import ServicesSection from "@/components/services-section"
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -73,7 +74,8 @@ export default function Home() {
               {/* New About Section */}
               <NewAbout />
               
-             
+              {/* Services Section */}
+              <ServicesSection />
             </>
           }
         />
