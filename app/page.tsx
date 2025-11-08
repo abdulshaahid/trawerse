@@ -9,16 +9,7 @@ import Header from "@/components/header"
 import Hero from "@/components/hero"
 import NewAbout from "@/components/new-about"
 import SlideInSection from "@/components/slide-in-section"
-import LogoSlider from "@/components/logo-slider"
-import About from "@/components/about"
-import Services from "@/components/services"
-import Features from "@/components/features"
-import Portfolio from "@/components/portfolio"
-import Process from "@/components/process"
-import Culture from "@/components/culture"
-import Testimonials from "@/components/testimonials"
-import FinalCTA from "@/components/final-cta"
-import Footer from "@/components/footer"
+
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -82,17 +73,7 @@ export default function Home() {
               {/* New About Section */}
               <NewAbout />
               
-              {/* Rest of the pages */}
-              <LogoSlider />
-              <About />
-              <Services />
-              <Features />
-              <Portfolio />
-              <Process />
-              <Culture />
-              <Testimonials />
-              <FinalCTA />
-              <Footer />
+             
             </>
           }
         />

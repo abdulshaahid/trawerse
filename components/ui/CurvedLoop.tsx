@@ -71,7 +71,6 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
         if (newOffset <= -wrapPoint) newOffset += wrapPoint;
         if (newOffset > 0) newOffset -= wrapPoint;
         textPathRef.current.setAttribute('startOffset', newOffset + 'px');
-        setOffset(newOffset);
       }
       frame = requestAnimationFrame(step);
     };
@@ -98,7 +97,6 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
     if (newOffset <= -wrapPoint) newOffset += wrapPoint;
     if (newOffset > 0) newOffset -= wrapPoint;
     textPathRef.current.setAttribute('startOffset', newOffset + 'px');
-    setOffset(newOffset);
   };
 
   const endDrag = () => {

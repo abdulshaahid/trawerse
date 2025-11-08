@@ -254,7 +254,7 @@ export default function NewAbout() {
           <div className="scale-50 sm:scale-65 md:scale-100">
             <CurvedLoop
               marqueeText="Trawerse ✦ Premium Web Development ✦ Crafting Digital Excellence ✦ Modern Design ✦ High Performance ✦"
-              speed={2}
+              speed={7}
               curveAmount={100}
               direction="left"
               interactive={true}
