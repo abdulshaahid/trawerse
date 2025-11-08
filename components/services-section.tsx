@@ -84,7 +84,7 @@ const Service = ({ icon, name, description, delay = 0 }: { icon: React.ReactNode
                 rotateY,
                 transformStyle: "preserve-3d",
             }}
-            className="group relative bg-[#151515] hover:bg-[#1a1a1a] space-y-4 rounded-lg border border-white/5 hover:border-white/20 p-4 transition-colors duration-300 cursor-grab"
+            className="group relative bg-[#121212] hover:bg-[#171717] space-y-4 rounded-2xl border border-[#1a1a1a] hover:border-white/5 p-4 transition-colors duration-300 cursor-grab"
         >
             
             {/* Icon layer - deepest */}
@@ -208,7 +208,7 @@ export default function ServicesSection() {
                         style={{ perspective: "1000px" }}
                     >
                         <motion.div 
-                            className="bg-[#111111] rounded-2xl border border-white/5 p-3 shadow-lg md:pb-12 overflow-visible"
+                            className="bg-[#0d0d0d] rounded-3xl border border-white/5 p-3 shadow-lg md:pb-12 overflow-visible"
                             initial={{ scale: 0.9 }}
                             whileInView={{ scale: 1 }}
                             viewport={{ once: true, amount: 0.3 }}
