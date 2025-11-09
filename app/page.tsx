@@ -11,6 +11,7 @@ import NewAbout from "@/components/new-about"
 import SlideInSection from "@/components/slide-in-section"
 import ServicesSection from "@/components/services-section"
 import ProjectShowcase from "@/components/project-showcase"
+import { WhyChooseTrawerse } from "@/components/why-choose-trawerse"
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -80,6 +81,9 @@ export default function Home() {
 
               {/* Project Showcase Section */}
               <ProjectShowcase />
+
+              {/* Why Choose Trawerse Section */}
+              <WhyChooseTrawerse />
             </>
           }
         />

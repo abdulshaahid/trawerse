@@ -15,6 +15,8 @@ export default function SlideInSection({ heroContent, restContent, className }: 
   const [transitionComplete, setTransitionComplete] = useState(false)
   const lastScrollY = useRef(0)
   const touchStartY = useRef(0)
+  const scrollThreshold = 50
+  const transitionDuration = 400
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,37 +25,44 @@ export default function SlideInSection({ heroContent, restContent, className }: 
       const currentScrollY = window.scrollY
 
       // Scroll down to show new page (only from hero)
-      if (!scrolled && currentScrollY > 50) {
+      if (!scrolled && !isTransitioning && currentScrollY > scrollThreshold) {
         setIsTransitioning(true)
         setScrolled(true)
         setTransitionComplete(false)
         
         // Lock scroll during transition
+        const scrollPosition = window.scrollY
         document.documentElement.style.overflow = 'hidden'
         document.body.style.position = 'fixed'
         document.body.style.width = '100%'
-        document.body.style.top = `-${currentScrollY}px`
+        document.body.style.top = `-${scrollPosition}px`
         
-        setTimeout(() => {
-          setIsTransitioning(false)
-          setTransitionComplete(true)
-          // Unlock scroll and reset to top
-          document.body.style.position = ''
-          document.body.style.width = ''
-          document.body.style.top = ''
-          document.documentElement.style.overflow = ''
-          window.scrollTo(0, 0)
-        }, 250)
+        // Use requestAnimationFrame for smoother transition
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            setIsTransitioning(false)
+            setTransitionComplete(true)
+            // Unlock scroll and reset to top
+            document.body.style.position = ''
+            document.body.style.width = ''
+            document.body.style.top = ''
+            document.documentElement.style.overflow = ''
+            window.scrollTo(0, 0)
+          }, transitionDuration)
+        })
       }
       
       lastScrollY.current = currentScrollY
     }
 
     const handleWheel = (e: WheelEvent) => {
-      if (isTransitioning) return
+      if (isTransitioning) {
+        e.preventDefault()
+        return
+      }
       
       // Detect upward scroll at the top of new section to go back to hero
-      if (transitionComplete && window.scrollY === 0 && e.deltaY < 0) {
+      if (transitionComplete && window.scrollY <= 5 && e.deltaY < -10) {
         e.preventDefault()
         
         setIsTransitioning(true)
@@ -66,29 +75,36 @@ export default function SlideInSection({ heroContent, restContent, className }: 
         document.body.style.width = '100%'
         document.body.style.top = '0px'
         
-        setTimeout(() => {
-          setIsTransitioning(false)
-          // Unlock scroll
-          document.body.style.position = ''
-          document.body.style.width = ''
-          document.body.style.top = ''
-          document.documentElement.style.overflow = ''
-        }, 250)
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            setIsTransitioning(false)
+            // Unlock scroll
+            document.body.style.position = ''
+            document.body.style.width = ''
+            document.body.style.top = ''
+            document.documentElement.style.overflow = ''
+          }, transitionDuration)
+        })
       }
     }
 
     const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY
+      if (!isTransitioning) {
+        touchStartY.current = e.touches[0].clientY
+      }
     }
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (isTransitioning) return
+      if (isTransitioning) {
+        e.preventDefault()
+        return
+      }
       
       const touchEndY = e.touches[0].clientY
       const deltaY = touchEndY - touchStartY.current
       
       // Detect upward swipe (deltaY > 0 means swiping down, which scrolls up)
-      if (transitionComplete && window.scrollY === 0 && deltaY > 30) {
+      if (transitionComplete && window.scrollY <= 5 && deltaY > 50) {
         e.preventDefault()
         
         setIsTransitioning(true)
@@ -101,14 +117,16 @@ export default function SlideInSection({ heroContent, restContent, className }: 
         document.body.style.width = '100%'
         document.body.style.top = '0px'
         
-        setTimeout(() => {
-          setIsTransitioning(false)
-          // Unlock scroll
-          document.body.style.position = ''
-          document.body.style.width = ''
-          document.body.style.top = ''
-          document.documentElement.style.overflow = ''
-        }, 250)
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            setIsTransitioning(false)
+            // Unlock scroll
+            document.body.style.position = ''
+            document.body.style.width = ''
+            document.body.style.top = ''
+            document.documentElement.style.overflow = ''
+          }, transitionDuration)
+        })
       }
     }
 
@@ -138,24 +156,19 @@ export default function SlideInSection({ heroContent, restContent, className }: 
         style={{
           width: 'calc(100vw + 2px)',
           transform: scrolled 
-            ? "translate3d(-100vw, 0, 0) scale(0.92) rotateY(8deg)" 
-            : "translate3d(0, 0, 0) scale(1) rotateY(0deg)",
-          opacity: scrolled ? 0.2 : 1,
-          filter: scrolled ? 'blur(5px) brightness(0.8)' : 'blur(0px) brightness(1)',
-          transformOrigin: 'center right',
+            ? "translate3d(-100%, 0, 0) scale(0.95)" 
+            : "translate3d(0, 0, 0) scale(1)",
+          opacity: scrolled ? 0 : 1,
+          filter: scrolled ? 'blur(8px)' : 'blur(0px)',
+          transformOrigin: 'center left',
           zIndex: scrolled ? 0 : 10,
           pointerEvents: scrolled ? "none" : "auto",
           visibility: scrolled && transitionComplete ? 'hidden' : 'visible',
-          transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), filter 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-          willChange: scrolled ? 'transform, opacity, filter' : 'auto',
+          transition: `transform ${transitionDuration}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1), filter ${transitionDuration}ms ease-out`,
+          willChange: isTransitioning ? 'transform, opacity, filter' : 'auto',
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
-          transformStyle: 'preserve-3d',
-          WebkitTransformStyle: 'preserve-3d',
           WebkitFontSmoothing: 'antialiased',
-          border: 'none',
-          outline: 'none',
-          perspective: '1000px',
         }}
       >
         {heroContent}
@@ -174,8 +187,10 @@ export default function SlideInSection({ heroContent, restContent, className }: 
           zIndex: scrolled && !transitionComplete ? 5 : 1,
           transition: transitionComplete 
             ? 'none' 
-            : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-out',
-          willChange: transitionComplete ? 'auto' : 'transform, opacity',
+            : `transform ${transitionDuration}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${transitionDuration}ms ease-out`,
+          willChange: isTransitioning ? 'transform, opacity' : 'auto',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
           pointerEvents: scrolled || transitionComplete ? 'auto' : 'none',
         }}
       >

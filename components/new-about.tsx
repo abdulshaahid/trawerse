@@ -99,7 +99,7 @@ export default function NewAbout() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center py-20 md:py-32 overflow-visible"
+      className="relative min-h-screen flex items-center justify-center pt-20 pb-12 md:py-32 overflow-visible"
     >
       {/* Gradient background effects */}
       <div className="absolute inset-0 -z-10">

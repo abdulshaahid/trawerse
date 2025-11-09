@@ -375,7 +375,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
           }}
         >
           <Card className="mx-auto w-full overflow-hidden rounded-[28px] border-0 bg-[radial-gradient(ellipse_at_top_left,#1e1e1e_0%,#151515_50%,#0f0f0f_100%)] text-white shadow-2xl">
-            <CardContent className="p-4 sm:p-6">
+            <CardContent className="px-4 py-1 sm:px-6 py-1">
               {/* Grid Layout: Image and Content */}
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6">
                 {/* Image - 3D Interactive */}
@@ -627,7 +627,13 @@ export default function ProjectShowcase() {
   }, [limit, handleCardClick]); // Only re-render if limit changes (screen size change)
 
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
+    <motion.section 
+      className="relative pt-12 pb-24 md:pt-16 md:pb-32 overflow-hidden"
+      initial={{ opacity: 0, filter: "blur(10px)" }}
+      whileInView={{ opacity: 1, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+    >
       <div className="absolute inset-0 -z-10">
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }} 
@@ -645,55 +651,39 @@ export default function ProjectShowcase() {
         />
       </div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }} 
-          whileInView={{ opacity: 1, y: 0 }} 
-          viewport={{ once: true, amount: 0.3 }} 
-          transition={{ 
-            duration: 0.8, 
-            ease: [0.34, 1.56, 0.64, 1],
-            type: "spring",
-            stiffness: 100,
-            damping: 15
-          }} 
-          className="text-center mb-16 space-y-4"
-        >
+        <div className="mb-16 space-y-4">
           <motion.h2 
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.6 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold overflow-hidden"
+            initial={{ opacity: 0, x: -100, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ 
+              duration: 0.8,
+              ease: [0.22, 1, 0.36, 1],
+              delay: 0.2
+            }}
           >
-            <motion.span 
-              className="bg-gradient-to-b from-gray-200 via-white to-gray-300 bg-clip-text text-transparent"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-            >
+            <span className="bg-gradient-to-b from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
               Our{" "}
-            </motion.span>
-            <motion.span 
-              className="text-accent"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-            >
+            </span>
+            <span className="text-accent">
               Projects
-            </motion.span>
+            </span>
           </motion.h2>
           <motion.p 
-            className="text-white/70 text-lg md:text-xl max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5, duration: 0.5 }}
+            className="text-white/70 text-lg md:text-xl max-w-2xl"
+            initial={{ opacity: 0, x: -80, filter: "blur(8px)" }}
+            whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ 
+              duration: 0.7,
+              ease: [0.22, 1, 0.36, 1],
+              delay: 0.4
+            }}
           >
             Explore our portfolio of exceptional digital experiences
           </motion.p>
-        </motion.div>
+        </div>
         <div className="relative pb-16">
           <div 
             className={cn(
@@ -781,6 +771,6 @@ export default function ProjectShowcase() {
         </div>
       </div>
       {selectedProject && <ProjectModal project={selectedProject} isOpen={!!selectedProject} onClose={() => setSelectedProject(null)} />}
-    </section>
+    </motion.section>
   );
 }

@@ -153,7 +153,7 @@ const Service = ({
 export default function ServicesSection() {
   return (
     <section>
-      <div className="py-24 md:py-32">
+      <div className="pt-12 pb-12 md:pt-32 md:pb-16">
         <div className="mx-auto flex flex-col px-6 md:grid md:max-w-5xl md:grid-cols-2 md:gap-12">
           {/* Heading for mobile - shows above service boxes */}
           <motion.h2
