@@ -157,7 +157,7 @@ export default function ServicesSection() {
         <div className="mx-auto flex flex-col px-6 md:grid md:max-w-5xl md:grid-cols-2 md:gap-12">
           {/* Heading for mobile - shows above service boxes */}
           <motion.h2
-            className="block md:hidden text-balance text-4xl font-semibold leading-tight mb-8"
+            className="block md:hidden text-center text-white/90 text-balance text-4xl font-semibold leading-tight mb-8"
             initial={{ opacity: 0, y: 30, scale: 0.95, filter: "blur(8px)" }}
             whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.3 }}
@@ -187,7 +187,7 @@ export default function ServicesSection() {
             <div className="space-y-6">
               {/* Heading for desktop - hidden on mobile */}
               <motion.h2
-                className="hidden md:block text-balance text-4xl font-semibold leading-tight md:text-5xl lg:text-6xl"
+                className="hidden md:block text-white/90 text-balance text-4xl font-semibold leading-tight md:text-5xl lg:text-6xl"
                 initial={{
                   opacity: 0,
                   y: 30,

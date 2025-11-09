@@ -183,8 +183,10 @@ export default function NewAbout() {
               <div className="relative z-10 space-y-6 sm:space-y-8 md:space-y-6">
                 {/* Title */}
                 <div ref={titleRef} className="text-center">
-                  <h2 className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-bold text-foreground leading-[1.1] tracking-tight">
-                    We Build{" "}
+                  <h2 className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-bold leading-[1.1] tracking-tight">
+                    <span className="bg-gradient-to-b from-gray-200 via-white to-gray-300 bg-clip-text text-transparent [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]">
+                      We Build{" "}
+                    </span>
                     <span className="text-accent relative inline-block">
                       Exceptional
                       <svg
@@ -203,7 +205,9 @@ export default function NewAbout() {
                       </svg>
                     </span>
                     <br className="hidden sm:block" />
-                    Digital Experiences
+                    <span className="bg-gradient-to-b from-gray-200 via-white to-gray-100 bg-clip-text text-transparent [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]">
+                      Digital Experiences
+                    </span>
                   </h2>
                 </div>
 
