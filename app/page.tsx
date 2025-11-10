@@ -14,6 +14,7 @@ import { MarqueeDemo } from "@/components/ui/marquee-demo"
 import ProjectShowcase from "@/components/project-showcase"
 import ScrollVelocity from "@/components/ui/scroll-velocity"
 import { WhyChooseTrawerse } from "@/components/why-choose-trawerse"
+import { Testimonials } from "@/components/testimonials"
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -100,6 +101,9 @@ export default function Home() {
 
               {/* Why Choose Trawerse Section */}
               <WhyChooseTrawerse />
+
+              {/* Testimonials Section */}
+              <Testimonials />
             </>
           }
         />
