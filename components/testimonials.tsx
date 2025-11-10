@@ -1,13 +1,14 @@
-import { Star } from "lucide-react"
-import { Marquee } from "@/components/ui/marquee"
-import { cn } from "@/lib/utils"
+import { Star } from "lucide-react";
+import { Marquee } from "@/components/ui/marquee";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface Review {
-  name: string
-  username: string
-  body: string
-  img: string
-  rating: number
+  name: string;
+  username: string;
+  body: string;
+  img: string;
+  rating: number;
 }
 
 const reviews: Review[] = [
@@ -55,7 +56,6 @@ const reviews: Review[] = [
   },
 ];
 
-
 const ReviewCard = ({ img, name, username, body, rating }: Review) => {
   return (
     <figure
@@ -63,11 +63,12 @@ const ReviewCard = ({ img, name, username, body, rating }: Review) => {
         "relative w-64 sm:w-80 cursor-pointer overflow-hidden rounded-xl p-3 sm:p-4",
         "transition-all duration-300"
       )}
-style={{
-  background: 'linear-gradient(90deg, #151515 0%, #1a1a1a 10%, #151515 20%, #1c1c1c 30%, #151515 40%, #1a1a1a 50%, #151515 60%, #1c1c1c 70%, #151515 80%, #1a1a1a 90%, #151515 100%)',
-  backgroundSize: '300% 100%',
-  animation: 'metalShift 10s ease-in-out infinite',
-}}
+      style={{
+        background:
+          "linear-gradient(90deg, #151515 0%, #1a1a1a 10%, #151515 20%, #1c1c1c 30%, #151515 40%, #1a1a1a 50%, #151515 60%, #1c1c1c 70%, #151515 80%, #1a1a1a 90%, #151515 100%)",
+        backgroundSize: "300% 100%",
+        animation: "metalShift 10s ease-in-out infinite",
+      }}
     >
       <div className="flex flex-row items-center gap-2">
         <img className="rounded-full w-7 h-7 sm:w-8 sm:h-8" alt="" src={img} />
@@ -75,7 +76,9 @@ style={{
           <figcaption className="text-xs sm:text-sm font-medium dark:text-white">
             {name}
           </figcaption>
-          <p className="text-[10px] sm:text-xs font-medium dark:text-white/40">{username}</p>
+          <p className="text-[10px] sm:text-xs font-medium dark:text-white/40">
+            {username}
+          </p>
         </div>
       </div>
       <div className="flex gap-1 my-1.5 sm:my-2">
@@ -86,36 +89,71 @@ style={{
           />
         ))}
       </div>
-      <blockquote className="mt-1.5 sm:mt-2 text-xs sm:text-sm dark:text-white/80">{body}</blockquote>
+      <blockquote className="mt-1.5 sm:mt-2 text-xs sm:text-sm dark:text-white/80">
+        {body}
+      </blockquote>
     </figure>
-  )
-}
+  );
+};
 
 export function Testimonials() {
-  const firstRow = reviews.slice(0, 2)
-  const secondRow = reviews.slice(2, 4)
-  const thirdRow = reviews.slice(4, 6)
+  const firstRow = reviews.slice(0, 2);
+  const secondRow = reviews.slice(2, 4);
+  const thirdRow = reviews.slice(4, 6);
 
   return (
     <section className="relative py-20 sm:py-32 overflow-hidden w-full">
       {/* Section Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16 px-4">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-  Built with passion.{" "}
-  <span className="gradient-text">Loved by clients.</span>
-</h2>
-<p className="text-lg text-muted-foreground">
-  From startups to enterprises — our work speaks through the people who use it.
-  Here’s what they say about partnering with Trawerse.
-</p>
+      <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-6 mb-16 space-y-4">
+        <motion.h2
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold overflow-hidden"
+          initial={{ opacity: 0, x: -100, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
+            delay: 0.2
+          }}
+        >
+          <span className="bg-gradient-to-b from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
+            Built with passion.{" "}
+          </span>
+          <span className="text-accent">
+            Loved by clients.
+          </span>
+        </motion.h2>
+        <motion.p
+          className="text-white/70 text-lg md:text-xl max-w-2xl"
+          initial={{ opacity: 0, x: -80, filter: "blur(8px)" }}
+          whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            duration: 0.7,
+            ease: [0.22, 1, 0.36, 1],
+            delay: 0.4
+          }}
+        >
+          From startups to enterprises — our work speaks through the people who use it. Here's what they say about partnering with Trawerse.
+        </motion.p>
       </div>
 
       {/* Testimonials Marquee - Full Width */}
-      <div 
+      <motion.div
         className="relative flex flex-col items-center justify-center gap-1 sm:gap-4 overflow-hidden w-full"
         style={{
-          maskImage: 'linear-gradient(to right, transparent, black 20%, black 80%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 20%, black 80%, transparent)'
+          maskImage:
+            "linear-gradient(to right, transparent, black 20%, black 80%, transparent)",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent, black 20%, black 80%, transparent)",
+        }}
+        initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
+        whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{
+          duration: 0.8,
+          ease: [0.22, 1, 0.36, 1],
+          delay: 0.6
         }}
       >
         <Marquee pauseOnHover className="[--duration:25s]">
@@ -134,7 +172,7 @@ export function Testimonials() {
             <ReviewCard key={review.username} {...review} />
           ))}
         </Marquee>
-      </div>
+      </motion.div>
     </section>
-  )
+  );
 }

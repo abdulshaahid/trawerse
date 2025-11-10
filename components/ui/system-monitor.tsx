@@ -152,25 +152,19 @@ const ResourceCard = ({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       <motion.div
-        className="flex items-center justify-center w-7 h-7 rounded-md bg-zinc-900 dark:bg-zinc-800"
+        className="flex items-center justify-center w-7 h-7 rounded-md bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 overflow-hidden relative"
         animate={{
           scale: isHovered ? 1.1 : 1,
         }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
-        <Icon className="w-4 h-4 text-muted-foreground" style={{ color }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+        <Icon className="w-4 h-4 text-muted-foreground relative z-10" style={{ color }} />
       </motion.div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs font-medium text-muted-foreground">{label}</span>
-          <motion.span
-            className={`font-medium ${hasSpikes ? "text-red-500" : "text-foreground"}`}
-            style={{ fontSize: '0.65rem' }}
-            animate={{ color: hasSpikes ? "#ef4444" : undefined }}
-          >
-            {value.toFixed(0)} {unit}
-          </motion.span>
         </div>
         <div className="mt-1">
           <Sparkline data={data} color={color} />
@@ -280,7 +274,7 @@ export default function SystemMonitor() {
 
   return (
     <div className="w-full h-full">
-      <Card className="w-full bg-background/95 backdrop-blur-sm border shadow-lg">
+      <Card className="w-full bg-background/95 backdrop-blur-sm border-none shadow-lg">
         <motion.div
           className="p-3 cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
@@ -302,19 +296,13 @@ export default function SystemMonitor() {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <Badge variant="destructive" className="text-xs text-white px-1.5 py-0.5">
-                    Alert
+                  <Badge className="text-xs text-white px-1.5 py-0.5 bg-emerald-800 hover:bg-emerald-600">
+                    Safe
                   </Badge>
                 </motion.div>
               )}
             </div>
-            <motion.div
-              animate={{ rotate: isExpanded ? 180 : 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="text-muted-foreground"
-            >
-              ▼
-            </motion.div>
+           
           </div>
 
           <div className="grid grid-cols-2 gap-1.5">
@@ -332,49 +320,7 @@ export default function SystemMonitor() {
           </div>
         </motion.div>
 
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="overflow-hidden"
-            >
-              <div className="px-3 pb-3 border-t">
-                <div className="mt-3 mb-2">
-                  <ResourceCard
-                    icon={Shield}
-                    label="Threat Level"
-                    value={currentThreats}
-                    data={resourceData.threats}
-                    color="#ef4444"
-                    unit=""
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-xs font-medium text-muted-foreground">Security Agents</span>
-                  {agents.map((agent, index) => (
-                    <motion.div
-                      key={agent.id}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{
-                        delay: index * 0.1,
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 30,
-                      }}
-                    >
-                      <AgentMemoryCard agent={agent} />
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        
       </Card>
     </div>
   )

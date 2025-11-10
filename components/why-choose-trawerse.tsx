@@ -64,7 +64,7 @@ export function WhyChooseTrawerse() {
                 </div>
 
                 <div className="relative">
-                    <div className="relative z-10 grid grid-cols-6 gap-3">
+                    <div className="relative z-10 grid grid-cols-6 gap-3 mx-2 sm:mx-0">
                         {/* Pixel-Perfect Design */}
                         <motion.div
                             className="relative col-span-full flex lg:col-span-2"
@@ -220,7 +220,7 @@ export function WhyChooseTrawerse() {
                                             <p className="text-foreground/50">From sleek landing pages to full-fledged web apps — we can handle anything you envision.</p>
                                         </motion.div>
                                     </div>
-                                    <div className="relative flex h-full items-center justify-center mt-3 sm:-my-6 min-h-[280px]">
+                                    <div className="relative flex h-full items-center justify-center -my-3 sm:-my-6 min-h-[280px]">
                                         <AnimatedBeamMultipleOutputDemo />
                                     </div>
                                 </CardContent>
@@ -254,42 +254,50 @@ export function WhyChooseTrawerse() {
                                     <div className="relative flex h-full items-center justify-center mt-3 sm:-my-6 sm:-mr-4 lg:-mt-9 min-h-[280px]">
                                         {/* Center icon */}
                                         <motion.div 
-                                            className="absolute size-16 rounded-full bg-zinc-900 dark:bg-zinc-800 flex items-center justify-center shadow-lg"
+                                            className="absolute size-16 rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-lg overflow-hidden"
                                             initial={{ scale: 0, rotate: -180, opacity: 0 }}
                                             whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
                                             viewport={{ once: true }}
                                             transition={{ delay: 1, duration: 0.8, type: "spring", stiffness: 180, damping: 15 }}
                                             whileHover={{ scale: 1.15, rotate: 360, transition: { duration: 0.6, ease: "easeInOut" } }}
                                         >
-                                            <Clock className="size-8 text-gray-400" strokeWidth={1.5} />
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+                                            <Clock className="size-8 text-gray-400 relative z-10" strokeWidth={1.5} />
                                         </motion.div>
                                     
                                     {/* Outer orbit - 4 icons */}
                                     <OrbitingCircles iconSize={48} radius={120} duration={25}>
-                                        <div className="size-full rounded-full bg-zinc-900 dark:bg-zinc-800 flex items-center justify-center shadow-xl">
-                                            <FontAwesomeIcon icon={faCode} className="text-emerald-400 text-xl" />
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-xl overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+                                            <FontAwesomeIcon icon={faCode} className="text-emerald-400 text-xl relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-zinc-900 dark:bg-zinc-800 flex items-center justify-center shadow-xl">
-                                            <FontAwesomeIcon icon={faTerminal} className="text-blue-400 text-xl" />
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-xl overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+                                            <FontAwesomeIcon icon={faTerminal} className="text-blue-400 text-xl relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-zinc-900 dark:bg-zinc-800 flex items-center justify-center shadow-xl">
-                                            <FontAwesomeIcon icon={faServer} className="text-purple-400 text-xl" />
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-xl overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+                                            <FontAwesomeIcon icon={faServer} className="text-purple-400 text-xl relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-zinc-900 dark:bg-zinc-800 flex items-center justify-center shadow-xl">
-                                            <FontAwesomeIcon icon={faDatabase} className="text-orange-400 text-xl" />
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-xl overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+                                            <FontAwesomeIcon icon={faDatabase} className="text-orange-400 text-xl relative z-10" />
                                         </div>
                                     </OrbitingCircles>
                                     
                                     {/* Inner orbit - 3 icons, faster */}
                                     <OrbitingCircles iconSize={36} radius={75} reverse speed={1.5} duration={20}>
-                                        <div className="size-full rounded-full bg-zinc-900 dark:bg-zinc-800 flex items-center justify-center shadow-lg">
-                                            <FontAwesomeIcon icon={faCodeBranch} className="text-pink-400 text-lg" />
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-lg overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+                                            <FontAwesomeIcon icon={faCodeBranch} className="text-pink-400 text-lg relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-zinc-900 dark:bg-zinc-800 flex items-center justify-center shadow-lg">
-                                            <FontAwesomeIcon icon={faRocket} className="text-amber-400 text-lg" />
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-lg overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+                                            <FontAwesomeIcon icon={faRocket} className="text-amber-400 text-lg relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-zinc-900 dark:bg-zinc-800 flex items-center justify-center shadow-lg">
-                                            <FontAwesomeIcon icon={faCode} className="text-cyan-400 text-lg" />
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-lg overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
+                                            <FontAwesomeIcon icon={faCode} className="text-cyan-400 text-lg relative z-10" />
                                         </div>
                                     </OrbitingCircles>
                                     </div>

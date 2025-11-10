@@ -127,6 +127,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         className
       )}
       viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
+      style={{ willChange: "transform" }}
     >
       <path
         d={pathD}
@@ -162,9 +163,10 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           transition={{
             delay,
             duration,
-            ease: [0.16, 1, 0.3, 1],
+            ease: "linear",
             repeat: Infinity,
             repeatDelay: 0,
+            repeatType: "loop",
           }}
         >
           <stop stopColor={gradientStartColor} stopOpacity="0"></stop>
