@@ -173,7 +173,7 @@ export function DotPattern({
         // Reduce opacity on mobile
         const isMobileView = window.innerWidth < 640
         if (isMobileView) {
-          opacity *= 0.63
+          opacity *= 0.64
         }
 
         ctx.fillStyle = `rgba(${color}, ${opacity})`
