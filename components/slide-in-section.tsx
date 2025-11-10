@@ -23,9 +23,13 @@ export default function SlideInSection({ heroContent, restContent, className }: 
 
   const lockScroll = useCallback((scrollPosition: number = 0) => {
     document.documentElement.style.overflow = 'hidden'
+    // @ts-ignore - WebKit-specific property for iOS
+    document.documentElement.style.WebkitOverflowScrolling = 'auto'
     document.body.style.position = 'fixed'
     document.body.style.width = '100%'
     document.body.style.top = `-${scrollPosition}px`
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
   }, [])
 
   const unlockScroll = useCallback(() => {
@@ -33,7 +37,11 @@ export default function SlideInSection({ heroContent, restContent, className }: 
     document.body.style.position = ''
     document.body.style.width = ''
     document.body.style.top = ''
+    document.body.style.overflow = ''
+    document.body.style.touchAction = ''
     document.documentElement.style.overflow = ''
+    // @ts-ignore - WebKit-specific property for iOS
+    document.documentElement.style.WebkitOverflowScrolling = 'touch'
     if (scrollY) {
       window.scrollTo(0, parseInt(scrollY || '0') * -1)
     }
@@ -43,12 +51,14 @@ export default function SlideInSection({ heroContent, restContent, className }: 
     if (isTransitioning || scrolled) return
     
     setIsTransitioning(true)
-    setScrolled(true)
-    setTransitionComplete(false)
-    
     lockScroll(window.scrollY)
     
+    // Force reflow for iOS Safari to recognize the initial state
     requestAnimationFrame(() => {
+      // Trigger the actual transition
+      setScrolled(true)
+      setTransitionComplete(false)
+      
       setTimeout(() => {
         setIsTransitioning(false)
         setTransitionComplete(true)
@@ -78,12 +88,14 @@ export default function SlideInSection({ heroContent, restContent, className }: 
     if (isTransitioning || !transitionComplete) return
     
     setIsTransitioning(true)
-    setScrolled(false)
-    setTransitionComplete(false)
-    
     lockScroll(0)
     
+    // Force reflow for iOS Safari to recognize the initial state
     requestAnimationFrame(() => {
+      // Trigger the actual transition
+      setScrolled(false)
+      setTransitionComplete(false)
+      
       setTimeout(() => {
         setIsTransitioning(false)
         unlockScroll()
@@ -135,13 +147,17 @@ export default function SlideInSection({ heroContent, restContent, className }: 
 
     const handleWheel = (e: WheelEvent) => {
       if (isTransitioning || isTouching.current) {
-        e.preventDefault()
+        if (e.cancelable) {
+          e.preventDefault()
+        }
         return
       }
       
       // Detect upward scroll at the top of new section to go back to hero
       if (transitionComplete && window.scrollY <= 10 && e.deltaY < -15) {
-        e.preventDefault()
+        if (e.cancelable) {
+          e.preventDefault()
+        }
         transitionToHero()
       }
     }
@@ -166,7 +182,10 @@ export default function SlideInSection({ heroContent, restContent, className }: 
       
       // Swipe down from hero to next section (deltaY < 0 means swiping up)
       if (!scrolled && !transitionComplete && deltaY < -40 && velocity > 0.3) {
-        e.preventDefault()
+        // Only preventDefault if the event is cancelable (iOS requirement)
+        if (e.cancelable) {
+          e.preventDefault()
+        }
         isTouching.current = false
         transitionToNewSection()
       }
@@ -175,7 +194,10 @@ export default function SlideInSection({ heroContent, restContent, className }: 
       // More lenient conditions: either a medium swipe or a fast swipe
       if (transitionComplete && window.scrollY <= 10 && 
           (deltaY > 40 || (deltaY > 25 && velocity > 0.4))) {
-        e.preventDefault()
+        // Only preventDefault if the event is cancelable (iOS requirement)
+        if (e.cancelable) {
+          e.preventDefault()
+        }
         isTouching.current = false
         transitionToHero()
       }
@@ -219,25 +241,32 @@ export default function SlideInSection({ heroContent, restContent, className }: 
     <>
       {/* Hero section - always present, slides in/out */}
       <div
-        className="fixed top-0 left-0 h-screen overflow-hidden"
+        className="fixed top-0 left-0 overflow-hidden h-[100dvh]"
         style={{
           width: '100vw',
+          WebkitTransform: scrolled 
+            ? "translate3d(-100%, 0, 0) scale(0.92)" 
+            : "translate3d(0, 0, 0) scale(1)",
           transform: scrolled 
             ? "translate3d(-100%, 0, 0) scale(0.92)" 
             : "translate3d(0, 0, 0) scale(1)",
           opacity: scrolled ? 0 : 1,
           filter: scrolled ? 'blur(12px)' : 'blur(0px)',
+          WebkitFilter: scrolled ? 'blur(12px)' : 'blur(0px)',
           transformOrigin: 'center left',
+          WebkitTransformOrigin: 'center left',
           zIndex: scrolled ? 0 : 10,
           pointerEvents: scrolled ? "none" : "auto",
           visibility: scrolled && transitionComplete ? 'hidden' : 'visible',
+          WebkitTransition: `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), -webkit-filter ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), -webkit-transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1)`,
           transition: `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), filter ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
           willChange: isTransitioning ? 'transform, opacity, filter' : 'auto',
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
           WebkitFontSmoothing: 'antialiased',
           MozOsxFontSmoothing: 'grayscale',
-        }}
+          WebkitOverflowScrolling: 'touch',
+        } as React.CSSProperties}
       >
         {heroContent}
       </div>
@@ -248,11 +277,17 @@ export default function SlideInSection({ heroContent, restContent, className }: 
         className={`${transitionComplete ? 'relative' : 'fixed'} ${transitionComplete ? '' : 'top-0 left-0'} min-h-screen ${className || ''}`}
         style={{
           width: transitionComplete ? '100%' : '100vw',
+          WebkitTransform: transitionComplete 
+            ? 'none' 
+            : (scrolled ? "translate3d(0, 0, 0)" : "translate3d(100%, 0, 0)"),
           transform: transitionComplete 
             ? 'none' 
             : (scrolled ? "translate3d(0, 0, 0)" : "translate3d(100%, 0, 0)"),
           opacity: transitionComplete ? 1 : (scrolled ? 1 : 0),
           zIndex: scrolled && !transitionComplete ? 5 : 1,
+          WebkitTransition: transitionComplete 
+            ? 'none' 
+            : `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), -webkit-transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1)`,
           transition: transitionComplete 
             ? 'none' 
             : `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
@@ -261,8 +296,9 @@ export default function SlideInSection({ heroContent, restContent, className }: 
           WebkitBackfaceVisibility: 'hidden',
           WebkitFontSmoothing: 'antialiased',
           MozOsxFontSmoothing: 'grayscale',
+          WebkitOverflowScrolling: 'touch',
           pointerEvents: scrolled || transitionComplete ? 'auto' : 'none',
-        }}
+        } as React.CSSProperties}
       >
         {(scrolled || transitionComplete) && restContent}
       </div>
