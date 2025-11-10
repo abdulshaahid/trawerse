@@ -10,7 +10,9 @@ import Hero from "@/components/hero"
 import NewAbout from "@/components/new-about"
 import SlideInSection from "@/components/slide-in-section"
 import ServicesSection from "@/components/services-section"
+import { MarqueeDemo } from "@/components/ui/marquee-demo"
 import ProjectShowcase from "@/components/project-showcase"
+import ScrollVelocity from "@/components/ui/scroll-velocity"
 import { WhyChooseTrawerse } from "@/components/why-choose-trawerse"
 
 
@@ -79,8 +81,22 @@ export default function Home() {
               {/* Services Section */}
               <ServicesSection />
 
+              {/* Logos Section */}
+              <MarqueeDemo />
+
               {/* Project Showcase Section */}
               <ProjectShowcase />
+
+              {/* Scroll Velocity Section */}
+              <ScrollVelocity
+                texts={['#WECODEFORFUN']} 
+                velocity={120} 
+                className="velocity-text"
+                damping={50}
+                stiffness={400}
+                numCopies={10}
+                velocityMapping={{ input: [0, 1000], output: [0, 10] }}
+              />
 
               {/* Why Choose Trawerse Section */}
               <WhyChooseTrawerse />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, memo, useCallback } from "react";
+import { useMemo, useState, useEffect, memo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -594,6 +594,7 @@ export default function ProjectShowcase() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   // Detect screen size
   useEffect(() => {
@@ -617,6 +618,21 @@ export default function ProjectShowcase() {
     setSelectedProject(project);
   }, []);
 
+  // Handle toggle with scroll preservation
+  const handleToggle = useCallback(() => {
+    if (showAll && sectionRef.current) {
+      // Store current position relative to section
+      const sectionTop = sectionRef.current.getBoundingClientRect().top + window.scrollY;
+      setShowAll(false);
+      // Restore scroll position after state update
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: sectionTop - 100, behavior: 'smooth' });
+      });
+    } else {
+      setShowAll(true);
+    }
+  }, [showAll]);
+
   // Memoize static cards to prevent re-render
   const staticCards = useMemo(() => {
     return projects.slice(0, limit).map((project) => (
@@ -628,7 +644,8 @@ export default function ProjectShowcase() {
 
   return (
     <motion.section 
-      className="relative pt-12 pb-24 md:pt-16 md:pb-32 overflow-hidden"
+      ref={sectionRef}
+      className="relative pt-18 pb-28 md:pt-40 md:pb-32 overflow-hidden"
       initial={{ opacity: 0, filter: "blur(10px)" }}
       whileInView={{ opacity: 1, filter: "blur(0px)" }}
       viewport={{ once: true, amount: 0.1 }}
@@ -687,8 +704,8 @@ export default function ProjectShowcase() {
         <div className="relative pb-16">
           <div 
             className={cn(
-              "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-14 md:gap-y-16 will-change-contents",
-              !showAll && "[mask-image:linear-gradient(to_bottom,#000_60%,transparent_100%)]"
+              "grid grid-cols-1 md:pt-2 md:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-15 md:gap-y-18 will-change-contents",
+              !showAll && "[mask-image:linear-gradient(to_bottom,#000_75%,transparent_100%)]"
             )}
           >
             {/* Always visible cards - memoized to prevent re-renders */}
@@ -738,7 +755,7 @@ export default function ProjectShowcase() {
             >
               <motion.button
                 key={showAll ? "less" : "more"}
-                onClick={() => setShowAll(!showAll)}
+                onClick={handleToggle}
                 className="text-white/80 font-semibold flex items-center gap-2 will-change-transform"
                 whileHover={{ scale: 1.05, y: showAll ? 2 : -2 }}
                 whileTap={{ scale: 0.95 }}
