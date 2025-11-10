@@ -15,6 +15,8 @@ import ProjectShowcase from "@/components/project-showcase"
 import ScrollVelocity from "@/components/ui/scroll-velocity"
 import { WhyChooseTrawerse } from "@/components/why-choose-trawerse"
 import { Testimonials } from "@/components/testimonials"
+import { ContactSection } from "@/components/contact-section"
+import { Footer } from "@/components/ui/footer-section"
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -104,6 +106,12 @@ export default function Home() {
 
               {/* Testimonials Section */}
               <Testimonials />
+
+              {/* Contact Section */}
+              <ContactSection />
+
+              {/* Footer Section */}
+              <Footer />
             </>
           }
         />

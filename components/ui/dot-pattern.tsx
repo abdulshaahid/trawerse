@@ -168,12 +168,12 @@ export function DotPattern({
           Math.pow(dot.x - dot.originalX, 2) + 
           Math.pow(dot.y - dot.originalY, 2)
         )
-        let opacity = Math.min(0.25 + displacement / 50, 0.35)
+        let opacity = Math.min(0.22 + displacement / 50, 0.32)
         
         // Reduce opacity on mobile
         const isMobileView = window.innerWidth < 640
         if (isMobileView) {
-          opacity *= 0.72
+          opacity *= 0.63
         }
 
         ctx.fillStyle = `rgba(${color}, ${opacity})`

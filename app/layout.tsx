@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: "Trawerse - Premium Web Development Studio",
   description: "We build premium websites that brands love to show off. Built with passion, designed for perfection.",
   generator: "v0.app",
+  icons: {
+    icon: "/tw.svg",
+  },
 }
 
 export default function RootLayout({
