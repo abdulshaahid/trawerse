@@ -26,7 +26,7 @@ export function ContactSection() {
   }
 
   return (
-    <section className="relative py-20 sm:py-32 overflow-hidden w-full">
+    <section id="contact" className="relative py-20 sm:py-32 overflow-hidden w-full">
       {/* Background gradient blobs */}
       <motion.div 
         className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"

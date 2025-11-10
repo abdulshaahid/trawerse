@@ -17,6 +17,7 @@ import { WhyChooseTrawerse } from "@/components/why-choose-trawerse"
 import { Testimonials } from "@/components/testimonials"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/ui/footer-section"
+import FloatingContact from "@/components/floating-contact"
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -73,6 +74,7 @@ export default function Home() {
       />
       
       <Header />
+      <FloatingContact />
       <main className="relative z-10">
         <SlideInSection 
           heroContent={<Hero />}

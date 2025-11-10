@@ -251,13 +251,13 @@ export default function Hero() {
 
     
     // Middle row
-    { Icon: IconSpotify, className: 'bottom-[25%] right-[7%] md:top-[48%] md:left-[5%]' },
+    { Icon: IconSpotify, className: 'bottom-[21%] right-[7%] md:top-[48%] md:left-[5%]' },
     { Icon: IconGitHub, className: 'top-[15%] left-[28%] md:top-[55%] md:left-[65%]' },
     { Icon: IconDiscord, className: 'top-[45%] right-[5%] md:top-[49%] md:right-[12%]' },
     
     // Lower-middle row
-    { Icon: IconLinear, className: 'top-[69%] left-[7%] md:top-[78%] md:left-[22%]' },
-    { Icon: IconDropbox, className: 'top-[70%] left-[48%] md:top-[70%] md:left-[57%]' },
+    { Icon: IconLinear, className: 'bottom-[21%] left-[7%] md:top-[78%] md:left-[22%]' },
+    { Icon: IconDropbox, className: 'bottom-[22%] left-[42%] md:top-[70%] md:left-[57%]' },
     
     // Bottom row
     { Icon: IconVercel, className: 'bottom-[10%] left-[45%] md:bottom-[12%] md:left-[38%]' },
@@ -416,18 +416,75 @@ export default function Hero() {
             </p>
 
             {/* CTA Buttons */}
-            <div ref={ctaRef} className="flex flex-row gap-3 items-center justify-center lg:justify-start mb-12 opacity-0" style={{ willChange: 'opacity' }}>
-              <button className="group relative bg-accent hover:bg-accent/80 text-white pl-1.5 pr-4 sm:pr-5 py-1.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 sm:gap-2.5 shadow-md ">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black flex items-center justify-center transition-transform duration-300 group-hover:rotate-180">
-                  <ArrowDown className="w-4 h-4 sm:w-4 sm:h-4 text-accent" strokeWidth={2.5} />
+            <div ref={ctaRef} className="flex flex-row gap-3 items-center justify-center lg:justify-start mb-12 opacity-0" style={{ willChange: 'opacity', perspective: '1000px' }}>
+              <button 
+                onClick={() => {
+                  const event = new CustomEvent('navigateToSection', {
+                    detail: { sectionId: 'contact' }
+                  })
+                  window.dispatchEvent(event)
+                }}
+                className="group relative bg-accent hover:bg-accent/90 text-white pl-1.5 pr-4 sm:pr-5 py-1.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95 active:translate-y-0 flex items-center gap-2 sm:gap-2.5 overflow-hidden"
+                style={{
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden',
+                }}
+              >
+                {/* Glossy light effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none" 
+                  style={{ 
+                    transform: 'translateZ(1px)',
+                    maskImage: 'linear-gradient(135deg, white 0%, transparent 60%)'
+                  }} 
+                />
+                {/* Bottom shadow for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-full" />
+                
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black flex items-center justify-center transition-transform duration-300 group-hover:rotate-180 relative overflow-hidden"
+                  style={{
+                    boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)',
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-50" />
+                  <ArrowDown className="w-4 h-4 sm:w-4 sm:h-4 text-accent relative z-10" strokeWidth={2.5} />
                 </div>
-                <span className="whitespace-nowrap text-black ">Join Waitlist</span>
+                <span className="whitespace-nowrap text-black font-semibold relative z-10">Start Project</span>
               </button>
-              <button className="group relative bg-accent hover:bg-accent/80 text-white pl-1.5 pr-4 sm:pr-5 py-1.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 sm:gap-2.5 shadow-md ">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                  <Eye className="w-4 h-4 sm:w-4 sm:h-4 text-accent" strokeWidth={2.5} />
+              
+              <button 
+                onClick={() => {
+                  const event = new CustomEvent('navigateToSection', {
+                    detail: { sectionId: 'work' }
+                  })
+                  window.dispatchEvent(event)
+                }}
+                className="group relative bg-accent hover:bg-accent/90 text-white pl-1.5 pr-4 sm:pr-5 py-1.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95 active:translate-y-0 flex items-center gap-2 sm:gap-2.5 overflow-hidden"
+                style={{
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden',
+                }}
+              >
+                {/* Glossy light effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none" 
+                  style={{ 
+                    transform: 'translateZ(1px)',
+                    maskImage: 'linear-gradient(135deg, white 0%, transparent 60%)'
+                  }} 
+                />
+                {/* Bottom shadow for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-full" />
+                
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black flex items-center justify-center transition-transform duration-300 group-hover:scale-110 relative overflow-hidden"
+                  style={{
+                    boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)',
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-50" />
+                  <Eye className="w-4 h-4 sm:w-4 sm:h-4 text-accent relative z-10" strokeWidth={2.5} />
                 </div>
-                <span className="whitespace-nowrap text-black font-semibold">View Our Work</span>
+                <span className="whitespace-nowrap text-black font-semibold relative z-10">View Our Work</span>
               </button>
             </div>
             

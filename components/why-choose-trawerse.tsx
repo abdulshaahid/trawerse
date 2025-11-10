@@ -11,7 +11,7 @@ import { motion } from 'framer-motion'
 
 export function WhyChooseTrawerse() {
     return (
-        <section className="relative bg-gray-50 mt-12 py-16 md:py-32 dark:bg-transparent overflow-hidden">
+        <section id="features" className="relative bg-gray-50 mt-12 py-16 md:py-32 dark:bg-transparent overflow-hidden">
             {/* Background animated blobs */}
             <motion.div 
                 className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl"

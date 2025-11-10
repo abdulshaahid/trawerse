@@ -644,6 +644,7 @@ export default function ProjectShowcase() {
 
   return (
     <motion.section 
+      id="work"
       ref={sectionRef}
       className="relative pt-18 pb-28 md:pt-40 md:pb-32 overflow-hidden"
       initial={{ opacity: 0, filter: "blur(10px)" }}

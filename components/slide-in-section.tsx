@@ -17,6 +17,7 @@ export default function SlideInSection({ heroContent, restContent, className }: 
   const touchStartY = useRef(0)
   const touchStartTime = useRef(0)
   const isTouching = useRef(false)
+  const pendingNavigation = useRef<string | null>(null)
   const scrollThreshold = 50
   const transitionDuration = 600
 
@@ -53,6 +54,22 @@ export default function SlideInSection({ heroContent, restContent, className }: 
         setTransitionComplete(true)
         unlockScroll()
         window.scrollTo(0, 0)
+        
+        // Handle pending navigation after transition
+        if (pendingNavigation.current) {
+          const targetId = pendingNavigation.current
+          pendingNavigation.current = null
+          
+          // Wait for DOM to update and scroll
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              const element = document.getElementById(targetId)
+              if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+            }, 100)
+          })
+        }
       }, transitionDuration)
     })
   }, [isTransitioning, scrolled, transitionDuration, lockScroll, unlockScroll])
@@ -73,6 +90,29 @@ export default function SlideInSection({ heroContent, restContent, className }: 
       }, transitionDuration)
     })
   }, [isTransitioning, transitionComplete, transitionDuration, lockScroll, unlockScroll])
+
+  // Handle navigation to sections
+  const navigateToSection = useCallback((sectionId: string) => {
+    if (sectionId === 'home' || sectionId === 'hero') {
+      // Go back to hero
+      if (transitionComplete) {
+        transitionToHero()
+      }
+    } else {
+      // Navigate to other sections
+      if (!scrolled && !transitionComplete) {
+        // Store pending navigation and trigger transition
+        pendingNavigation.current = sectionId
+        transitionToNewSection()
+      } else {
+        // Already in new section, just scroll
+        const element = document.getElementById(sectionId)
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+      }
+    }
+  }, [scrolled, transitionComplete, transitionToNewSection, transitionToHero])
 
   useEffect(() => {
     let scrollTimeout: NodeJS.Timeout
@@ -147,12 +187,19 @@ export default function SlideInSection({ heroContent, restContent, className }: 
       }, 100)
     }
 
+    // Custom navigation event handler
+    const handleNavigateEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ sectionId: string }>
+      navigateToSection(customEvent.detail.sectionId)
+    }
+
     window.addEventListener("scroll", handleScroll, { passive: true })
     window.addEventListener("wheel", handleWheel, { passive: false })
     window.addEventListener("touchstart", handleTouchStart, { passive: true })
     window.addEventListener("touchmove", handleTouchMove, { passive: false })
     window.addEventListener("touchend", handleTouchEnd, { passive: true })
     window.addEventListener("touchcancel", handleTouchEnd, { passive: true })
+    window.addEventListener("navigateToSection", handleNavigateEvent as EventListener)
     
     return () => {
       clearTimeout(scrollTimeout)
@@ -162,10 +209,11 @@ export default function SlideInSection({ heroContent, restContent, className }: 
       window.removeEventListener("touchmove", handleTouchMove)
       window.removeEventListener("touchend", handleTouchEnd)
       window.removeEventListener("touchcancel", handleTouchEnd)
+      window.removeEventListener("navigateToSection", handleNavigateEvent as EventListener)
       // Reset scroll lock
       unlockScroll()
     }
-  }, [scrolled, isTransitioning, transitionComplete, transitionToNewSection, transitionToHero, unlockScroll])
+  }, [scrolled, isTransitioning, transitionComplete, transitionToNewSection, transitionToHero, unlockScroll, navigateToSection])
 
   return (
     <>

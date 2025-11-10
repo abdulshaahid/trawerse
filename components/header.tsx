@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Briefcase, Wrench, User, Mail } from "lucide-react"
+import { Briefcase, Wrench, User, Star } from "lucide-react"
 import { ExpandableTabs } from "@/components/ui/expandable-tabs"
 
 export default function Header() {
@@ -18,22 +18,32 @@ export default function Header() {
   }, [])
 
   const navTabs = [
-    { title: "Work", icon: Briefcase },
-    { title: "Services", icon: Wrench },
     { title: "About", icon: User },
-    { title: "Contact", icon: Mail },
+    { title: "Services", icon: Wrench },
+    { title: "Work", icon: Briefcase },
+    { title: "Features", icon: Star },
   ]
 
   const handleTabChange = (index: number | null) => {
     if (index !== null) {
       const tab = navTabs[index]
       if (tab && tab.title) {
-        const element = document.getElementById(tab.title.toLowerCase())
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" })
-        }
+        // Dispatch custom navigation event
+        const event = new CustomEvent('navigateToSection', {
+          detail: { sectionId: tab.title.toLowerCase() }
+        })
+        window.dispatchEvent(event)
       }
     }
+  }
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    // Dispatch custom navigation event for home
+    const event = new CustomEvent('navigateToSection', {
+      detail: { sectionId: 'home' }
+    })
+    window.dispatchEvent(event)
   }
 
   return (
@@ -46,7 +56,7 @@ export default function Header() {
             onChange={handleTabChange}
             activeColor="text-accent"
             logo={
-              <Link href="/" className="flex items-center px-2 hover:opacity-80 transition-opacity">
+              <Link href="/" onClick={handleLogoClick} className="flex items-center px-2 hover:opacity-80 transition-opacity">
                 <Image
                   src="/trawerse.svg"
                   alt="Trawerse"
@@ -71,7 +81,7 @@ export default function Header() {
             onChange={handleTabChange}
             activeColor="text-accent"
             logo={
-              <Link href="/" className="flex items-center">
+              <Link href="/" onClick={handleLogoClick} className="flex items-center">
                 <Image
                   src="/tw.svg"
                   alt="Trawerse"

@@ -98,8 +98,9 @@ export default function NewAbout() {
 
   return (
     <section
+      id="about"
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center pt-20 pb-12 md:py-32 overflow-visible"
+      className="relative min-h-screen flex items-center justify-center pt-20 pb-32 sm:pb-36 md:py-32 overflow-visible"
     >
       {/* Gradient background effects */}
       <div className="absolute inset-0 -z-10">
@@ -246,7 +247,7 @@ export default function NewAbout() {
 
         {/* Curved Loop Marquee - Full Width */}
         <motion.div
-          className="absolute bottom-14 md:bottom-20 lg:bottom-14 left-0 right-0 w-full px-0 overflow-visible origin-center"
+          className="absolute bottom-20 sm:bottom-24 md:bottom-20 lg:bottom-14 left-0 right-0 w-full px-0 overflow-visible origin-center"
           variants={{
             hidden: {
               y:

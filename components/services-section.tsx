@@ -152,7 +152,7 @@ const Service = ({
 // Main Exported Component
 export default function ServicesSection() {
   return (
-    <section>
+    <section id="services">
       <div className="pt-12 pb-12 md:pt-32 md:pb-16">
         <div className="mx-auto flex flex-col px-6 md:grid md:max-w-5xl md:grid-cols-2 md:gap-12">
           {/* Heading for mobile - shows above service boxes */}
