@@ -112,8 +112,7 @@ export default function NewAbout() {
           style={{ y: useTransform(scrollYProgress, [0, 1], [-100, 100]) }}
           className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
         />
-        {/* Animated grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(74,222,128,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(74,222,128,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_80%)]" />
+     
       </div>
 
       <motion.div
