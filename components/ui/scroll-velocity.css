@@ -3,6 +3,16 @@
   overflow: hidden;
 }
 
+.parallax:not(:first-child) {
+  margin-top: -1rem;
+}
+
+@media (min-width: 768px) {
+  .parallax:not(:first-child) {
+    margin-top: 0;
+  }
+}
+
 .scroller {
   display: flex;
   white-space: nowrap;
@@ -24,8 +34,8 @@
 
 @media (min-width: 768px) {
   .scroller {
-    font-size: 4.2rem;
-    line-height: 4.2rem;
+    font-size: 4rem;
+    line-height: 4rem;
   }
 }
 

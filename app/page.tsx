@@ -89,8 +89,8 @@ export default function Home() {
 
               {/* Scroll Velocity Section */}
               <ScrollVelocity
-                texts={['#WECODEFORFUN']} 
-                velocity={120} 
+                texts={['#WECODEFORFUN', '#WECODEFORFUN']} 
+                velocity={100} 
                 className="velocity-text"
                 damping={50}
                 stiffness={400}
