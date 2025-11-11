@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { ExternalLink, Github, Link2, Sun, Copy, Zap, Plus, ShoppingCart, BarChart3, Smartphone, Sparkles, Rocket, Palette, ChevronDown, ChevronUp, X, User } from "lucide-react";
+import { ExternalLink, Github, Link2, Sun, Copy, Zap, Plus, ShoppingCart, BarChart3, Smartphone, Sparkles, Rocket, Palette, ChevronDown, ChevronUp, X, User, Stethoscope, Clock } from "lucide-react";
 
 interface Project {
   id: string;
@@ -48,7 +48,7 @@ const projects: Project[] = [
   githubUrl: "Private Repository",
   statusText: "Live & Running",
   statusColor: "bg-lime-500",
-  glowText: "Empowering 100+ travelers and tour providers",
+  glowText: "Empowering travelers",
   icon: "https://trawayl.com/assets/trpd-C6HNp4ZR.svg",
   iconColor: "text-emerald-400",
   iconBgColor: "",
@@ -106,7 +106,7 @@ const projects: Project[] = [
     {
   id: "4",
   title: "Avoid Sun - Location-Based Travel Comfort App",
-  category: "Web Application / Travel Utility",
+  category: "Web Application",
   clientName: "Owned by Trawerse",
   image: "/assets/projects/sun.png",
   description:
@@ -130,7 +130,7 @@ const projects: Project[] = [
 {
   id: "5",
   title: "Stain - VS Code Productivity Extension",
-  category: "Developer Tool / VS Code Extension",
+  category: "VS Code Extension",
   clientName: "Owned by Trawerse",
   image: "/assets/projects/stain.png",
   description:
@@ -152,7 +152,7 @@ const projects: Project[] = [
 {
   id: "6",
   title: "Abdul Shaahid - Personal Portfolio",
-  category: "Personal Website / Portfolio",
+  category: "Personal Website",
   clientName: "Owned by Abdul Shaahid",
   image: "/assets/projects/shah.png",
   description:
@@ -171,6 +171,55 @@ const projects: Project[] = [
   icon: User,
   iconColor: "text-cyan-400",
   iconBgColor: "bg-cyan-500/20",
+},
+{
+  id: "7",
+  title: "Doctime - Online Doctor Consultation Platform",
+  category: "Web Application",
+  clientName: "Owned by Trawerse",
+  image: "/assets/projects/doct.png",
+  description:
+    "Doctime is an innovative online platform transforming healthcare by connecting doctors and patients through seamless digital interaction.",
+  technologies: [
+    "React",
+    "Django REST Framework",
+    "PostgreSQL",
+    "WebRTC",
+    "Tailwind CSS"
+  ],
+  liveUrl: "https://doctime.trawerse.com",
+  githubUrl: "Private Repository",
+  statusText: "In Development",
+  statusColor: "bg-yellow-500",
+  glowText: "Reimagining healthcare through technology",
+  icon: Stethoscope,
+  iconColor: "text-rose-400",
+  iconBgColor: "bg-rose-500/20",
+},
+{
+  id: "8",
+  title: "TimeMachine - Watch E-Commerce Platform",
+  category: "E-Commerce",
+  clientName: "Owned by Trawerse",
+  image: "/assets/projects/time.png",
+  description:
+    "TimeMachine is a specialized e-commerce platform built for watch enthusiasts, featuring a clean interface, detailed product pages, coupon systems, digital wallet, and integrated multi-payment options.",
+  technologies: [
+    "Django",
+    "Python",
+    "PostgreSQL",
+    "HTML",
+    "CSS",
+    "JavaScript"
+  ],
+  liveUrl: "https://timemachine.trawerse.com",
+  githubUrl: "Private Repository",
+  statusText: "In Development",
+  statusColor: "bg-yellow-500",
+  glowText: "Precision meets performance",
+  icon: Clock,
+  iconColor: "text-amber-400",
+  iconBgColor: "bg-amber-500/20",
 }
 
 ];
