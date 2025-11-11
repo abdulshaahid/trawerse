@@ -131,20 +131,23 @@ const FloatingIcon = ({
 
   useEffect(() => {
     let rafId: number;
+    let lastFrameTime = 0;
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const maxDistance = isTouchDevice ? 150 : 120; // Larger radius on mobile
-    const forceMultiplier = isTouchDevice ? 40 : 30; // Stronger force on mobile
+    const maxDistance = isTouchDevice ? 150 : 120;
+    const forceMultiplier = isTouchDevice ? 40 : 30;
+    const targetFPS = 30; // Reduce from 60 to 30 FPS for better performance
+    const frameInterval = 1000 / targetFPS;
     
     const updatePosition = () => {
       if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-        const distance = Math.sqrt(
-          Math.pow(mouseX.current - centerX, 2) + Math.pow(mouseY.current - centerY, 2)
-        );
+        const distanceSq = Math.pow(mouseX.current - centerX, 2) + Math.pow(mouseY.current - centerY, 2);
+        const maxDistanceSq = maxDistance * maxDistance;
 
-        if (distance < maxDistance) {
+        if (distanceSq < maxDistanceSq) {
+          const distance = Math.sqrt(distanceSq);
           const angle = Math.atan2(
             mouseY.current - centerY,
             mouseX.current - centerX
@@ -159,9 +162,15 @@ const FloatingIcon = ({
       }
     };
 
-    // Continuous animation loop for smooth interaction
-    const animate = () => {
-      updatePosition();
+    // Throttled animation loop for better performance
+    const animate = (currentTime: number = 0) => {
+      const elapsed = currentTime - lastFrameTime;
+      
+      if (elapsed >= frameInterval) {
+        lastFrameTime = currentTime - (elapsed % frameInterval);
+        updatePosition();
+      }
+      
       rafId = requestAnimationFrame(animate);
     };
 

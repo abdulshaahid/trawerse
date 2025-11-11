@@ -323,17 +323,9 @@ const MinimalProjectCard = memo(({ project, onClick }: { project: Project; onCli
               transition={{ delay: 0.3, duration: 0.5 }}
             >
               <motion.div
-                className={cn("relative h-14 w-14 shrink-0 rounded-full  flex items-center justify-center", project.iconBgColor)}
-                animate={{
-                  rotate: [0, 8, -8, 0],
-                  scale: [1, 1.05, 1.05, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                whileHover={{ scale: 1.15, rotate: 180 }}
+                className={cn("relative h-14 w-14 shrink-0 rounded-full flex items-center justify-center", project.iconBgColor)}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.2 }}
               >
                 {typeof project.icon === 'string' ? (
                   <img src={project.icon} alt="" className={cn("h-10 w-10", project.iconColor)} />
@@ -407,7 +399,13 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
     } catch {}
   };
 
+  // Throttle mouse move for performance
+  const lastUpdate = useRef(0);
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const now = Date.now();
+    if (now - lastUpdate.current < 50) return; // Throttle to 20fps
+    lastUpdate.current = now;
+    
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
@@ -452,38 +450,28 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                 {/* Image - 3D Interactive */}
                 <div className="lg:col-span-2" style={{ perspective: "1000px" }}>
                   <motion.div
-                    className="relative w-full aspect-[4/3] rounded-xl overflow-hidden cursor-grab active:cursor-grabbing"
-                    initial={{ opacity: 0, x: -30, rotateY: -15 }}
-                    animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                    transition={{ delay: 0.1, duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
-                    drag
-                    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                    dragElastic={0.1}
+                    className="relative w-full aspect-[4/3] rounded-xl overflow-hidden"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
                     whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
                     onMouseMove={handleMouseMove}
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => {
                       setIsHovering(false);
                       setMousePosition({ x: 0.5, y: 0.5 });
                     }}
-                    style={{
-                      rotateY: isHovering ? (mousePosition.x - 0.5) * 20 : 0,
-                      rotateX: isHovering ? (mousePosition.y - 0.5) * -20 : 0,
-                      transformStyle: "preserve-3d",
-                      border: "none",
-                      outline: "none",
-                    }}
                   >
                     {/* Image */}
-                    <div className="relative w-full h-full rounded-xl overflow-hidden shadow-[0_20px_50px_-12px_rgba(74,222,128,0.3)]" style={{ border: "none", outline: "none" }}>
+                    <div className="relative w-full h-full rounded-xl overflow-hidden shadow-[0_20px_50px_-12px_rgba(74,222,128,0.25)]">
                       <Image 
                         src={project.image} 
                         alt={project.title} 
                         fill 
                         sizes="(max-width: 1024px) 100vw, 400px" 
                         className="object-cover"
-                        style={{ transform: "translateZ(20px)", border: "none", outline: "none" }}
+                        priority={project.id === "1" || project.id === "2"}
+                        quality={85}
                       />
                       
                       {/* Shine effect on hover */}
@@ -504,9 +492,9 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                       {/* Icon in top left corner */}
                       <motion.div
                         className={cn("absolute top-3 left-3 h-12 w-12 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm", project.iconBgColor || "bg-white/10")}
-                        initial={{ opacity: 0, scale: 0.5, rotate: 180 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        transition={{ delay: 0.3, duration: 0.5, type: "spring", stiffness: 200 }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
                       >
                         {typeof project.icon === 'string' ? (
                           <img src={project.icon} alt="" className="h-9 w-9" />

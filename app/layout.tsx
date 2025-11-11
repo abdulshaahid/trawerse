@@ -7,8 +7,11 @@ import "./globals.css"
 
 const bricolageGrotesque = Bricolage_Grotesque({ 
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
-  variable: "--font-bricolage"
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-bricolage",
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial']
 })
 
 export const metadata: Metadata = {

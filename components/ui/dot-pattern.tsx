@@ -126,22 +126,40 @@ export function DotPattern({
       }
     }
 
-    // Animation loop
-    const animate = () => {
+    // Animation loop with FPS throttling
+    let lastFrameTime = 0
+    const targetFPS = 30 // Reduce from 60 to 30 FPS for better performance
+    const frameInterval = 1000 / targetFPS
+    
+    const animate = (currentTime: number = 0) => {
+      const elapsed = currentTime - lastFrameTime
+      
+      if (elapsed < frameInterval) {
+        animationFrameId.current = requestAnimationFrame(animate)
+        return
+      }
+      
+      lastFrameTime = currentTime - (elapsed % frameInterval)
+      
       const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
       ctx.clearRect(0, 0, window.innerWidth, height)
+      
+      const isMobileView = window.innerWidth < 640
+      const baseOpacity = isMobileView ? 0.14 : 0.22
 
       dotsRef.current.forEach((dot) => {
+        let opacity = baseOpacity
+        
         if (interactive) {
           const dx = mousePos.current.x - dot.x
           const dy = mousePos.current.y - dot.y
-          const distance = Math.sqrt(dx * dx + dy * dy)
-          // Larger interaction radius on mobile for better touch response
+          const distanceSq = dx * dx + dy * dy // Avoid sqrt for better performance
           const maxDistance = isTouchDevice.current ? 200 : 150
+          const maxDistanceSq = maxDistance * maxDistance
 
-          if (distance < maxDistance) {
+          if (distanceSq < maxDistanceSq) {
+            const distance = Math.sqrt(distanceSq) // Only calculate when needed
             // Push dots away from cursor/touch
-            // Stronger force on mobile for more noticeable effect
             const forceMultiplier = isTouchDevice.current ? 0.8 : 0.5
             const force = (1 - distance / maxDistance) * forceMultiplier
             const angle = Math.atan2(dy, dx)
@@ -161,19 +179,13 @@ export function DotPattern({
           // Damping
           dot.vx *= 0.95
           dot.vy *= 0.95
-        }
-
-        // Calculate opacity based on distance from original position
-        const displacement = Math.sqrt(
-          Math.pow(dot.x - dot.originalX, 2) + 
-          Math.pow(dot.y - dot.originalY, 2)
-        )
-        let opacity = Math.min(0.22 + displacement / 50, 0.32)
-        
-        // Reduce opacity on mobile
-        const isMobileView = window.innerWidth < 640
-        if (isMobileView) {
-          opacity *= 0.64
+          
+          // Calculate opacity based on displacement only if interactive
+          const displacementSq = Math.pow(dot.x - dot.originalX, 2) + Math.pow(dot.y - dot.originalY, 2)
+          if (displacementSq > 1) {
+            const displacement = Math.sqrt(displacementSq)
+            opacity = Math.min(baseOpacity + displacement / 50, 0.32)
+          }
         }
 
         ctx.fillStyle = `rgba(${color}, ${opacity})`

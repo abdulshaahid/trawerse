@@ -345,3 +345,50 @@ body {
   width: 0;
   height: 0;
 }
+
+/* Performance optimizations */
+@layer base {
+  /* GPU acceleration for animations */
+  [class*="motion-"],
+  [class*="animate-"] {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Optimize rendering performance */
+  img, 
+  picture, 
+  video, 
+  canvas, 
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Content visibility for off-screen sections */
+  section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+
+  /* Font rendering optimization */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+  }
+}

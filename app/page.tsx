@@ -1,23 +1,26 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, lazy, Suspense } from "react"
+import dynamic from "next/dynamic"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { motion, useMotionValue } from "framer-motion"
 import { DotPattern } from "@/components/ui/dot-pattern"
 import Header from "@/components/header"
 import Hero from "@/components/hero"
-import NewAbout from "@/components/new-about"
 import SlideInSection from "@/components/slide-in-section"
-import ServicesSection from "@/components/services-section"
-import { MarqueeDemo } from "@/components/ui/marquee-demo"
-import ProjectShowcase from "@/components/project-showcase"
-import ScrollVelocity from "@/components/ui/scroll-velocity"
-import { WhyChooseTrawerse } from "@/components/why-choose-trawerse"
-import { Testimonials } from "@/components/testimonials"
-import { ContactSection } from "@/components/contact-section"
-import { Footer } from "@/components/ui/footer-section"
 import FloatingContact from "@/components/floating-contact"
+
+// Lazy load heavy components below the fold
+const NewAbout = dynamic(() => import("@/components/new-about"), { ssr: true })
+const ServicesSection = dynamic(() => import("@/components/services-section"), { ssr: true })
+const MarqueeDemo = dynamic(() => import("@/components/ui/marquee-demo").then(mod => ({ default: mod.MarqueeDemo })), { ssr: false })
+const ProjectShowcase = dynamic(() => import("@/components/project-showcase"), { ssr: false })
+const ScrollVelocity = dynamic(() => import("@/components/ui/scroll-velocity"), { ssr: false })
+const WhyChooseTrawerse = dynamic(() => import("@/components/why-choose-trawerse").then(mod => ({ default: mod.WhyChooseTrawerse })), { ssr: true })
+const Testimonials = dynamic(() => import("@/components/testimonials").then(mod => ({ default: mod.Testimonials })), { ssr: false })
+const ContactSection = dynamic(() => import("@/components/contact-section").then(mod => ({ default: mod.ContactSection })), { ssr: true })
+const Footer = dynamic(() => import("@/components/ui/footer-section").then(mod => ({ default: mod.Footer })), { ssr: true })
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -51,10 +54,18 @@ export default function Home() {
     return () => ctx.revert()
   }, [])
 
+  // Throttle mouse move for better performance
+  const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (throttleTimeoutRef.current) return
+    
     setIsDesktop(true)
     cursorX.set(event.clientX)
     cursorY.set(event.clientY)
+    
+    throttleTimeoutRef.current = setTimeout(() => {
+      throttleTimeoutRef.current = null
+    }, 16) // ~60fps
   }
 
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
@@ -87,21 +98,23 @@ export default function Home() {
       onTouchEnd={handleTouchEnd}
     >
       {/* Universal Dot Pattern Background - spans all sections */}
-      <DotPattern dotSize={0.9} dotSpacing={18} interactive={true} color="180, 180, 180" />
+      <DotPattern dotSize={0.9} dotSpacing={18} interactive={isDesktop} color="180, 180, 180" />
       
-      {/* Universal Ambient cursor light - spans all sections */}
-      <motion.div
-        className="pointer-events-none fixed w-[700px] h-[700px] -translate-x-1/2 -translate-y-1/2 z-[5]"
-        style={{
-          left: cursorX,
-          top: cursorY,
-          background: 'radial-gradient(circle, rgba(100, 220, 150, 0.15) 0%, rgba(100, 220, 150, 0.09) 20%, rgba(100, 220, 150, 0.04) 40%, transparent 60%)',
-          filter: 'blur(45px)',
-        }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isDesktop ? 1 : (isTouching ? 1 : 0) }}
-        transition={{ duration: 0.2 }}
-      />
+      {/* Universal Ambient cursor light - spans all sections (desktop only) */}
+      {isDesktop && (
+        <motion.div
+          className="pointer-events-none fixed w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 z-[5] will-change-transform"
+          style={{
+            left: cursorX,
+            top: cursorY,
+            background: 'radial-gradient(circle, rgba(100, 220, 150, 0.12) 0%, rgba(100, 220, 150, 0.06) 20%, rgba(100, 220, 150, 0.03) 40%, transparent 60%)',
+            filter: 'blur(40px)',
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+        />
+      )}
       
       <Header />
       <FloatingContact />
