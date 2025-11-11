@@ -602,7 +602,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                         <Button 
                           variant="secondary" 
                           size="sm"
-                          className="w-full gap-2 rounded-xl bg-accent text-black hover:bg-accent/90 font-semibold transition-all" 
+                          className="w-full gap-2 rounded-xl bg-accent text-black hover:bg-accent/90 font-semibold transition-all focus:outline-none focus-visible:outline-none" 
                           asChild
                         >
                           <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
@@ -622,7 +622,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                       <Button 
                         variant="secondary" 
                         size="sm"
-                        className="w-full gap-2 rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all" 
+                        className="w-full gap-2 rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all focus:outline-none focus-visible:outline-none" 
                         onClick={onClose}
                       >
                         <X className="h-3 w-3" /> Close

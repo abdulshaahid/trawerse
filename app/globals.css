@@ -163,6 +163,10 @@
   body {
     @apply bg-background text-foreground;
   }
+  button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }
 
 /* Enhanced gradient text effects with multicolor support */
