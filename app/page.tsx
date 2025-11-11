@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { motion, useMotionValue } from "framer-motion"
@@ -26,6 +26,8 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
   const cursorX = useMotionValue(0)
   const cursorY = useMotionValue(0)
+  const [isTouching, setIsTouching] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(true)
 
   useEffect(() => {
     // Initialize GSAP animations
@@ -50,12 +52,40 @@ export default function Home() {
   }, [])
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    setIsDesktop(true)
     cursorX.set(event.clientX)
     cursorY.set(event.clientY)
   }
 
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    setIsDesktop(false)
+    setIsTouching(true)
+    const touch = event.touches[0]
+    cursorX.set(touch.clientX)
+    cursorY.set(touch.clientY)
+  }
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (event.touches.length > 0) {
+      const touch = event.touches[0]
+      cursorX.set(touch.clientX)
+      cursorY.set(touch.clientY)
+    }
+  }
+
+  const handleTouchEnd = () => {
+    setIsTouching(false)
+  }
+
   return (
-    <div ref={containerRef} className="relative w-full overflow-x-hidden" onMouseMove={handleMouseMove}>
+    <div 
+      ref={containerRef} 
+      className="relative w-full overflow-x-hidden" 
+      onMouseMove={handleMouseMove}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Universal Dot Pattern Background - spans all sections */}
       <DotPattern dotSize={0.9} dotSpacing={18} interactive={true} color="180, 180, 180" />
       
@@ -69,8 +99,8 @@ export default function Home() {
           filter: 'blur(45px)',
         }}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
+        animate={{ opacity: isDesktop ? 1 : (isTouching ? 1 : 0) }}
+        transition={{ duration: 0.2 }}
       />
       
       <Header />

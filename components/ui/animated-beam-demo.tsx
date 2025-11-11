@@ -59,7 +59,7 @@ export function AnimatedBeamMultipleOutputDemo({
             <FontAwesomeIcon icon={faMobile} className="text-purple-400 text-xl" />
           </Circle>
         </div>
-        <div className="flex flex-col pr-4 justify-center">
+        <div className="flex flex-col mr-6 justify-center">
           <Circle ref={div6Ref} className="size-15">
             <img src="/tw.svg" alt="Trawerse Logo" className="w-10 h-10" />
           </Circle>

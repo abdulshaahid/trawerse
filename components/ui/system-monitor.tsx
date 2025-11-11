@@ -274,9 +274,12 @@ export default function SystemMonitor() {
 
   return (
     <div className="w-full h-full">
-      <Card className="w-full bg-background/95 backdrop-blur-sm border-none shadow-lg">
+      <Card className="w-full bg-zinc-950 backdrop-blur-sm border-none shadow-lg relative overflow-hidden" style={{ background: '#0a0a0c' }}>
+        {/* Light hitting effect */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
+        
         <motion.div
-          className="p-3 cursor-pointer"
+          className="p-3 cursor-pointer relative z-10"
           onClick={() => setIsExpanded(!isExpanded)}
           whileHover={{ backgroundColor: "hsl(var(--muted) / 0.5)" }}
           transition={{ duration: 0.2 }}
