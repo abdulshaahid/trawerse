@@ -46,6 +46,14 @@ export default function Header() {
     window.dispatchEvent(event)
   }
 
+  const handleStartProject = () => {
+    // Dispatch custom navigation event for contact section
+    const event = new CustomEvent('navigateToSection', {
+      detail: { sectionId: 'contact' }
+    })
+    window.dispatchEvent(event)
+  }
+
   return (
     <header className="fixed top-0 w-full z-[100] py-4 transform-gpu" style={{ willChange: 'transform' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,7 +75,10 @@ export default function Header() {
               </Link>
             }
             rightContent={
-              <button className="px-3 py-2 rounded-full bg-accent text-black font-semibold hover:shadow-lg  transition-all hover:scale-[1.02] active:scale-95">
+              <button 
+                onClick={handleStartProject}
+                className="px-3 py-2 rounded-full bg-accent text-black font-semibold hover:shadow-lg  transition-all hover:scale-[1.02] active:scale-95"
+              >
                 Start Project
               </button>
             }

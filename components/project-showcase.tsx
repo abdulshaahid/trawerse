@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { ExternalLink, Github, Clock, Copy, Zap, Plus, ShoppingCart, BarChart3, Smartphone, Sparkles, Rocket, Palette, ChevronDown, ChevronUp } from "lucide-react";
+import { ExternalLink, Github, Link2, Sun, Copy, Zap, Plus, ShoppingCart, BarChart3, Smartphone, Sparkles, Rocket, Palette, ChevronDown, ChevronUp, X, User } from "lucide-react";
 
 interface Project {
   id: string;
@@ -22,161 +22,157 @@ interface Project {
   statusText: string;
   statusColor: string;
   glowText: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string }> | string;
   iconColor: string;
   iconBgColor: string;
 }
 
 const projects: Project[] = [
   {
-    id: "1",
-    title: "E-Commerce Platform",
-    category: "Web Development",
-    clientName: "RetailCo Inc.",
-    image: "https://images.unsplash.com/photo-1557821552-17105176677c?w=1200&h=800&fit=crop",
-    description: "A full-featured e-commerce platform with product catalog, shopping cart, secure checkout, and admin dashboard.",
-    technologies: ["Next.js", "TypeScript", "Stripe", "Tailwind CSS"],
-    liveUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    statusText: "Live & Running",
-    statusColor: "bg-lime-500",
-    glowText: "Serving 10K+ customers daily",
-    icon: ShoppingCart,
-    iconColor: "text-emerald-400",
-    iconBgColor: "bg-emerald-500/20",
-  },
+  id: "1",
+  title: "Trawayl - Travel Package Marketplace",
+  category: "Tech-travel",
+  clientName: "Owned by Trawerse",
+  image: "/assets/projects/trawayl.png",
+  description:
+    "Trawayl is a full-fledged travel package marketplace designed to connect travelers with verified local tour providers.",
+  technologies: [
+    "React",
+    "Django",
+    "PostgreSQL",
+    "Docker",
+    "AWS EC2",
+    "Tailwind CSS"
+  ],
+  liveUrl: "https://trawayl.com",
+  githubUrl: "Private Repository",
+  statusText: "Live & Running",
+  statusColor: "bg-lime-500",
+  glowText: "Empowering 100+ travelers and tour providers",
+  icon: "https://trawayl.com/assets/trpd-C6HNp4ZR.svg",
+  iconColor: "text-emerald-400",
+  iconBgColor: "",
+}
+,
   {
-    id: "2",
-    title: "SaaS Dashboard",
-    category: "UI/UX Design",
-    clientName: "DataFlow Labs",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop",
-    description: "Analytics dashboard featuring real-time data visualization, customizable widgets, and advanced reporting.",
-    technologies: ["React", "D3.js", "Node.js", "PostgreSQL"],
-    liveUrl: "https://example.com",
-    statusText: "In Production",
-    statusColor: "bg-green-500",
-    glowText: "Processing 1M+ data points daily",
-    icon: BarChart3,
-    iconColor: "text-blue-400",
-    iconBgColor: "bg-blue-500/20",
-  },
-  {
-    id: "3",
-    title: "Mobile Banking App",
-    category: "Mobile Development",
-    clientName: "SecureBank",
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200&h=800&fit=crop",
-    description: "Secure banking application with account management, fund transfers, bill payments, and transaction history.",
-    technologies: ["React Native", "Firebase", "Redux", "Biometrics"],
-    liveUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    statusText: "Active",
-    statusColor: "bg-blue-500",
-    glowText: "100K+ downloads",
-    icon: Smartphone,
-    iconColor: "text-cyan-400",
-    iconBgColor: "bg-cyan-500/20",
-  },
-  {
-    id: "4",
-    title: "AI Content Generator",
-    category: "AI & Machine Learning",
-    clientName: "ContentAI Corp",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=800&fit=crop",
-    description: "AI-powered platform for blog posts, social media content, email templates, and SEO optimization.",
-    technologies: ["Python", "OpenAI", "FastAPI", "React"],
-    liveUrl: "https://example.com",
-    statusText: "Scaling",
-    statusColor: "bg-purple-500",
-    glowText: "5K+ content pieces generated",
-    icon: Sparkles,
-    iconColor: "text-purple-400",
-    iconBgColor: "bg-purple-500/20",
-  },
-  {
-    id: "5",
-    title: "Fitness Tracking App",
-    category: "Health & Fitness",
-    clientName: "FitLife Pro",
-    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&h=800&fit=crop",
-    description: "Comprehensive fitness tracking with workout logging, nutrition tracking, progress analytics.",
-    technologies: ["Flutter", "Firebase", "HealthKit", "Charts"],
-    liveUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    statusText: "Growing",
-    statusColor: "bg-orange-500",
-    glowText: "50K+ active users",
-    icon: Rocket,
-    iconColor: "text-orange-400",
-    iconBgColor: "bg-orange-500/20",
-  },
-  {
-    id: "6",
-    title: "Real Estate Platform",
-    category: "Web Development",
-    clientName: "HomeFinder",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=800&fit=crop",
-    description: "Modern platform with property listings, virtual tours, mortgage calculators, and agent management.",
-    technologies: ["Next.js", "MongoDB", "Mapbox", "Cloudinary"],
-    liveUrl: "https://example.com",
-    statusText: "Launched",
-    statusColor: "bg-cyan-500",
-    glowText: "2K+ properties listed",
-    icon: Palette,
-    iconColor: "text-pink-400",
-    iconBgColor: "bg-pink-500/20",
-  },
-  {
-    id: "7",
-    title: "AI Content Generator",
-    category: "SaaS Platform",
-    clientName: "ContentAI",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=800&fit=crop",
-    description: "AI-powered content generation tool with templates, SEO optimization, and multi-language support.",
-    technologies: ["Vue.js", "Python", "OpenAI", "Redis"],
-    liveUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    statusText: "Beta",
-    statusColor: "bg-purple-500",
-    glowText: "1M+ words generated",
-    icon: Sparkles,
-    iconColor: "text-purple-400",
-    iconBgColor: "bg-purple-500/20",
-  },
-  {
-    id: "8",
-    title: "Restaurant Booking System",
-    category: "Web Application",
-    clientName: "DineEasy",
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=800&fit=crop",
-    description: "Complete restaurant management with online reservations, table management, and customer reviews.",
-    technologies: ["React", "Node.js", "PostgreSQL", "Stripe"],
-    liveUrl: "https://example.com",
-    statusText: "Active",
-    statusColor: "bg-green-500",
-    glowText: "500+ restaurants",
-    icon: ShoppingCart,
-    iconColor: "text-green-400",
-    iconBgColor: "bg-green-500/20",
-  },
-  {
-    id: "9",
-    title: "Crypto Trading Dashboard",
-    category: "FinTech",
-    clientName: "CryptoVault",
-    image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=1200&h=800&fit=crop",
-    description: "Real-time cryptocurrency trading platform with advanced charts, portfolio tracking, and price alerts.",
-    technologies: ["Next.js", "GraphQL", "WebSockets", "TradingView"],
-    liveUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    statusText: "Live Trading",
-    statusColor: "bg-blue-500",
-    glowText: "$10M+ daily volume",
-    icon: BarChart3,
-    iconColor: "text-blue-400",
-    iconBgColor: "bg-blue-500/20",
-  },
+  id: "2",
+  title: "Cliper.click - Cross-Platform Clipboard & File Sharing",
+  category: "Product by Trawerse",
+  clientName: "Owned by Trawerse",
+  image: "/assets/projects/cliper.png",
+  description:
+    "Cliper.click is a seamless cross-platform tool that lets users instantly share text, files, and clipboard content between devices using unique codes or QR links.",
+  technologies: [
+    "React",
+    "Django",
+    "PostgreSQL",
+    "Docker",
+    "CronJob",
+    "Tailwind CSS"
+  ],
+  liveUrl: "https://cliper.click",
+  githubUrl: "Private Repository",
+  statusText: "Live & Running",
+  statusColor: "bg-lime-500",
+  glowText: "Connecting devices with a single click",
+  icon: Link2,
+  iconColor: "text-amber-400",
+  iconBgColor: "bg-amber-500/20",
+}
+,
+{
+  id: "3",
+  title: "Flotilla - EPC ",
+  category: "Landing Page",
+  clientName: "Flotilla Electro Mechanical EPC",
+  image: "/assets/projects/flotilla.png",
+  description:
+    "A high-end landing page built for Flotilla, an Electro Mechanical EPC company based in the UAE",
+  technologies: [
+    "Next.js",
+    "TypeScript",
+    "Tailwind CSS",
+    "Framer Motion"
+  ],
+  liveUrl: "https://flotilla.ae",
+  githubUrl: "Private Repository",
+  statusText: "Live & Running",
+  statusColor: "bg-lime-500",
+  glowText: "Crafted for a bold engineering presence",
+  icon: "https://flotilla.ae/flotilla.svg",
+  iconColor: "",
+  iconBgColor: "",
+},
+    {
+  id: "4",
+  title: "Avoid Sun - Location-Based Travel Comfort App",
+  category: "Web Application / Travel Utility",
+  clientName: "Owned by Trawerse",
+  image: "/assets/projects/sun.png",
+  description:
+    "Avoid Sun is a smart travel utility that helps users identify the sun-exposed side of their route based on live geolocation and direction data. ",
+  technologies: [
+    "Next.js",
+    "Tailwind CSS",
+    "Leaflet.js",
+    "Geolocation API",
+    "Framer Motion"
+  ],
+  liveUrl: "https://avoid-sun.vercel.app/",
+  githubUrl: "Private Repository",
+  statusText: "Live Prototype",
+  statusColor: "bg-sky-500",
+  glowText: "Helping travelers stay cool on the go",
+  icon: Sun,
+  iconColor: "text-orange-400",
+  iconBgColor: "bg-orange-500/20",
+},
+{
+  id: "5",
+  title: "Stain - VS Code Productivity Extension",
+  category: "Developer Tool / VS Code Extension",
+  clientName: "Owned by Trawerse",
+  image: "/assets/projects/stain.png",
+  description:
+    "When working with large code files, it's easy to lose track of where you were.",
+  technologies: [
+    "TypeScript",
+    "VS Code API",
+    "Node.js"
+  ],
+  liveUrl: "https://marketplace.visualstudio.com/items?itemName=muhammedrashid.stain",
+  githubUrl: "Private Repository",
+  statusText: "Live on VS Code Marketplace",
+  statusColor: "bg-lime-500",
+  glowText: "Helping developers stay focused",
+  icon: '/assets/projects/stainicon.png',
+  iconColor: "text-violet-400",
+  iconBgColor: "",
+},
+{
+  id: "6",
+  title: "Abdul Shaahid - Personal Portfolio",
+  category: "Personal Website / Portfolio",
+  clientName: "Owned by Abdul Shaahid",
+  image: "/assets/projects/shah.png",
+  description:
+    "A sleek and minimal personal portfolio.",
+  technologies: [
+    "Next.js",
+    "Tailwind CSS",
+    "Framer Motion",
+    "Vercel"
+  ],
+  liveUrl: "https://abdulshaahid.vercel.app",
+  githubUrl: "Private Repository",
+  statusText: "Live & Updated",
+  statusColor: "bg-lime-500",
+  glowText: "craftsmanship and code in harmony",
+  icon: User,
+  iconColor: "text-cyan-400",
+  iconBgColor: "bg-cyan-500/20",
+}
+
 ];
 
 const MinimalProjectCard = memo(({ project, onClick }: { project: Project; onClick: () => void }) => {
@@ -235,8 +231,18 @@ const MinimalProjectCard = memo(({ project, onClick }: { project: Project; onCli
           }
         }}
       >
-        <Card className="relative z-10 mx-auto w-full h-[240px] flex flex-col overflow-hidden rounded-[28px] border-0 bg-[radial-gradient(120%_120%_at_30%_10%,#1a1a1a_0%,#0f0f10_60%,#0b0b0c_100%)] text-white shadow-[0_8px_16px_-4px_rgba(0,0,0,0.4)]">
-        <CardContent className="p-5 sm:p-5 pt-4 sm:pt-4 flex flex-col justify-between h-full">
+        <Card className="relative z-10 mx-auto w-full h-[240px] flex flex-col rounded-[28px] border-0 bg-[radial-gradient(120%_120%_at_30%_10%,#1a1a1a_0%,#0f0f10_60%,#0b0b0c_100%)] text-white shadow-[0_8px_16px_-4px_rgba(0,0,0,0.4)]" style={{ overflow: 'visible' }}>
+          {(project.id === "1" || project.id === "2") && (
+            <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden z-20">
+              {/* Ribbon */}
+              <div className="absolute top-3 right-[-32px] w-32 text-center rotate-45 bg-accent shadow-lg">
+                <span className="text-black ml-2 text-[9px] font-extrabold tracking-wider py-1.5 block">OUR PRODUCT</span>
+              </div>
+              {/* Shadow underneath */}
+              <div className="absolute top-3 right-[-32px] w-32 rotate-45 bg-black/20 blur-sm" style={{ height: '26px' }}></div>
+            </div>
+          )}
+        <CardContent className="p-5 sm:p-5 pt-4 sm:pt-4 flex flex-col justify-between h-full" style={{ overflow: 'visible' }}>
           <motion.div 
             className="flex-1 flex flex-col"
             initial={{ opacity: 0 }}
@@ -256,10 +262,7 @@ const MinimalProjectCard = memo(({ project, onClick }: { project: Project; onCli
                 <span className={cn("inline-block h-2.5 w-2.5 rounded-full animate-pulse", project.statusColor)} />
                 <span className="select-none">{project.statusText}</span>
               </div>
-              <div className="flex items-center gap-2 opacity-80">
-                <Clock className="h-4 w-4" />
-                <span className="tabular-nums">{timeText}</span>
-              </div>
+              
             </motion.div>
 
             {/* Icon and Info */}
@@ -283,7 +286,11 @@ const MinimalProjectCard = memo(({ project, onClick }: { project: Project; onCli
                 }}
                 whileHover={{ scale: 1.15, rotate: 180 }}
               >
-                <project.icon className={cn("h-7 w-7", project.iconColor)} />
+                {typeof project.icon === 'string' ? (
+                  <img src={project.icon} alt="" className={cn("h-10 w-10", project.iconColor)} />
+                ) : (
+                  <project.icon className={cn("h-7 w-7", project.iconColor)} />
+                )}
               </motion.div>
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-lg font-semibold tracking-tight">
@@ -374,8 +381,23 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
             damping: 20
           }}
         >
-          <Card className="mx-auto w-full overflow-hidden rounded-[28px] border-0 bg-[radial-gradient(ellipse_at_top_left,#1e1e1e_0%,#151515_50%,#0f0f0f_100%)] text-white shadow-2xl">
-            <CardContent className="px-4 py-1 sm:px-6 py-1">
+          <Card className="relative mx-auto w-full rounded-[28px] border-0 bg-[radial-gradient(ellipse_at_top_left,#1e1e1e_0%,#151515_50%,#0f0f0f_100%)] text-white shadow-2xl" style={{ overflow: 'visible' }}>
+            {(project.id === "1" || project.id === "2") && (
+              <motion.div
+                className="absolute top-0 right-0 w-32 h-32 overflow-hidden z-20"
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                transition={{ delay: 0.6, duration: 0.5, type: "spring", stiffness: 150 }}
+              >
+                {/* Ribbon */}
+                <div className="absolute top-4 right-[-38px] w-40 text-center rotate-45 bg-accent shadow-xl">
+                  <span className="text-black ml-3 text-[11px] font-extrabold tracking-wider py-2 block">OUR PRODUCT</span>
+                </div>
+                {/* Shadow underneath */}
+                <div className="absolute top-4 right-[-38px] w-40 rotate-45 bg-black/20 blur-sm" style={{ height: '32px' }}></div>
+              </motion.div>
+            )}
+            <CardContent className="px-4 py-1 sm:px-6 py-1" style={{ overflow: 'visible' }}>
               {/* Grid Layout: Image and Content */}
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6">
                 {/* Image - 3D Interactive */}
@@ -429,6 +451,20 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                           transition={{ duration: 0.2 }}
                         />
                       )}
+                      
+                      {/* Icon in top left corner */}
+                      <motion.div
+                        className={cn("absolute top-3 left-3 h-12 w-12 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm", project.iconBgColor || "bg-white/10")}
+                        initial={{ opacity: 0, scale: 0.5, rotate: 180 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.3, duration: 0.5, type: "spring", stiffness: 200 }}
+                      >
+                        {typeof project.icon === 'string' ? (
+                          <img src={project.icon} alt="" className="h-9 w-9" />
+                        ) : (
+                          <project.icon className={cn("h-6 w-6", project.iconColor)} />
+                        )}
+                      </motion.div>
                     </div>
                   </motion.div>
                 </div>
@@ -484,10 +520,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                       <span className={cn("inline-block h-2 w-2 rounded-full animate-pulse", project.statusColor)} />
                       <span>{project.statusText}</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="h-3 w-3" />
-                      <span>{timeText}</span>
-                    </div>
+                   
                   </motion.div>
 
                   {/* Technologies */}
@@ -541,42 +574,21 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                         </Button>
                       </motion.div>
                     )}
-                    {project.githubUrl && (
-                      <motion.div
-                        className="flex-1 min-w-[100px]"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.9, duration: 0.3, type: "spring", stiffness: 200 }}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button 
-                          variant="secondary" 
-                          size="sm"
-                          className="w-full gap-2 rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all" 
-                          asChild
-                        >
-                          <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                            <Github className="h-3 w-3" /> Code
-                          </a>
-                        </Button>
-                      </motion.div>
-                    )}
                     <motion.div
                       className="flex-1 min-w-[100px]"
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.95, duration: 0.3, type: "spring", stiffness: 200 }}
+                      transition={{ delay: 0.9, duration: 0.3, type: "spring", stiffness: 200 }}
                       whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       <Button 
                         variant="secondary" 
                         size="sm"
-                        onClick={handleCopy} 
-                        className="w-full gap-2 rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all"
+                        className="w-full gap-2 rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all" 
+                        onClick={onClose}
                       >
-                        <Copy className="h-3 w-3" /> {copied ? "✓" : "Copy"}
+                        <X className="h-3 w-3" /> Close
                       </Button>
                     </motion.div>
                   </motion.div>

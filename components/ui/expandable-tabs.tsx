@@ -82,7 +82,7 @@ export function ExpandableTabs({
       ref={outsideClickRef}
       className={cn(
         "flex items-center gap-2 rounded-3xl p-1 min-h-[48px]",
-        "bg-white/10 backdrop-blur-xl border border-white/6 shadow-lg",
+        "bg-white/8 backdrop-blur-xl border border-white/4 shadow-lg",
         className
       )}
       style={{ 

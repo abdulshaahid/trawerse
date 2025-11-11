@@ -99,7 +99,7 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-white/50 text-sm">Phone</p>
-                  <p className="text-white font-medium">+91 123 456 7890</p>
+                  <p className="text-white font-medium">+91 6282 669 441</p>
                 </div>
               </div>
 

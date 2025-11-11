@@ -11,7 +11,7 @@ export default function FloatingContact() {
     {
       name: "WhatsApp",
       icon: MessageCircle,
-      href: "https://wa.me/919876543210", // Replace with your WhatsApp number
+      href: "https://wa.me/916282669441",
     },
     {
       name: "Email Us",
@@ -21,7 +21,7 @@ export default function FloatingContact() {
     {
       name: "Call Now",
       icon: Phone,
-      href: "tel:+911234567890", // Replace with your phone number
+      href: "tel:+916282669441",
     },
   ];
 
