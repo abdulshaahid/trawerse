@@ -98,7 +98,7 @@ export default function Home() {
       onTouchEnd={handleTouchEnd}
     >
       {/* Universal Dot Pattern Background - spans all sections */}
-      <DotPattern dotSize={0.9} dotSpacing={18} interactive={isDesktop} color="180, 180, 180" />
+      <DotPattern dotSize={0.9} dotSpacing={18} interactive={true} color="180, 180, 180" />
       
       {/* Universal Ambient cursor light - spans all sections (desktop only) */}
       {isDesktop && (

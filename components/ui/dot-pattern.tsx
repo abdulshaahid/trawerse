@@ -46,13 +46,31 @@ export function DotPattern({
     }
   }, [])
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    // Don't prevent default to allow normal scrolling
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
     const touch = e.touches[0]
     if (touch) {
+      const rect = canvas.getBoundingClientRect()
       mousePos.current = {
-        x: touch.clientX,
-        y: touch.clientY,
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
+      }
+    }
+  }, [])
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    // Don't prevent default to allow normal scrolling
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const touch = e.touches[0]
+    if (touch) {
+      const rect = canvas.getBoundingClientRect()
+      mousePos.current = {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
       }
     }
   }, [])
@@ -94,6 +112,7 @@ export function DotPattern({
       
       // Add touch-specific handlers for mobile on window level (since canvas has pointer-events-none)
       if (isTouchDevice.current) {
+        window.addEventListener("touchstart", handleTouchStart, { passive: true })
         window.addEventListener("touchmove", handleTouchMove, { passive: true })
         window.addEventListener("touchend", handleTouchEnd, { passive: true })
         window.addEventListener("touchcancel", handleTouchEnd, { passive: true })
@@ -145,10 +164,10 @@ export function DotPattern({
       ctx.clearRect(0, 0, window.innerWidth, height)
       
       const isMobileView = window.innerWidth < 640
-      const baseOpacity = isMobileView ? 0.14 : 0.22
+      const baseOpacity = isMobileView ? 0.155 : 0.22
 
       dotsRef.current.forEach((dot) => {
-        let opacity = baseOpacity
+        const opacity = baseOpacity // Fixed opacity, no dynamic changes
         
         if (interactive) {
           const dx = mousePos.current.x - dot.x
@@ -179,13 +198,6 @@ export function DotPattern({
           // Damping
           dot.vx *= 0.95
           dot.vy *= 0.95
-          
-          // Calculate opacity based on displacement only if interactive
-          const displacementSq = Math.pow(dot.x - dot.originalX, 2) + Math.pow(dot.y - dot.originalY, 2)
-          if (displacementSq > 1) {
-            const displacement = Math.sqrt(displacementSq)
-            opacity = Math.min(baseOpacity + displacement / 50, 0.32)
-          }
         }
 
         ctx.fillStyle = `rgba(${color}, ${opacity})`
@@ -204,6 +216,7 @@ export function DotPattern({
       if (interactive) {
         window.removeEventListener("pointermove", handlePointerMove)
         if (isTouchDevice.current) {
+          window.removeEventListener("touchstart", handleTouchStart)
           window.removeEventListener("touchmove", handleTouchMove)
           window.removeEventListener("touchend", handleTouchEnd)
           window.removeEventListener("touchcancel", handleTouchEnd)
@@ -213,7 +226,7 @@ export function DotPattern({
         cancelAnimationFrame(animationFrameId.current)
       }
     }
-  }, [dotSize, dotSpacing, interactive, handlePointerMove, handleTouchMove, handleTouchEnd, color])
+  }, [dotSize, dotSpacing, interactive, handlePointerMove, handleTouchStart, handleTouchMove, handleTouchEnd, color])
 
   return (
     <canvas
