@@ -7,7 +7,6 @@ import {
   useScroll,
   useTransform,
   useSpring,
-  useReducedMotion,
 } from "framer-motion";
 import {
   Sparkles,
@@ -19,7 +18,11 @@ import {
   ArrowRight,
   Star,
 } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CurvedLoop from "@/components/ui/CurvedLoop";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
   { value: "150+", label: "Projects Delivered", icon: Rocket },
@@ -77,28 +80,13 @@ const NewAbout = () => {
   const statsRef = useRef<HTMLDivElement>(null);
   const [hoveredStat, setHoveredStat] = useState<number | null>(null);
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
-  const [viewportWidth, setViewportWidth] = useState(() => (typeof window !== "undefined" ? window.innerWidth : 1280));
 
   const featuresInView = useInView(sectionRef, { once: true, amount: 0.3 });
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    let rafId: number;
-    const handleResize = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => setViewportWidth(window.innerWidth));
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const isMobile = viewportWidth < 768;
-  const travelDistance = useMemo(() => viewportWidth + 320, [viewportWidth]);
-  const prefersReducedMotion = useReducedMotion();
+  // Memoize mobile detection for better performance
+  const isMobile = useMemo(() => 
+    typeof window !== "undefined" && window.innerWidth < 768
+  , []);
 
   // Parallax effect
   const { scrollYProgress } = useScroll({
@@ -115,6 +103,24 @@ const NewAbout = () => {
   );
 
   const smoothY = useSpring(y, { stiffness: 80, damping: 25, mass: 0.8 });
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    let ctx: gsap.Context | undefined;
+
+    // Wait for component to mount and render
+    const timer = setTimeout(() => {
+      ctx = gsap.context(() => {
+        // Removed separate text animations - using container animation only
+      }, sectionRef);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      ctx?.revert();
+    };
+  }, []);
 
   return (
     <section
@@ -163,11 +169,11 @@ const NewAbout = () => {
               <motion.div
                 className="absolute top-1/4 left-0 w-72 h-72 md:w-96 md:h-96 rounded-full bg-accent/18 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
-                animate={prefersReducedMotion ? { opacity: 0.18 } : {
-                  x: [-120, travelDistance],
+                animate={{
+                  x: [-100, window.innerWidth || 1200],
                   opacity: [0, 0.18, 0.18, 0],
                 }}
-                transition={prefersReducedMotion ? { duration: 0 } : {
+                transition={{
                   duration: 20,
                   repeat: Infinity,
                   ease: "easeInOut",
@@ -176,11 +182,11 @@ const NewAbout = () => {
               <motion.div
                 className="absolute top-1/2 left-0 w-80 h-80 md:w-[400px] md:h-[400px] rounded-full bg-accent/15 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
-                animate={prefersReducedMotion ? { opacity: 0.15 } : {
-                  x: [-140, travelDistance],
+                animate={{
+                  x: [-120, window.innerWidth || 1200],
                   opacity: [0, 0.15, 0.15, 0],
                 }}
-                transition={prefersReducedMotion ? { duration: 0 } : {
+                transition={{
                   duration: 25,
                   repeat: Infinity,
                   ease: "easeInOut",
@@ -190,11 +196,11 @@ const NewAbout = () => {
               <motion.div
                 className="absolute top-1/3 left-0 w-64 h-64 md:w-80 md:h-80 rounded-full bg-accent/20 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
-                animate={prefersReducedMotion ? { opacity: 0.2 } : {
-                  x: [-100, travelDistance],
+                animate={{
+                  x: [-80, window.innerWidth || 1200],
                   opacity: [0, 0.20, 0.20, 0],
                 }}
-                transition={prefersReducedMotion ? { duration: 0 } : {
+                transition={{
                   duration: 18,
                   repeat: Infinity,
                   ease: "easeInOut",
@@ -204,11 +210,11 @@ const NewAbout = () => {
               <motion.div
                 className="absolute bottom-1/3 left-0 w-72 h-72 md:w-96 md:h-96 rounded-full bg-accent/16 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
-                animate={prefersReducedMotion ? { opacity: 0.16 } : {
-                  x: [-120, travelDistance],
+                animate={{
+                  x: [-100, window.innerWidth || 1200],
                   opacity: [0, 0.16, 0.16, 0],
                 }}
-                transition={prefersReducedMotion ? { duration: 0 } : {
+                transition={{
                   duration: 22,
                   repeat: Infinity,
                   ease: "easeInOut",

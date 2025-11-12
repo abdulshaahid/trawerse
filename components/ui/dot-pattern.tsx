@@ -21,7 +21,7 @@ interface Dot {
   shimmerOffset: number
 }
 
-const DotPatternComponent: React.FC<DotPatternProps> = ({
+const DotPattern: React.FC<DotPatternProps> = ({
   className,
   dotSize = 1.5,
   dotSpacing = 30,
@@ -89,11 +89,6 @@ const DotPatternComponent: React.FC<DotPatternProps> = ({
     const ctx = canvas.getContext("2d", { alpha: true })
     if (!ctx) return
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const effectiveInteractive = interactive && !prefersReducedMotion
-    const effectiveDotSize = prefersReducedMotion ? dotSize * 0.85 : dotSize
-    const effectiveSpacingMultiplier = prefersReducedMotion ? 1.1 : 1
-
     // Set canvas size
     const setCanvasSize = () => {
       const dpr = window.devicePixelRatio || 1
@@ -109,7 +104,7 @@ const DotPatternComponent: React.FC<DotPatternProps> = ({
     setCanvasSize()
     window.addEventListener("resize", setCanvasSize)
 
-    if (effectiveInteractive) {
+    if (interactive) {
       // Detect if touch device
       isTouchDevice.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0
       
@@ -126,7 +121,7 @@ const DotPatternComponent: React.FC<DotPatternProps> = ({
 
     // Responsive dot spacing - closer on mobile
     const isMobile = window.innerWidth < 640
-    const responsiveSpacing = (isMobile ? dotSpacing * 0.8 : dotSpacing) * effectiveSpacingMultiplier
+    const responsiveSpacing = isMobile ? dotSpacing * 0.8 : dotSpacing
 
     // Initialize dots with positions and velocities
     const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
@@ -152,12 +147,10 @@ const DotPatternComponent: React.FC<DotPatternProps> = ({
 
     // Animation loop with FPS throttling
     let lastFrameTime = 0
-    const targetFPS = prefersReducedMotion ? 20 : 30
+    const targetFPS = 30 // Reduce from 60 to 30 FPS for better performance
     const frameInterval = 1000 / targetFPS
-    let animationStopped = false
     
     const animate = (currentTime: number = 0) => {
-      if (animationStopped) return
       const elapsed = currentTime - lastFrameTime
       
       if (elapsed < frameInterval) {
@@ -176,11 +169,11 @@ const DotPatternComponent: React.FC<DotPatternProps> = ({
       dotsRef.current.forEach((dot) => {
         const opacity = baseOpacity // Fixed opacity, no dynamic changes
         
-        if (effectiveInteractive) {
+        if (interactive) {
           const dx = mousePos.current.x - dot.x
           const dy = mousePos.current.y - dot.y
           const distanceSq = dx * dx + dy * dy // Avoid sqrt for better performance
-          const maxDistance = isTouchDevice.current ? 180 : 140
+          const maxDistance = isTouchDevice.current ? 200 : 150
           const maxDistanceSq = maxDistance * maxDistance
 
           if (distanceSq < maxDistanceSq) {
@@ -209,43 +202,18 @@ const DotPatternComponent: React.FC<DotPatternProps> = ({
 
         ctx.fillStyle = `rgba(${color}, ${opacity})`
         ctx.beginPath()
-        ctx.arc(dot.x, dot.y, effectiveDotSize, 0, Math.PI * 2)
+        ctx.arc(dot.x, dot.y, dotSize, 0, Math.PI * 2)
         ctx.fill()
       })
 
       animationFrameId.current = requestAnimationFrame(animate)
     }
 
-    const startAnimation = () => {
-      if (animationStopped) {
-        animationStopped = false
-      }
-      animationFrameId.current = requestAnimationFrame(animate)
-    }
-
-    const stopAnimation = () => {
-      animationStopped = true
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current)
-        animationFrameId.current = undefined
-      }
-    }
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        stopAnimation()
-      } else {
-        startAnimation()
-      }
-    }
-
-    document.addEventListener("visibilitychange", handleVisibilityChange)
-    startAnimation()
+    animate()
 
     return () => {
       window.removeEventListener("resize", setCanvasSize)
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
-      if (effectiveInteractive) {
+      if (interactive) {
         window.removeEventListener("pointermove", handlePointerMove)
         if (isTouchDevice.current) {
           window.removeEventListener("touchstart", handleTouchStart)
@@ -254,7 +222,9 @@ const DotPatternComponent: React.FC<DotPatternProps> = ({
           window.removeEventListener("touchcancel", handleTouchEnd)
         }
       }
-      stopAnimation()
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+      }
     }
   }, [dotSize, dotSpacing, interactive, handlePointerMove, handleTouchStart, handleTouchMove, handleTouchEnd, color])
 
@@ -277,4 +247,5 @@ const DotPatternComponent: React.FC<DotPatternProps> = ({
   )
 }
 
-export const DotPattern = memo(DotPatternComponent)
+export const DotPatternMemoized = memo(DotPattern)
+export { DotPattern }

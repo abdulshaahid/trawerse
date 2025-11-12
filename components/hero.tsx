@@ -3,7 +3,8 @@
 import { useEffect, useRef, useMemo, useCallback, memo } from "react"
 import * as React from 'react';
 import Image from 'next/image';
-import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion';
+import gsap from "gsap"
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { GooeyText } from "@/components/ui/gooey-text-morphing";
 import TrueFocus from "@/components/ui/true-focus";
 import { ArrowDown, Eye } from 'lucide-react';
@@ -273,116 +274,77 @@ const Hero = () => {
   const decorStarsRef = useRef<HTMLDivElement>(null)
   const mouseX = useRef(0);
   const mouseY = useRef(0);
-  const gsapRef = useRef<typeof import("gsap")["default"] | null>(null);
-  const prefersReducedMotion = useReducedMotion();
-
-  const loadGSAP = useCallback(async () => {
-    if (gsapRef.current) {
-      return gsapRef.current;
-    }
-    try {
-      const module = await import("gsap");
-      const instance = module?.gsap ?? module?.default ?? (module as unknown as typeof import("gsap")["default"]);
-      if (instance) {
-        gsapRef.current = instance;
-        return instance;
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV !== "production") {
-        console.warn("[hero] failed to load gsap, skipping intro animation.", error);
-      }
-    }
-    gsapRef.current = null;
-    return null;
-  }, []);
 
   useEffect(() => {
-    if (!containerRef.current || prefersReducedMotion) return
+    if (!containerRef.current) return
 
-    let ctx: import("gsap").gsap.Context | undefined;
-    let isMounted = true;
+    const ctx = gsap.context(() => {
+      // Set initial states
+      gsap.set([decorStarsRef.current, logoRef.current, titleRef.current, subheadlineRef.current, ctaRef.current], { 
+        opacity: 0
+      })
 
-    const initAnimations = async () => {
-      const gsap = await loadGSAP();
-      if (!gsap || !isMounted || !containerRef.current) return;
+      // Decorative stars at top
+      gsap.to(decorStarsRef.current, {
+        opacity: 1,
+        duration: 0.4,
+        ease: "power1.out",
+      })
+      gsap.from(decorStarsRef.current?.children || [], {
+        scale: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: "back.out(1.7)",
+      })
 
-      ctx = gsap.context(() => {
-        gsap.set([decorStarsRef.current, logoRef.current, titleRef.current, subheadlineRef.current, ctaRef.current], { 
-          opacity: 0
-        })
-
-        gsap.to(decorStarsRef.current, {
-          opacity: 1,
-          duration: 0.4,
-          ease: "power1.out",
-        })
-        gsap.from(decorStarsRef.current?.children || [], {
-          scale: 0,
+      // Create a timeline for smooth sequencing
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" } })
+      
+      // Logo animation
+      tl.fromTo(logoRef.current, 
+        { opacity: 0, y: -20, scale: 0.85 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power1.out" },
+        0.1
+      )
+      
+      // Title animation
+      tl.fromTo(titleRef.current,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power1.out" },
+        0.25
+      )
+      
+      // Subheadline animation
+      tl.fromTo(subheadlineRef.current,
+        { opacity: 0, y: 25 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power1.out" },
+        0.4
+      )
+      
+      // CTA container fade in
+      tl.to(ctaRef.current, 
+        { opacity: 1, duration: 0.4, ease: "power1.out" },
+        0.55
+      )
+      
+      // CTA buttons stagger
+      tl.fromTo(ctaRef.current?.children || [],
+        { opacity: 0, y: 15, scale: 0.95 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          scale: 1,
           duration: 0.5,
-          stagger: 0.08,
-          ease: "back.out(1.7)",
-        })
+          stagger: 0.1,
+          ease: "back.out(1.4)"
+        },
+        0.65
+      )
 
-        const tl = gsap.timeline({ defaults: { ease: "power2.out" } })
-        
-        tl.fromTo(logoRef.current, 
-          { opacity: 0, y: -20, scale: 0.85 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power1.out" },
-          0.1
-        )
-        
-        tl.fromTo(titleRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power1.out" },
-          0.25
-        )
-        
-        tl.fromTo(subheadlineRef.current,
-          { opacity: 0, y: 25 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power1.out" },
-          0.4
-        )
-        
-        tl.to(ctaRef.current, 
-          { opacity: 1, duration: 0.4, ease: "power1.out" },
-          0.55
-        )
-        
-        tl.fromTo(ctaRef.current?.children || [],
-          { opacity: 0, y: 15, scale: 0.95 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            scale: 1,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: "back.out(1.4)"
-          },
-          0.65
-        )
-      }, containerRef)
-    };
+    }, containerRef)
 
-    const scheduleInit = () => {
-      if (typeof window === "undefined") {
-        initAnimations();
-        return;
-      }
-      const run = () => requestAnimationFrame(() => initAnimations());
-      if ("requestIdleCallback" in window) {
-        (window as Window & typeof globalThis & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(run);
-      } else {
-        setTimeout(run, 80);
-      }
-    };
-
-    scheduleInit();
-
-    return () => {
-      isMounted = false;
-      ctx?.revert();
-    }
-  }, [loadGSAP, prefersReducedMotion])
+    return () => ctx.revert()
+  }, [])
 
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     mouseX.current = event.clientX;
