@@ -2,9 +2,27 @@
 
 import { motion } from "framer-motion"
 import { ArrowRight, Mail, Phone, MapPin } from "lucide-react"
-import { useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 
-export function ContactSection() {
+const contactDetails = [
+  {
+    icon: Mail,
+    label: "Email",
+    value: "hello@trawerse.com",
+  },
+  {
+    icon: Phone,
+    label: "Phone",
+    value: "+91 6282 669 441",
+  },
+  {
+    icon: MapPin,
+    label: "Location",
+    value: "Kerala, India",
+  },
+]
+
+export const ContactSection = memo(function ContactSection() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,18 +30,39 @@ export function ContactSection() {
     message: ""
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // Handle form submission
-    console.log(formData)
-  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+    const submit = () => {
+      // Replace with actual form submission logic
+      if (process.env.NODE_ENV !== "production") {
+        console.info("[contact] form submission payload", formData)
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      const idleCallback = (window as Window & typeof globalThis & { requestIdleCallback?: (callback: IdleRequestCallback) => number }).requestIdleCallback
+      if (typeof idleCallback === "function") {
+        idleCallback(() => submit())
+        return
+      }
+    } else {
+      setTimeout(submit, 0)
+      return
+    }
+
+    setTimeout(submit, 0)
+  }, [formData])
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }, [])
+
+  const contactItems = useMemo(() => contactDetails, [])
 
   return (
     <section id="contact" className="relative py-20 sm:py-32 overflow-hidden w-full">
@@ -83,35 +122,17 @@ export function ContactSection() {
                 delay: 0.4
               }}
             >
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#111111]/90 ">
-                  <Mail className="w-5 h-5 text-accent" />
+              {contactItems.map(({ icon: Icon, label, value }) => (
+                <div className="flex items-center gap-4" key={label}>
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#111111]/90 ">
+                    <Icon className="w-5 h-5 text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-white/50 text-sm">{label}</p>
+                    <p className="text-white font-medium">{value}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-white/50 text-sm">Email</p>
-                  <p className="text-white font-medium">hello@trawerse.com</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#111111]/90 ">
-                  <Phone className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-white/50 text-sm">Phone</p>
-                  <p className="text-white font-medium">+91 6282 669 441</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#111111]/90 ">
-                  <MapPin className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-white/50 text-sm">Location</p>
-                  <p className="text-white font-medium">Kerala, India</p>
-                </div>
-              </div>
+              ))}
             </motion.div>
           </div>
 
@@ -128,7 +149,7 @@ export function ContactSection() {
           >
             <div className="relative w-full overflow-hidden rounded-3xl bg-[#111111]/90 p-6 shadow-2xl">
               
-              <form onSubmit={handleSubmit} className="relative space-y-4">
+              <form onSubmit={handleSubmit} className="relative space-y-4" noValidate>
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-white/80 mb-2">
                     Name
@@ -209,4 +230,4 @@ export function ContactSection() {
       </div>
     </section>
   )
-}
+})

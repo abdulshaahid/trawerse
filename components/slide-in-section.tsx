@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef, useCallback, memo } from "react"
 
 interface SlideInSectionProps {
   heroContent: React.ReactNode
@@ -8,7 +8,7 @@ interface SlideInSectionProps {
   className?: string
 }
 
-export default function SlideInSection({ heroContent, restContent, className }: SlideInSectionProps) {
+const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionProps) => {
   const [scrolled, setScrolled] = useState(false)
   const newPageRef = useRef<HTMLDivElement>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -18,7 +18,7 @@ export default function SlideInSection({ heroContent, restContent, className }: 
   const touchStartTime = useRef(0)
   const isTouching = useRef(false)
   const pendingNavigation = useRef<string | null>(null)
-  const scrollThreshold = 50
+  const scrollThreshold = 5
   const transitionDuration = 600
 
   const lockScroll = useCallback((scrollPosition: number = 0) => {
@@ -127,22 +127,18 @@ export default function SlideInSection({ heroContent, restContent, className }: 
   }, [scrolled, transitionComplete, transitionToNewSection, transitionToHero])
 
   useEffect(() => {
-    let scrollTimeout: NodeJS.Timeout
-
     const handleScroll = () => {
       if (isTransitioning || isTouching.current) return
       
-      clearTimeout(scrollTimeout)
-      scrollTimeout = setTimeout(() => {
-        const currentScrollY = window.scrollY
+      const currentScrollY = window.scrollY
 
-        // Scroll down to show new page (only from hero)
-        if (!scrolled && currentScrollY > scrollThreshold) {
-          transitionToNewSection()
-        }
-        
-        lastScrollY.current = currentScrollY
-      }, 50)
+      // On hero section, prevent scroll and trigger transition immediately
+      if (!scrolled && !transitionComplete && currentScrollY > scrollThreshold) {
+        window.scrollTo(0, 0) // Prevent visible scroll
+        transitionToNewSection()
+      }
+      
+      lastScrollY.current = currentScrollY
     }
 
     const handleWheel = (e: WheelEvent) => {
@@ -150,6 +146,15 @@ export default function SlideInSection({ heroContent, restContent, className }: 
         if (e.cancelable) {
           e.preventDefault()
         }
+        return
+      }
+      
+      // On hero section, prevent scroll and trigger transition immediately on downward scroll
+      if (!scrolled && !transitionComplete && e.deltaY > 0) {
+        if (e.cancelable) {
+          e.preventDefault()
+        }
+        transitionToNewSection()
         return
       }
       
@@ -171,30 +176,29 @@ export default function SlideInSection({ heroContent, restContent, className }: 
     }
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (isTransitioning) {
-        return
-      }
+      if (!isTouching.current || isTransitioning) return
       
-      const touchEndY = e.touches[0].clientY
-      const deltaY = touchEndY - touchStartY.current
+      const touch = e.touches[0]
+      const deltaY = touch.clientY - touchStartY.current
       const deltaTime = Date.now() - touchStartTime.current
       const velocity = Math.abs(deltaY / deltaTime)
       
-      // Swipe down from hero to next section (deltaY < 0 means swiping up)
-      if (!scrolled && !transitionComplete && deltaY < -40 && velocity > 0.3) {
-        // Only preventDefault if the event is cancelable (iOS requirement)
-        if (e.cancelable) {
+      // On hero section, prevent any scroll and trigger on upward swipe
+      if (!scrolled && !transitionComplete) {
+        // Prevent scroll on hero
+        if (Math.abs(deltaY) > 5 && e.cancelable) {
           e.preventDefault()
         }
-        isTouching.current = false
-        transitionToNewSection()
+        
+        // Swipe up to next section (deltaY < 0 means swiping up)
+        if (deltaY < -20 && velocity > 0.2) {
+          isTouching.current = false
+          transitionToNewSection()
+        }
       }
       
-      // Swipe up from new section back to hero (deltaY > 0 means swiping down)
-      // More lenient conditions: either a medium swipe or a fast swipe
-      if (transitionComplete && window.scrollY <= 10 && 
-          (deltaY > 40 || (deltaY > 25 && velocity > 0.4))) {
-        // Only preventDefault if the event is cancelable (iOS requirement)
+      // Swipe down from new section back to hero
+      if (transitionComplete && window.scrollY <= 10 && deltaY > 30 && velocity > 0.3) {
         if (e.cancelable) {
           e.preventDefault()
         }
@@ -224,7 +228,6 @@ export default function SlideInSection({ heroContent, restContent, className }: 
     window.addEventListener("navigateToSection", handleNavigateEvent as EventListener)
     
     return () => {
-      clearTimeout(scrollTimeout)
       window.removeEventListener("scroll", handleScroll)
       window.removeEventListener("wheel", handleWheel)
       window.removeEventListener("touchstart", handleTouchStart)
@@ -244,6 +247,8 @@ export default function SlideInSection({ heroContent, restContent, className }: 
         className="fixed top-0 left-0 overflow-hidden h-[100dvh]"
         style={{
           width: '100vw',
+          overscrollBehavior: 'none',
+          WebkitOverflowScrolling: 'auto',
           WebkitTransform: scrolled 
             ? "translate3d(-100%, 0, 0) scale(0.92)" 
             : "translate3d(0, 0, 0) scale(1)",
@@ -265,7 +270,6 @@ export default function SlideInSection({ heroContent, restContent, className }: 
           WebkitBackfaceVisibility: 'hidden',
           WebkitFontSmoothing: 'antialiased',
           MozOsxFontSmoothing: 'grayscale',
-          WebkitOverflowScrolling: 'touch',
         } as React.CSSProperties}
       >
         {heroContent}
@@ -304,7 +308,9 @@ export default function SlideInSection({ heroContent, restContent, className }: 
       </div>
 
       {/* Spacer to allow scroll trigger - only show when on hero */}
-      {!scrolled && !transitionComplete && <div className="h-[200vh] w-full"></div>}
+      {!scrolled && !transitionComplete && <div className="h-[150vh] w-full"></div>}
     </>
   )
 }
+
+export default memo(SlideInSection);

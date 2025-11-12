@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect, useRef, useTransition } from "react"
+import { motion, useInView, useReducedMotion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Shield, ShieldCheck, Lock, AlertTriangle, Activity, KeyRound } from "lucide-react"
@@ -231,31 +231,53 @@ export default function SystemMonitor() {
   ])
 
   const [isExpanded, setIsExpanded] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isVisible = useInView(containerRef, { amount: 0.25 })
+  const prefersReducedMotion = useReducedMotion()
+  const updateDelay = prefersReducedMotion ? 1600 : 1000
+  const [, startTransition] = useTransition()
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setResourceData((prev) => {
-        const maxPoints = 20
+    if (!isVisible) {
+      return
+    }
 
-        return {
-          codeScans: [...prev.codeScans, generateDataPoint(85, 15, 0.08)].slice(-maxPoints),
-          vulnerabilities: [...prev.vulnerabilities, generateDataPoint(10, 20, 0.06)].slice(-maxPoints),
-          encryption: [...prev.encryption, generateDataPoint(95, 8, 0.05)].slice(-maxPoints),
-          authentication: [...prev.authentication, generateDataPoint(90, 12, 0.1)].slice(-maxPoints),
-          threats: [...prev.threats, generateDataPoint(5, 15, 0.04)].slice(-maxPoints),
-        }
-      })
+    let animationFrame: number | null = null
+    let lastUpdate = performance.now()
 
-      // Update agent memory
-      agents.forEach((agent) => {
-        const baseMemory = agent.id === "1" ? 150 : agent.id === "2" ? 200 : agent.id === "3" ? 80 : 120
-        const newPoint = generateDataPoint(baseMemory, 50, 0.06)
-        agent.memory = [...agent.memory, newPoint].slice(-15)
-      })
-    }, 1000)
+    const tick = () => {
+      const now = performance.now()
+      if (now - lastUpdate >= updateDelay) {
+        lastUpdate = now
+        startTransition(() => {
+          setResourceData((prev) => {
+            const maxPoints = 20
 
-    return () => clearInterval(interval)
-  }, [agents])
+            return {
+              codeScans: [...prev.codeScans, generateDataPoint(85, 15, 0.08)].slice(-maxPoints),
+              vulnerabilities: [...prev.vulnerabilities, generateDataPoint(10, 20, 0.06)].slice(-maxPoints),
+              encryption: [...prev.encryption, generateDataPoint(95, 8, 0.05)].slice(-maxPoints),
+              authentication: [...prev.authentication, generateDataPoint(90, 12, 0.1)].slice(-maxPoints),
+              threats: [...prev.threats, generateDataPoint(5, 15, 0.04)].slice(-maxPoints),
+            }
+          })
+
+          agents.forEach((agent) => {
+            const baseMemory = agent.id === "1" ? 150 : agent.id === "2" ? 200 : agent.id === "3" ? 80 : 120
+            const newPoint = generateDataPoint(baseMemory, prefersReducedMotion ? 30 : 50, 0.06)
+            agent.memory = [...agent.memory, newPoint].slice(-15)
+          })
+        })
+      }
+      animationFrame = requestAnimationFrame(tick)
+    }
+
+    animationFrame = requestAnimationFrame(tick)
+
+    return () => {
+      if (animationFrame) cancelAnimationFrame(animationFrame)
+    }
+  }, [agents, isVisible, prefersReducedMotion, startTransition, updateDelay])
 
   const currentCodeScans = resourceData.codeScans[resourceData.codeScans.length - 1]?.value || 0
   const currentVulnerabilities = resourceData.vulnerabilities[resourceData.vulnerabilities.length - 1]?.value || 0
@@ -273,7 +295,7 @@ export default function SystemMonitor() {
   ].some((d) => d.isSpike)
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full" ref={containerRef}>
       <Card className="w-full bg-zinc-950 backdrop-blur-sm border-none shadow-lg relative overflow-hidden" style={{ background: '#0a0a0c' }}>
         {/* Light hitting effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />

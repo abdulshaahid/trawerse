@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useLayoutEffect, useState } from 'react';
+import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import {
   motion,
   useScroll,
@@ -57,8 +57,18 @@ function useElementWidth<T extends HTMLElement>(ref: React.RefObject<T | null>):
       }
     }
     updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    
+    let timeoutId: NodeJS.Timeout;
+    const debouncedUpdate = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateWidth, 100);
+    };
+    
+    window.addEventListener('resize', debouncedUpdate, { passive: true });
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', debouncedUpdate);
+    };
   }, [ref]);
 
   return width;
@@ -78,7 +88,7 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
   parallaxStyle,
   scrollerStyle
 }) => {
-  function VelocityText({
+  const VelocityText = React.memo(({
     children,
     baseVelocity = velocity,
     scrollContainerRef,
@@ -91,14 +101,18 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
     scrollerClassName,
     parallaxStyle,
     scrollerStyle
-  }: VelocityTextProps) {
+  }: VelocityTextProps) => {
     const baseX = useMotionValue(0);
-    const scrollOptions = scrollContainerRef ? { container: scrollContainerRef } : {};
+    const scrollOptions = useMemo(() => 
+      scrollContainerRef ? { container: scrollContainerRef } : {}, 
+      [scrollContainerRef]
+    );
     const { scrollY } = useScroll(scrollOptions);
     const scrollVelocity = useVelocity(scrollY);
     const smoothVelocity = useSpring(scrollVelocity, {
       damping: damping ?? 50,
-      stiffness: stiffness ?? 400
+      stiffness: stiffness ?? 400,
+      restDelta: 0.001
     });
     const velocityFactor = useTransform(
       smoothVelocity,
@@ -110,11 +124,11 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
     const copyRef = useRef<HTMLSpanElement>(null);
     const copyWidth = useElementWidth(copyRef);
 
-    function wrap(min: number, max: number, v: number): number {
+    const wrap = useCallback((min: number, max: number, v: number): number => {
       const range = max - min;
       const mod = (((v - min) % range) + range) % range;
       return mod + min;
-    }
+    }, []);
 
     const x = useTransform(baseX, v => {
       if (copyWidth === 0) return '0px';
@@ -123,20 +137,22 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
 
     const directionFactor = useRef<number>(1);
     useAnimationFrame((t, delta) => {
-      let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
+      const cappedDelta = Math.min(delta, 50);
+      let moveBy = directionFactor.current * baseVelocity * (cappedDelta / 1000);
 
-      if (velocityFactor.get() < 0) {
+      const velFactor = velocityFactor.get();
+      if (velFactor < 0) {
         directionFactor.current = -1;
-      } else if (velocityFactor.get() > 0) {
+      } else if (velFactor > 0) {
         directionFactor.current = 1;
       }
 
-      moveBy += directionFactor.current * moveBy * velocityFactor.get();
+      moveBy += directionFactor.current * moveBy * velFactor;
       baseX.set(baseX.get() + moveBy);
     });
 
     // Function to format text with different opacity parts
-    const formatText = (text: React.ReactNode) => {
+    const formatText = useCallback((text: React.ReactNode) => {
       const textStr = String(text).trim();
       if (textStr === '#WECODEFORFUN') {
         return (
@@ -150,16 +166,19 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
         );
       }
       return text;
-    };
+    }, []);
 
-    const spans = [];
-    for (let i = 0; i < numCopies!; i++) {
-      spans.push(
-        <span className={className} key={i} ref={i === 0 ? copyRef : null}>
-          {formatText(children)}
-        </span>
-      );
-    }
+    const spans = useMemo(() => {
+      const result = [];
+      for (let i = 0; i < numCopies!; i++) {
+        result.push(
+          <span className={className} key={i} ref={i === 0 ? copyRef : null}>
+            {formatText(children)}
+          </span>
+        );
+      }
+      return result;
+    }, [numCopies, className, children, formatText]);
 
     return (
       <div className={parallaxClassName} style={parallaxStyle}>
@@ -168,7 +187,9 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
         </motion.div>
       </div>
     );
-  }
+  });
+
+  VelocityText.displayName = 'VelocityText';
 
   return (
     <section>

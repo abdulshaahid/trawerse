@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Shield, Users } from 'lucide-react'
+import Image from 'next/image'
 
 export function Features() {
     return (
@@ -85,20 +86,41 @@ export function Features() {
                                     <div className="relative flex h-full flex-col justify-center space-y-6 py-6">
                                         <div className="relative flex w-[calc(50%+0.875rem)] items-center justify-end gap-2">
                                             <span className="block h-fit rounded border px-2 py-1 text-xs shadow-sm">Likeur</span>
-                                            <div className="ring-background size-7 ring-4">
-                                                <img className="size-full rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="User avatar" />
+                                            <div className="ring-background size-7 ring-4 relative overflow-hidden rounded-full">
+                                                <Image
+                                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+                                                    alt="User avatar"
+                                                    fill
+                                                    sizes="56px"
+                                                    className="object-cover"
+                                                    loading="lazy"
+                                                />
                                             </div>
                                         </div>
                                         <div className="relative ml-[calc(50%-1rem)] flex items-center gap-2">
-                                            <div className="ring-background size-8 ring-4">
-                                                <img className="size-full rounded-full" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="User avatar" />
+                                            <div className="ring-background size-8 ring-4 relative overflow-hidden rounded-full">
+                                                <Image
+                                                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
+                                                    alt="User avatar"
+                                                    fill
+                                                    sizes="64px"
+                                                    className="object-cover"
+                                                    loading="lazy"
+                                                />
                                             </div>
                                             <span className="block h-fit rounded border px-2 py-1 text-xs shadow-sm">M. Irung</span>
                                         </div>
                                         <div className="relative flex w-[calc(50%+0.875rem)] items-center justify-end gap-2">
                                             <span className="block h-fit rounded border px-2 py-1 text-xs shadow-sm">B. Ng</span>
-                                            <div className="ring-background size-7 ring-4">
-                                                <img className="size-full rounded-full" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop" alt="User avatar" />
+                                            <div className="ring-background size-7 ring-4 relative overflow-hidden rounded-full">
+                                                <Image
+                                                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"
+                                                    alt="User avatar"
+                                                    fill
+                                                    sizes="56px"
+                                                    className="object-cover"
+                                                    loading="lazy"
+                                                />
                                             </div>
                                         </div>
                                     </div>

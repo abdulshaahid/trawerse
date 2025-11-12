@@ -1,6 +1,8 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import AutoScroll from "embla-carousel-auto-scroll";
+import Image from "next/image";
 
 import {
   Carousel,
@@ -20,8 +22,7 @@ interface Logos3Props {
   className?: string;
 }
 
-const Logos3 = ({
-  logos = [
+const defaultLogos: Logo[] = [
     {
       id: "logo-1",
       description: "Partner Logo 1",
@@ -82,9 +83,11 @@ const Logos3 = ({
       image: "/assets/logo/logo10.svg",
       className: "h-4 w-auto",
     },
-  ],
-  className = "",
-}: Logos3Props) => {
+  ];
+
+const Logos3 = memo(({ logos = defaultLogos, className = "" }: Logos3Props) => {
+  const memoizedLogos = useMemo(() => [...logos, ...logos], [logos]);
+
   return (
     <section className={`py-12 md:py-16 ${className}`}>
       <div className="relative w-full flex items-center justify-center overflow-hidden">
@@ -94,16 +97,19 @@ const Logos3 = ({
           className="w-full"
         >
           <CarouselContent className="ml-0 w-full">
-            {[...logos, ...logos].map((logo, index) => (
+            {memoizedLogos.map((logo, index) => (
               <CarouselItem
                 key={`${logo.id}-${index}`}
                 className="flex basis-auto justify-center pl-0"
               >
                 <div className="flex shrink-0 items-center justify-center px-5 md:px-8 lg:px-12">
-                  <img
+                  <Image
                     src={logo.image}
                     alt={logo.description}
+                    width={160}
+                    height={64}
                     className={logo.className}
+                    loading="lazy"
                   />
                 </div>
               </CarouselItem>
@@ -115,6 +121,6 @@ const Logos3 = ({
       </div>
     </section>
   );
-};
+});
 
 export { Logos3 };

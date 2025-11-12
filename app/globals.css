@@ -198,14 +198,14 @@
   background-clip: text;
 }
 
-/* Enhanced animations with more visual interest */
+/* GPU-Accelerated animations with translate3d and transform */
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translate3d(0, -20px, 0);
   }
 }
 
@@ -222,33 +222,33 @@
 @keyframes slideInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translate3d(0, 30px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translate3d(-30px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translate3d(30px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -264,20 +264,20 @@
 
 @keyframes rotate-slow {
   from {
-    transform: rotate(0deg);
+    transform: rotate3d(0, 0, 1, 0deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate3d(0, 0, 1, 360deg);
   }
 }
 
 @keyframes bounce-slow {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translate3d(0, -10px, 0);
   }
 }
 
@@ -287,6 +287,28 @@
   }
   100% {
     background-position: 300% 0%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale3d(0.95, 0.95, 1);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale3d(0.9, 0.9, 1);
+    opacity: 0;
+  }
+  to {
+    transform: scale3d(1, 1, 1);
+    opacity: 1;
   }
 }
 
@@ -322,6 +344,14 @@
   animation: bounce-slow 2s ease-in-out infinite;
 }
 
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out;
+}
+
 /* Hide scrollbar for Chrome, Safari, and Opera (Desktop & Mobile) */
 ::-webkit-scrollbar {
   display: none;
@@ -354,10 +384,18 @@ body {
 @layer base {
   /* GPU acceleration for animations */
   [class*="motion-"],
-  [class*="animate-"] {
-    transform: translateZ(0);
+  [class*="animate-"],
+  [data-animate] {
+    transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
     perspective: 1000px;
+    will-change: auto;
+  }
+  
+  /* Optimize frequently animated elements */
+  .transform-gpu {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
   }
 
   /* Reduce motion for users who prefer it */
@@ -394,5 +432,82 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeSpeed;
+  }
+  
+  /* Optimize touch actions for mobile */
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Contain layout shifts */
+  main {
+    contain: layout style paint;
+  }
+  
+  /* Hardware acceleration hints */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .will-change-opacity {
+    will-change: opacity;
+  }
+  
+  .will-change-auto {
+    will-change: auto;
+  }
+}
+
+/* Additional utility classes for performance */
+@layer utilities {
+  .gpu-accelerated {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+  
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .contain-strict {
+    contain: strict;
+  }
+  
+  .contain-content {
+    contain: content;
+  }
+  
+  /* Ensure backdrop-filter works on mobile browsers */
+  .backdrop-blur-2xl {
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
+  }
+  
+  /* Mobile Safari specific fix */
+  @supports (-webkit-backdrop-filter: blur(1px)) {
+    .backdrop-blur-2xl {
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      backdrop-filter: blur(40px) saturate(180%);
+    }
+  }
+  
+  /* Ensure smooth transitions */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Slide transition classes */
+  .hero-slide-transition {
+    -webkit-transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1) !important;
+    transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1) !important;
+  }
+  
+  .section-slide-transition {
+    -webkit-transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1) !important;
+    transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1) !important;
   }
 }

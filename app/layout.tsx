@@ -11,7 +11,8 @@ const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-bricolage",
   display: 'swap',
   preload: true,
-  fallback: ['system-ui', 'arial']
+  fallback: ['system-ui', 'arial'],
+  adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {

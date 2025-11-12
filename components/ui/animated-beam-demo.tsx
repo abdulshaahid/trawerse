@@ -1,6 +1,7 @@
 "use client"
 
 import React, { forwardRef, useRef } from "react"
+import Image from "next/image"
 
 import { cn } from "@/lib/utils"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
@@ -61,7 +62,16 @@ export function AnimatedBeamMultipleOutputDemo({
         </div>
         <div className="flex flex-col mr-6 justify-center">
           <Circle ref={div6Ref} className="size-15">
-            <img src="/tw.svg" alt="Trawerse Logo" className="w-10 h-10" />
+            <div className="relative w-10 h-10">
+              <Image
+                src="/tw.svg"
+                alt="Trawerse Logo"
+                fill
+                sizes="40px"
+                className="object-contain"
+                priority={false}
+              />
+            </div>
           </Circle>
         </div>
         <div className="flex flex-col justify-center">

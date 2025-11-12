@@ -1,9 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState, lazy, Suspense } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import dynamic from "next/dynamic"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { motion, useMotionValue } from "framer-motion"
 import { DotPattern } from "@/components/ui/dot-pattern"
 import Header from "@/components/header"
@@ -11,19 +9,43 @@ import Hero from "@/components/hero"
 import SlideInSection from "@/components/slide-in-section"
 import FloatingContact from "@/components/floating-contact"
 
-// Lazy load heavy components below the fold
-const NewAbout = dynamic(() => import("@/components/new-about"), { ssr: true })
-const ServicesSection = dynamic(() => import("@/components/services-section"), { ssr: true })
-const MarqueeDemo = dynamic(() => import("@/components/ui/marquee-demo").then(mod => ({ default: mod.MarqueeDemo })), { ssr: false })
-const ProjectShowcase = dynamic(() => import("@/components/project-showcase"), { ssr: false })
-const ScrollVelocity = dynamic(() => import("@/components/ui/scroll-velocity"), { ssr: false })
-const WhyChooseTrawerse = dynamic(() => import("@/components/why-choose-trawerse").then(mod => ({ default: mod.WhyChooseTrawerse })), { ssr: true })
-const Testimonials = dynamic(() => import("@/components/testimonials").then(mod => ({ default: mod.Testimonials })), { ssr: false })
-const ContactSection = dynamic(() => import("@/components/contact-section").then(mod => ({ default: mod.ContactSection })), { ssr: true })
-const Footer = dynamic(() => import("@/components/ui/footer-section").then(mod => ({ default: mod.Footer })), { ssr: true })
-
-
-gsap.registerPlugin(ScrollTrigger)
+// Lazy load heavy components below the fold with optimized loading strategies
+const NewAbout = dynamic(() => import("@/components/new-about"), { 
+  ssr: true,
+  loading: () => <div className="min-h-screen" />
+})
+const ServicesSection = dynamic(() => import("@/components/services-section"), { 
+  ssr: true,
+  loading: () => <div className="min-h-screen" /> 
+})
+const MarqueeDemo = dynamic(() => import("@/components/ui/marquee-demo").then(mod => ({ default: mod.MarqueeDemo })), { 
+  ssr: false,
+  loading: () => <div className="h-32" />
+})
+const ProjectShowcase = dynamic(() => import("@/components/project-showcase"), { 
+  ssr: false,
+  loading: () => <div className="min-h-screen" />
+})
+const ScrollVelocity = dynamic(() => import("@/components/ui/scroll-velocity"), { 
+  ssr: false,
+  loading: () => <div className="h-24" />
+})
+const WhyChooseTrawerse = dynamic(() => import("@/components/why-choose-trawerse").then(mod => ({ default: mod.WhyChooseTrawerse })), { 
+  ssr: true,
+  loading: () => <div className="min-h-screen" />
+})
+const Testimonials = dynamic(() => import("@/components/testimonials").then(mod => ({ default: mod.Testimonials })), { 
+  ssr: false,
+  loading: () => <div className="min-h-[60vh]" />
+})
+const ContactSection = dynamic(() => import("@/components/contact-section").then(mod => ({ default: mod.ContactSection })), { 
+  ssr: true,
+  loading: () => <div className="min-h-screen" />
+})
+const Footer = dynamic(() => import("@/components/ui/footer-section").then(mod => ({ default: mod.Footer })), { 
+  ssr: true,
+  loading: () => <div className="h-64" />
+})
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -33,30 +55,47 @@ export default function Home() {
   const [isDesktop, setIsDesktop] = useState(true)
 
   useEffect(() => {
-    // Initialize GSAP animations
-    const ctx = gsap.context(() => {
-      // Smooth scroll animations for sections
-      gsap.utils.toArray<HTMLElement>("[data-animate]").forEach((element) => {
-        gsap.from(element, {
-          scrollTrigger: {
-            trigger: element,
-            start: "top 80%",
-            end: "top 20%",
-            scrub: false,
-          },
-          opacity: 0,
-          y: 30,
-          duration: 0.8,
+    // Lazy load GSAP only when needed for scroll animations
+    let ctx: any
+    const initGSAP = async () => {
+      const gsap = (await import("gsap")).default
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger")
+      gsap.registerPlugin(ScrollTrigger)
+      
+      ctx = gsap.context(() => {
+        // Smooth scroll animations for sections with GPU-accelerated properties
+        gsap.utils.toArray<HTMLElement>("[data-animate]").forEach((element) => {
+          gsap.from(element, {
+            scrollTrigger: {
+              trigger: element,
+              start: "top 80%",
+              end: "top 20%",
+              scrub: false,
+            },
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            force3D: true,
+          })
         })
-      })
-    }, containerRef)
+      }, containerRef)
+    }
 
-    return () => ctx.revert()
+    // Defer GSAP initialization to idle time
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => initGSAP())
+    } else {
+      setTimeout(() => initGSAP(), 100)
+    }
+
+    return () => {
+      if (ctx) ctx.revert()
+    }
   }, [])
 
-  // Throttle mouse move for better performance
+  // Throttle mouse move for better performance using useCallback
   const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (throttleTimeoutRef.current) return
     
     setIsDesktop(true)
@@ -66,27 +105,27 @@ export default function Home() {
     throttleTimeoutRef.current = setTimeout(() => {
       throttleTimeoutRef.current = null
     }, 16) // ~60fps
-  }
+  }, [cursorX, cursorY])
 
-  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+  const handleTouchStart = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
     setIsDesktop(false)
     setIsTouching(true)
     const touch = event.touches[0]
     cursorX.set(touch.clientX)
     cursorY.set(touch.clientY)
-  }
+  }, [cursorX, cursorY])
 
-  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+  const handleTouchMove = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
     if (event.touches.length > 0) {
       const touch = event.touches[0]
       cursorX.set(touch.clientX)
       cursorY.set(touch.clientY)
     }
-  }
+  }, [cursorX, cursorY])
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     setIsTouching(false)
-  }
+  }, [])
 
   return (
     <div 

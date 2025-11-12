@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo, memo } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
@@ -13,8 +13,8 @@ import {
   Settings,
 } from "lucide-react";
 
-// Service Card Sub-Component with Multi-Layer 3D Illusion
-const Service = ({
+// Service Card Sub-Component with Multi-Layer 3D Illusion - Memoized
+const Service = memo(({
   icon,
   name,
   description,
@@ -30,8 +30,10 @@ const Service = ({
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const mouseXSpring = useSpring(x, { stiffness: 200, damping: 30, mass: 0.5 });
-  const mouseYSpring = useSpring(y, { stiffness: 200, damping: 30, mass: 0.5 });
+  // Memoize spring config
+  const springConfig = useMemo(() => ({ stiffness: 200, damping: 30, mass: 0.5 }), []);
+  const mouseXSpring = useSpring(x, springConfig);
+  const mouseYSpring = useSpring(y, springConfig);
 
   // Enhanced 3D rotation with smoother angles
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["12deg", "-12deg"]);
@@ -43,7 +45,7 @@ const Service = ({
   const textX = useTransform(mouseXSpring, [-0.5, 0.5], [-4, 4]);
   const textY = useTransform(mouseYSpring, [-0.5, 0.5], [-4, 4]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -53,13 +55,17 @@ const Service = ({
     const yPct = mouseY / height - 0.5;
     x.set(xPct);
     y.set(yPct);
-  };
+  }, [x, y]);
 
-  const handleMouseLeave = () => {
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
     x.set(0);
     y.set(0);
-  };
+  }, [x, y]);
 
   return (
     <motion.div
@@ -100,12 +106,13 @@ const Service = ({
         mass: 1,
       }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
         rotateX,
         rotateY,
         transformStyle: "preserve-3d",
+        willChange: 'transform',
       }}
       className="group relative bg-[#121212] hover:bg-[#171717] space-y-4 rounded-2xl border border-[#1a1a1a] hover:border-white/5 p-4 transition-all duration-500 ease-out cursor-grab"
     >
@@ -116,6 +123,7 @@ const Service = ({
           transform: "translateZ(60px)",
           x: iconX,
           y: iconY,
+          willChange: 'transform',
         }}
         animate={{
           rotate: isHovered ? 5 : 0,
@@ -136,6 +144,7 @@ const Service = ({
           transform: "translateZ(40px)",
           x: textX,
           y: textY,
+          willChange: 'transform',
         }}
       >
         <h3 className="text-sm font-medium transition-all duration-500 ease-out group-hover:text-white group-hover:tracking-wide">
@@ -147,10 +156,12 @@ const Service = ({
       </motion.div>
     </motion.div>
   );
-};
+});
+
+Service.displayName = 'Service';
 
 // Main Exported Component
-export default function ServicesSection() {
+const ServicesSection = () => {
   return (
     <section id="services">
       <div className="pt-12 pb-12 md:pt-32 md:pb-16">
@@ -341,3 +352,5 @@ export default function ServicesSection() {
     </section>
   );
 }
+
+export default memo(ServicesSection)

@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import { MessageCircle, Mail, Phone, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function FloatingContact() {
+const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const contactOptions = [
+  // Memoize contact options to prevent recreation
+  const contactOptions = useMemo(() => [
     {
       name: "WhatsApp",
       icon: MessageCircle,
@@ -23,7 +24,12 @@ export default function FloatingContact() {
       icon: Phone,
       href: "tel:+916282669441",
     },
-  ];
+  ], []);
+  
+  // Memoize toggle handler
+  const toggleOpen = useCallback(() => {
+    setIsOpen(prev => !prev);
+  }, []);
 
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-1.5">
@@ -65,7 +71,7 @@ export default function FloatingContact() {
 
       {/* Main Toggle Button */}
       <motion.button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleOpen}
         className="group flex items-center gap-1.5 bg-[#1a1a1a] hover:bg-[#202020] text-white pl-2 pr-3.5 py-2 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -84,3 +90,5 @@ export default function FloatingContact() {
     </div>
   );
 }
+
+export default memo(FloatingContact)

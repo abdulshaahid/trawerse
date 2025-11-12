@@ -1,37 +1,48 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo, memo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Briefcase, Wrench, User, Star } from "lucide-react"
 import { ExpandableTabs } from "@/components/ui/expandable-tabs"
 
-export default function Header() {
+const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     let ticking = false
+    let lastScrollY = 0
+    
     const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      
+      // Only update state if scroll position meaningfully changed
+      if (Math.abs(currentScrollY - lastScrollY) < 5) return
+      
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 10)
+          setIsScrolled(currentScrollY > 10)
+          lastScrollY = currentScrollY
           ticking = false
         })
         ticking = true
       }
     }
+    
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const navTabs = [
+  // Memoize navTabs to prevent recreation on every render
+  const navTabs = useMemo(() => [
     { title: "About", icon: User },
     { title: "Services", icon: Wrench },
     { title: "Work", icon: Briefcase },
     { title: "Features", icon: Star },
-  ]
+  ], [])
 
-  const handleTabChange = (index: number | null) => {
+  // Memoize event handlers
+  const handleTabChange = useCallback((index: number | null) => {
     if (index !== null) {
       const tab = navTabs[index]
       if (tab && tab.title) {
@@ -42,24 +53,24 @@ export default function Header() {
         window.dispatchEvent(event)
       }
     }
-  }
+  }, [navTabs])
 
-  const handleLogoClick = (e: React.MouseEvent) => {
+  const handleLogoClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     // Dispatch custom navigation event for home
     const event = new CustomEvent('navigateToSection', {
       detail: { sectionId: 'home' }
     })
     window.dispatchEvent(event)
-  }
+  }, [])
 
-  const handleStartProject = () => {
+  const handleStartProject = useCallback(() => {
     // Dispatch custom navigation event for contact section
     const event = new CustomEvent('navigateToSection', {
       detail: { sectionId: 'contact' }
     })
     window.dispatchEvent(event)
-  }
+  }, [])
 
   return (
     <header className="fixed top-0 w-full z-[100] py-4 transform-gpu" style={{ willChange: 'transform' }}>
@@ -115,3 +126,5 @@ export default function Header() {
     </header>
   )
 }
+
+export default memo(Header)
