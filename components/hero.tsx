@@ -161,8 +161,8 @@ const FloatingIcon = memo(({
     let rafId: number;
     let lastFrameTime = 0;
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const maxDistance = isTouchDevice ? 150 : 120;
-    const forceMultiplier = isTouchDevice ? 40 : 30;
+    const maxDistance = isTouchDevice ? 280 : 140;
+    const forceMultiplier = isTouchDevice ? 60 : 35;
     const targetFPS = 30; // Reduce from 60 to 30 FPS for better performance
     const frameInterval = 1000 / targetFPS;
     
@@ -204,6 +204,10 @@ const FloatingIcon = memo(({
 
     animate();
 
+    const handleTouchMoveDirect = () => {
+      updatePosition();
+    };
+
     const handleTouchEnd = () => {
       // Reset mouse position off-screen when touch ends
       setTimeout(() => {
@@ -214,12 +218,16 @@ const FloatingIcon = memo(({
     
     // Add touch end handlers for mobile
     if (isTouchDevice) {
+      window.addEventListener('touchstart', handleTouchMoveDirect, { passive: true });
+      window.addEventListener('touchmove', handleTouchMoveDirect, { passive: true });
       window.addEventListener('touchend', handleTouchEnd, { passive: true });
       window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
     }
     
     return () => {
       if (isTouchDevice) {
+        window.removeEventListener('touchstart', handleTouchMoveDirect);
+        window.removeEventListener('touchmove', handleTouchMoveDirect);
         window.removeEventListener('touchend', handleTouchEnd);
         window.removeEventListener('touchcancel', handleTouchEnd);
       }
@@ -343,7 +351,79 @@ const Hero = () => {
 
     }, containerRef)
 
-    return () => ctx.revert()
+    return () => {
+      if (ctx) ctx.revert()
+    }
+  }, [])
+
+  // Mobile touch fallback: ensure refs update even if events are captured by children
+  useEffect(() => {
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (!isTouchDevice) return
+
+    const onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (t) {
+        mouseX.current = t.clientX
+        mouseY.current = t.clientY
+      }
+    }
+    const onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (t) {
+        mouseX.current = t.clientX
+        mouseY.current = t.clientY
+      }
+    }
+    const onTouchEnd = () => {
+      mouseX.current = -1000
+      mouseY.current = -1000
+    }
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('touchend', onTouchEnd, { passive: true })
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true })
+
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('touchend', onTouchEnd)
+      window.removeEventListener('touchcancel', onTouchEnd)
+    }
+  }, [])
+
+  // Pointer fallback (for devices that support Pointer Events)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !(window as any).PointerEvent) return
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') {
+        mouseX.current = e.clientX
+        mouseY.current = e.clientY
+      }
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') {
+        mouseX.current = e.clientX
+        mouseY.current = e.clientY
+      }
+    }
+    const onPointerUp = () => {
+      mouseX.current = -1000
+      mouseY.current = -1000
+    }
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', onPointerDown, { passive: true })
+    window.addEventListener('pointerup', onPointerUp, { passive: true })
+    window.addEventListener('pointercancel', onPointerUp, { passive: true })
+
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('pointerup', onPointerUp)
+      window.removeEventListener('pointercancel', onPointerUp)
+    }
   }, [])
 
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
@@ -359,12 +439,51 @@ const Hero = () => {
     }
   }, []);
 
+  const handleMouseLeave = useCallback(() => {
+    mouseX.current = -1000;
+    mouseY.current = -1000;
+  }, []);
+
+  const handleTouchStart = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    if (touch) {
+      mouseX.current = touch.clientX;
+      mouseY.current = touch.clientY;
+    }
+  }, []);
+
+  const handlePointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    mouseX.current = event.clientX;
+    mouseY.current = event.clientY;
+  }, []);
+
+  const handlePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    mouseX.current = event.clientX;
+    mouseY.current = event.clientY;
+  }, []);
+
+  const handlePointerUp = useCallback(() => {
+    mouseX.current = -1000;
+    mouseY.current = -1000;
+  }, []);
+
   return (
     <section
       ref={containerRef}
       onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
+      onTouchEnd={handlePointerUp}
+      onTouchStartCapture={handleTouchStart}
+      onTouchMoveCapture={handleTouchMove}
+      onTouchEndCapture={handlePointerUp}
+      onPointerMove={handlePointerMove}
+      onPointerMoveCapture={handlePointerMove}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
       className="relative w-full h-full flex items-center justify-center overflow-hidden"
+      style={{ touchAction: 'manipulation' }}
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 z-0">

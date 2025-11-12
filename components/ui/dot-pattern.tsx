@@ -86,13 +86,20 @@ const DotPattern: React.FC<DotPatternProps> = ({
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext("2d", { alpha: true })
+    const ctx = canvas.getContext("2d", { 
+      alpha: true,
+      desynchronized: true, // Better performance
+      willReadFrequently: false
+    })
     if (!ctx) return
 
-    // Set canvas size
+    // Detect mobile for performance optimizations
+    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window
+    const isLowEndDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4
+
+    // Set canvas size with performance optimizations
     const setCanvasSize = () => {
-      const dpr = window.devicePixelRatio || 1
-      // Use the larger of viewport height or document height to ensure full coverage
+      const dpr = isMobile ? Math.min(window.devicePixelRatio || 1, 2) : window.devicePixelRatio || 1
       const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
       canvas.width = window.innerWidth * dpr
       canvas.height = height * dpr
@@ -102,7 +109,15 @@ const DotPattern: React.FC<DotPatternProps> = ({
     }
 
     setCanvasSize()
-    window.addEventListener("resize", setCanvasSize)
+    
+    // Throttled resize handler
+    let resizeTimeout: NodeJS.Timeout
+    const throttledResize = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(setCanvasSize, 100)
+    }
+    
+    window.addEventListener("resize", throttledResize, { passive: true })
 
     if (interactive) {
       // Detect if touch device
@@ -139,6 +154,10 @@ const DotPattern: React.FC<DotPatternProps> = ({
       const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
       const cols = Math.ceil(window.innerWidth / responsiveSpacing)
       const rows = Math.ceil(height / responsiveSpacing)
+      
+      // Reduce dots dramatically on mobile for performance
+      const maxDots = isMobile ? 800 : 2000
+      const totalDots = Math.min(cols * rows, maxDots)
       
       dotsRef.current = []
       for (let row = 0; row < rows; row++) {
@@ -221,8 +240,6 @@ const DotPattern: React.FC<DotPatternProps> = ({
     }
 
     // Start immediately on mobile for instant visibility
-    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window
-    
     if (isMobile) {
       // Immediate start on mobile
       start()

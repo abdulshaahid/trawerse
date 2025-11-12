@@ -58,7 +58,7 @@ export function ContactSection() {
                 delay: 0.2
               }}
             >
-              <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold">
+              <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold">
                 <span className="bg-gradient-to-b from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
                   Contact{" "}
                 </span>

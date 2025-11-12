@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useCallback, useMemo, memo } from "react";
+import React, { useState, useCallback, useMemo, memo, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
+import { useMousePosition } from "@/lib/mouse-context";
 import {
   Palette,
   Code,
@@ -13,7 +14,7 @@ import {
   Settings,
 } from "lucide-react";
 
-// Service Card Sub-Component with Multi-Layer 3D Illusion - Memoized
+// Optimized Service Card with CSS-based animations
 const Service = memo(({
   icon,
   name,
@@ -26,49 +27,51 @@ const Service = memo(({
   delay?: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { position: mousePos, isTouch } = useMousePosition('service-card');
+  
+  // Memoized device detection
+  const isMobile = useMemo(() => 
+    typeof window !== 'undefined' && (window.innerWidth < 768 || 'ontouchstart' in window), 
+    []
+  );
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  // Memoize spring config
-  const springConfig = useMemo(() => ({ stiffness: 200, damping: 30, mass: 0.5 }), []);
-  const mouseXSpring = useSpring(x, springConfig);
-  const mouseYSpring = useSpring(y, springConfig);
-
-  // Enhanced 3D rotation with smoother angles
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["12deg", "-12deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-12deg", "12deg"]);
-
-  // Multi-layer parallax movement
-  const iconX = useTransform(mouseXSpring, [-0.5, 0.5], [-8, 8]);
-  const iconY = useTransform(mouseYSpring, [-0.5, 0.5], [-8, 8]);
-  const textX = useTransform(mouseXSpring, [-0.5, 0.5], [-4, 4]);
-  const textY = useTransform(mouseYSpring, [-0.5, 0.5], [-4, 4]);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  }, [x, y]);
-
-  const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-    x.set(0);
-    y.set(0);
-  }, [x, y]);
+  // Optimized mouse tracking with CSS custom properties
+  useEffect(() => {
+    if (!cardRef.current || isMobile) return;
+    
+    const card = cardRef.current;
+    const rect = card.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const distanceThreshold = 200;
+    const distance = Math.sqrt(
+      Math.pow(mousePos.x - centerX, 2) + Math.pow(mousePos.y - centerY, 2)
+    );
+    
+    if (distance < distanceThreshold && !isTouch) {
+      const xPct = Math.max(-0.5, Math.min(0.5, (mousePos.x - centerX) / rect.width));
+      const yPct = Math.max(-0.5, Math.min(0.5, (mousePos.y - centerY) / rect.height));
+      
+      // Use CSS custom properties instead of Framer Motion transforms
+      card.style.setProperty('--mouse-x', `${xPct * 12}deg`);
+      card.style.setProperty('--mouse-y', `${yPct * -12}deg`);
+      card.style.setProperty('--translate-x', `${xPct * 8}px`);
+      card.style.setProperty('--translate-y', `${yPct * 8}px`);
+      setIsHovered(true);
+    } else {
+      card.style.setProperty('--mouse-x', '0deg');
+      card.style.setProperty('--mouse-y', '0deg');
+      card.style.setProperty('--translate-x', '0px');
+      card.style.setProperty('--translate-y', '0px');
+      setIsHovered(false);
+    }
+  }, [mousePos, isMobile, isTouch]);
 
   return (
     <motion.div
+      ref={cardRef}
       drag="x"
       dragConstraints={{ left: -20, right: 20 }}
       dragElastic={0.2}
@@ -105,14 +108,13 @@ const Service = memo(({
         damping: 20,
         mass: 1,
       }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       style={{
-        rotateX,
-        rotateY,
+        transform: isMobile 
+          ? 'none' 
+          : 'rotateX(var(--mouse-y, 0deg)) rotateY(var(--mouse-x, 0deg))',
         transformStyle: "preserve-3d",
         willChange: 'transform',
+        transition: 'transform 0.3s ease-out',
       }}
       className="group relative bg-[#121212] hover:bg-[#171717] space-y-4 rounded-2xl border border-[#1a1a1a] hover:border-white/5 p-4 transition-all duration-500 ease-out cursor-grab"
     >
@@ -120,9 +122,7 @@ const Service = memo(({
       <motion.div
         className="flex size-fit items-center justify-center relative z-10"
         style={{
-          transform: "translateZ(60px)",
-          x: iconX,
-          y: iconY,
+          transform: "translateZ(60px) translateX(var(--translate-x, 0px)) translateY(var(--translate-y, 0px))",
           willChange: 'transform',
         }}
         animate={{
@@ -142,8 +142,6 @@ const Service = memo(({
         className="space-y-1 relative z-20"
         style={{
           transform: "translateZ(40px)",
-          x: textX,
-          y: textY,
           willChange: 'transform',
         }}
       >

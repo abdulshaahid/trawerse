@@ -401,15 +401,19 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
 
   // Throttle mouse move for performance
   const lastUpdate = useRef(0);
+  const rafId = useRef<number | null>(null);
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const now = Date.now();
-    if (now - lastUpdate.current < 50) return; // Throttle to 20fps
+    const now = performance.now();
+    if (now - lastUpdate.current < 32) return; // Throttle to 30fps
     lastUpdate.current = now;
     
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    setMousePosition({ x, y });
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      setMousePosition({ x, y });
+    });
   };
 
   return (
@@ -471,7 +475,10 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                         sizes="(max-width: 1024px) 100vw, 400px" 
                         className="object-cover"
                         priority={project.id === "1" || project.id === "2"}
-                        quality={85}
+                        quality={project.id === "1" || project.id === "2" ? 85 : 75}
+                        loading={project.id === "1" || project.id === "2" ? "eager" : "lazy"}
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyatmnhFPtUeWNlWkHhteHHtVeFkPNH3eQ=="
                       />
                       
                       {/* Shine effect on hover */}

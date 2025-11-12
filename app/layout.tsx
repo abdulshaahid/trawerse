@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Bricolage_Grotesque } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
+import { MouseProvider } from "@/lib/mouse-context"
 import "./globals.css"
 
 const bricolageGrotesque = Bricolage_Grotesque({ 
@@ -10,7 +11,7 @@ const bricolageGrotesque = Bricolage_Grotesque({
   weight: ["400", "500", "600", "700"],
   variable: "--font-bricolage",
   display: 'swap',
-  preload: true,
+  preload: false, // Defer non-critical font loading
   fallback: ['system-ui', 'arial'],
   adjustFontFallback: true,
 })
@@ -39,8 +40,10 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
-          <Analytics />
+          <MouseProvider>
+            {children}
+            <Analytics />
+          </MouseProvider>
         </ThemeProvider>
       </body>
     </html>
