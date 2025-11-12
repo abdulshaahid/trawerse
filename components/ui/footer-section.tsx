@@ -1,8 +1,9 @@
 'use client';
-import React from 'react';
+import React, { memo } from 'react';
 import type { ComponentProps, ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { FacebookIcon, InstagramIcon, LinkedinIcon, YoutubeIcon } from 'lucide-react';
+import Image from 'next/image';
 
 interface FooterLink {
 	title: string;
@@ -38,7 +39,7 @@ const footerLinks: FooterSection[] = [
 	},
 ];
 
-export function Footer() {
+const Footer = memo(function Footer() {
 	return (
 		<footer className="relative w-full flex flex-col items-center justify-center rounded-t-4xl md:rounded-t-6xl border-t bg-black px-6 py-12 lg:py-16">
 			<div className="absolute inset-0 bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] pointer-events-none rounded-t-4xl md:rounded-t-6xl" />
@@ -46,14 +47,14 @@ export function Footer() {
 
 			<div className="relative grid w-full max-w-7xl mx-auto gap-8 xl:grid-cols-3 xl:gap-8">
 				<AnimatedContainer className="space-y-4 flex flex-col items-center xl:items-start">
-					<img src="/trawerse.svg" alt="Trawerse Logo" className=" h-6" />
+					<Image src="/trawerse.svg" alt="Trawerse Logo" width={120} height={24} className=" h-6 w-auto" />
 					<p className="text-muted-foreground  text-sm md:mt-0 text-center xl:text-left">
 						© {new Date().getFullYear()} Trawerse. All rights reserved.
 					</p>
 					<div className="flex items-center gap-2 text-base text-muted-foreground pt-4 border-t border-white/5">
 						<span>Crafted by</span>
 						<span className="font-semibold text-white text-lg">Abdul Shahid</span>
-						<img src="/sign.png" alt="Abdul Shahid Signature" className="h-8 ml-1" />
+						<Image src="/sign.png" alt="Abdul Shahid Signature" width={120} height={32} className="h-8 w-auto ml-1" />
 					</div>
 				</AnimatedContainer>
 
@@ -82,7 +83,9 @@ export function Footer() {
 			</div>
 		</footer>
 	);
-};
+});
+
+export { Footer };
 
 type ViewAnimationProps = {
 	delay?: number;

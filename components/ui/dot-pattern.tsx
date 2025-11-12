@@ -119,100 +119,110 @@ const DotPattern: React.FC<DotPatternProps> = ({
       }
     }
 
-    // Responsive dot spacing - closer on mobile
-    const isMobile = window.innerWidth < 640
-    const responsiveSpacing = isMobile ? dotSpacing * 0.8 : dotSpacing
+    // Defer heavy initialization and animation start to idle time
+    let canceled = false
 
-    // Initialize dots with positions and velocities
-    const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
-    const cols = Math.ceil(window.innerWidth / responsiveSpacing)
-    const rows = Math.ceil(height / responsiveSpacing)
-    
-    dotsRef.current = []
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const x = col * responsiveSpacing + responsiveSpacing / 2
-        const y = row * responsiveSpacing + responsiveSpacing / 2
-        dotsRef.current.push({
-          x,
-          y,
-          originalX: x,
-          originalY: y,
-          vx: 0,
-          vy: 0,
-          shimmerOffset: Math.random() * Math.PI * 2, // Random phase offset
-        })
-      }
-    }
+    const start = () => {
+      if (canceled) return
 
-    // Animation loop with FPS throttling
-    let lastFrameTime = 0
-    const targetFPS = 30 // Reduce from 60 to 30 FPS for better performance
-    const frameInterval = 1000 / targetFPS
-    
-    const animate = (currentTime: number = 0) => {
-      const elapsed = currentTime - lastFrameTime
-      
-      if (elapsed < frameInterval) {
-        animationFrameId.current = requestAnimationFrame(animate)
-        return
-      }
-      
-      lastFrameTime = currentTime - (elapsed % frameInterval)
-      
+      // Responsive dot spacing - closer on mobile
+      const isMobile = window.innerWidth < 640
+      const responsiveSpacing = isMobile ? dotSpacing * 0.8 : dotSpacing
+
+      // Initialize dots with positions and velocities
       const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
-      ctx.clearRect(0, 0, window.innerWidth, height)
+      const cols = Math.ceil(window.innerWidth / responsiveSpacing)
+      const rows = Math.ceil(height / responsiveSpacing)
       
-      const isMobileView = window.innerWidth < 640
-      const baseOpacity = isMobileView ? 0.155 : 0.22
+      dotsRef.current = []
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const x = col * responsiveSpacing + responsiveSpacing / 2
+          const y = row * responsiveSpacing + responsiveSpacing / 2
+          dotsRef.current.push({
+            x,
+            y,
+            originalX: x,
+            originalY: y,
+            vx: 0,
+            vy: 0,
+            shimmerOffset: Math.random() * Math.PI * 2,
+          })
+        }
+      }
 
-      dotsRef.current.forEach((dot) => {
-        const opacity = baseOpacity // Fixed opacity, no dynamic changes
+      // Animation loop with FPS throttling
+      let lastFrameTime = 0
+      const targetFPS = 30
+      const frameInterval = 1000 / targetFPS
+      
+      const animate = (currentTime: number = 0) => {
+        const elapsed = currentTime - lastFrameTime
         
-        if (interactive) {
-          const dx = mousePos.current.x - dot.x
-          const dy = mousePos.current.y - dot.y
-          const distanceSq = dx * dx + dy * dy // Avoid sqrt for better performance
-          const maxDistance = isTouchDevice.current ? 200 : 150
-          const maxDistanceSq = maxDistance * maxDistance
+        if (elapsed < frameInterval) {
+          animationFrameId.current = requestAnimationFrame(animate)
+          return
+        }
+        
+        lastFrameTime = currentTime - (elapsed % frameInterval)
+        
+        const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
+        ctx.clearRect(0, 0, window.innerWidth, height)
+        
+        const isMobileView = window.innerWidth < 640
+        const baseOpacity = isMobileView ? 0.155 : 0.22
 
-          if (distanceSq < maxDistanceSq) {
-            const distance = Math.sqrt(distanceSq) // Only calculate when needed
-            // Push dots away from cursor/touch
-            const forceMultiplier = isTouchDevice.current ? 0.8 : 0.5
-            const force = (1 - distance / maxDistance) * forceMultiplier
-            const angle = Math.atan2(dy, dx)
-            dot.vx -= Math.cos(angle) * force
-            dot.vy -= Math.sin(angle) * force
+        dotsRef.current.forEach((dot) => {
+          const opacity = baseOpacity
+          
+          if (interactive) {
+            const dx = mousePos.current.x - dot.x
+            const dy = mousePos.current.y - dot.y
+            const distanceSq = dx * dx + dy * dy
+            const maxDistance = isTouchDevice.current ? 200 : 150
+            const maxDistanceSq = maxDistance * maxDistance
+
+            if (distanceSq < maxDistanceSq) {
+              const distance = Math.sqrt(distanceSq)
+              const forceMultiplier = isTouchDevice.current ? 0.8 : 0.5
+              const force = (1 - distance / maxDistance) * forceMultiplier
+              const angle = Math.atan2(dy, dx)
+              dot.vx -= Math.cos(angle) * force
+              dot.vy -= Math.sin(angle) * force
+            }
+
+            dot.x += dot.vx
+            dot.y += dot.vy
+
+            const returnForce = 0.05
+            dot.vx += (dot.originalX - dot.x) * returnForce
+            dot.vy += (dot.originalY - dot.y) * returnForce
+
+            dot.vx *= 0.95
+            dot.vy *= 0.95
           }
 
-          // Apply velocity
-          dot.x += dot.vx
-          dot.y += dot.vy
+          ctx.fillStyle = `rgba(${color}, ${opacity})`
+          ctx.beginPath()
+          ctx.arc(dot.x, dot.y, dotSize, 0, Math.PI * 2)
+          ctx.fill()
+        })
 
-          // Spring back to original position
-          const returnForce = 0.05
-          dot.vx += (dot.originalX - dot.x) * returnForce
-          dot.vy += (dot.originalY - dot.y) * returnForce
+        animationFrameId.current = requestAnimationFrame(animate)
+      }
 
-          // Damping
-          dot.vx *= 0.95
-          dot.vy *= 0.95
-        }
-
-        ctx.fillStyle = `rgba(${color}, ${opacity})`
-        ctx.beginPath()
-        ctx.arc(dot.x, dot.y, dotSize, 0, Math.PI * 2)
-        ctx.fill()
-      })
-
-      animationFrameId.current = requestAnimationFrame(animate)
+      animate()
     }
 
-    animate()
+    if ('requestIdleCallback' in window) {
+      ;(window as any).requestIdleCallback(() => !canceled && start())
+    } else {
+      setTimeout(() => !canceled && start(), 50)
+    }
 
     return () => {
       window.removeEventListener("resize", setCanvasSize)
+      canceled = true
       if (interactive) {
         window.removeEventListener("pointermove", handlePointerMove)
         if (isTouchDevice.current) {
@@ -248,4 +258,4 @@ const DotPattern: React.FC<DotPatternProps> = ({
 }
 
 export const DotPatternMemoized = memo(DotPattern)
-export { DotPattern }
+export { DotPatternMemoized as DotPattern }

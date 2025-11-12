@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, memo, useMemo } from "react";
+import { useRef, memo, useMemo } from "react";
 import {
   motion,
   useInView,
@@ -8,68 +8,26 @@ import {
   useTransform,
   useSpring,
 } from "framer-motion";
-import {
-  Sparkles,
-  Zap,
-  Target,
-  Users,
-  Rocket,
-  Award,
-  ArrowRight,
-  Star,
-} from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CurvedLoop from "@/components/ui/CurvedLoop";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const stats = [
-  { value: "150+", label: "Projects Delivered", icon: Rocket },
-  { value: "98%", label: "Client Satisfaction", icon: Award },
-  { value: "50+", label: "Happy Clients", icon: Users },
-  { value: "24/7", label: "Support Available", icon: Zap },
-];
-
-const features = [
-  {
-    icon: Target,
-    title: "Pixel Perfect",
-    description:
-      "Every pixel matters. We craft designs with meticulous attention to detail.",
-  },
-  {
-    icon: Zap,
-    title: "Lightning Fast",
-    description:
-      "Performance is key. Our websites load instantly and run smoothly.",
-  },
-  {
-    icon: Sparkles,
-    title: "Modern Stack",
-    description:
-      "We use cutting-edge technologies to build future-proof solutions.",
-  },
-];
-
-// Memoized animation variants (moved outside component)
+// Memoized animation variants with constant initial values to avoid SSR mismatch
 const containerVariants = {
-  hidden: (isMobile: boolean) => ({
-    y: isMobile ? 500 : 300,
-    scale: 0.9
-  }),
-  visible: (isMobile: boolean) => ({
-    y: isMobile ? -6 : 0,
-    scale: 1
-  }),
+  hidden: {
+    y: 300,
+    scale: 0.9,
+  },
+  visible: {
+    y: 0,
+    scale: 1,
+  },
 };
 
 const curvedLoopVariants = {
-  hidden: (isMobile: boolean) => ({
-    y: isMobile ? 400 : 200,
+  hidden: {
+    y: 200,
     opacity: 0,
-    scale: 0.85
-  }),
+    scale: 0.85,
+  },
   visible: { y: 0, opacity: 1, scale: 1 },
 };
 
@@ -77,16 +35,8 @@ const NewAbout = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const descRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
-  const [hoveredStat, setHoveredStat] = useState<number | null>(null);
-  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
 
   const featuresInView = useInView(sectionRef, { once: true, amount: 0.3 });
-
-  // Memoize mobile detection for better performance
-  const isMobile = useMemo(() => 
-    typeof window !== "undefined" && window.innerWidth < 768
-  , []);
 
   // Parallax effect
   const { scrollYProgress } = useScroll({
@@ -104,23 +54,9 @@ const NewAbout = () => {
 
   const smoothY = useSpring(y, { stiffness: 80, damping: 25, mass: 0.8 });
 
-  useEffect(() => {
-    if (!sectionRef.current) return;
+  // Compute viewport width safely for SSR
+  const vw = useMemo(() => (typeof window !== 'undefined' ? window.innerWidth : 1200), []);
 
-    let ctx: gsap.Context | undefined;
-
-    // Wait for component to mount and render
-    const timer = setTimeout(() => {
-      ctx = gsap.context(() => {
-        // Removed separate text animations - using container animation only
-      }, sectionRef);
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      ctx?.revert();
-    };
-  }, []);
 
   return (
     <section
@@ -150,7 +86,6 @@ const NewAbout = () => {
           {/* Glassmorphism Container */}
           <motion.div
             className="max-w-7xl mx-auto"
-            custom={isMobile}
             variants={containerVariants}
             transition={{ 
               duration: 0.8,
@@ -170,7 +105,7 @@ const NewAbout = () => {
                 className="absolute top-1/4 left-0 w-72 h-72 md:w-96 md:h-96 rounded-full bg-accent/18 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
                 animate={{
-                  x: [-100, window.innerWidth || 1200],
+                  x: [-100, vw],
                   opacity: [0, 0.18, 0.18, 0],
                 }}
                 transition={{
@@ -183,7 +118,7 @@ const NewAbout = () => {
                 className="absolute top-1/2 left-0 w-80 h-80 md:w-[400px] md:h-[400px] rounded-full bg-accent/15 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
                 animate={{
-                  x: [-120, window.innerWidth || 1200],
+                  x: [-120, vw],
                   opacity: [0, 0.15, 0.15, 0],
                 }}
                 transition={{
@@ -197,7 +132,7 @@ const NewAbout = () => {
                 className="absolute top-1/3 left-0 w-64 h-64 md:w-80 md:h-80 rounded-full bg-accent/20 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
                 animate={{
-                  x: [-80, window.innerWidth || 1200],
+                  x: [-80, vw],
                   opacity: [0, 0.20, 0.20, 0],
                 }}
                 transition={{
@@ -211,7 +146,7 @@ const NewAbout = () => {
                 className="absolute bottom-1/3 left-0 w-72 h-72 md:w-96 md:h-96 rounded-full bg-accent/16 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
                 animate={{
-                  x: [-100, window.innerWidth || 1200],
+                  x: [-100, vw],
                   opacity: [0, 0.16, 0.16, 0],
                 }}
                 transition={{
@@ -290,7 +225,6 @@ const NewAbout = () => {
         {/* Curved Loop Marquee - Full Width */}
         <motion.div
           className="absolute bottom-20 sm:bottom-24 md:bottom-20 lg:bottom-14 left-0 right-0 w-full px-0 overflow-visible origin-center"
-          custom={isMobile}
           variants={curvedLoopVariants}
           transition={{ 
             duration: 0.8,

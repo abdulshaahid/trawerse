@@ -4,46 +4,34 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import dynamic from "next/dynamic"
 import { motion, useMotionValue } from "framer-motion"
 import { DotPattern } from "@/components/ui/dot-pattern"
+import NewAbout from "@/components/new-about"
+import ServicesSection from "@/components/services-section"
+import { WhyChooseTrawerse } from "@/components/why-choose-trawerse"
+import ProjectShowcase from "@/components/project-showcase"
 import Header from "@/components/header"
 import Hero from "@/components/hero"
 import SlideInSection from "@/components/slide-in-section"
 import FloatingContact from "@/components/floating-contact"
 
 // Lazy load heavy components below the fold with optimized loading strategies
-const NewAbout = dynamic(() => import("@/components/new-about"), { 
-  ssr: true,
-  loading: () => <div className="min-h-screen" />
-})
-const ServicesSection = dynamic(() => import("@/components/services-section"), { 
-  ssr: true,
-  loading: () => <div className="min-h-screen" /> 
-})
 const MarqueeDemo = dynamic(() => import("@/components/ui/marquee-demo").then(mod => ({ default: mod.MarqueeDemo })), { 
   ssr: false,
   loading: () => <div className="h-32" />
 })
-const ProjectShowcase = dynamic(() => import("@/components/project-showcase"), { 
-  ssr: false,
-  loading: () => <div className="min-h-screen" />
-})
 const ScrollVelocity = dynamic(() => import("@/components/ui/scroll-velocity"), { 
   ssr: false,
   loading: () => <div className="h-24" />
-})
-const WhyChooseTrawerse = dynamic(() => import("@/components/why-choose-trawerse").then(mod => ({ default: mod.WhyChooseTrawerse })), { 
-  ssr: true,
-  loading: () => <div className="min-h-screen" />
 })
 const Testimonials = dynamic(() => import("@/components/testimonials").then(mod => ({ default: mod.Testimonials })), { 
   ssr: false,
   loading: () => <div className="min-h-[60vh]" />
 })
 const ContactSection = dynamic(() => import("@/components/contact-section").then(mod => ({ default: mod.ContactSection })), { 
-  ssr: true,
+  ssr: false,
   loading: () => <div className="min-h-screen" />
 })
 const Footer = dynamic(() => import("@/components/ui/footer-section").then(mod => ({ default: mod.Footer })), { 
-  ssr: true,
+  ssr: false,
   loading: () => <div className="h-64" />
 })
 
@@ -166,36 +154,52 @@ export default function Home() {
               <NewAbout />
               
               {/* Services Section */}
-              <ServicesSection />
+              <div style={{ position: 'relative', contentVisibility: 'auto', containIntrinsicSize: '800px 600px', contain: 'layout paint style' }}>
+                <ServicesSection />
+              </div>
 
               {/* Logos Section */}
-              <MarqueeDemo />
+              <div style={{ position: 'relative', contentVisibility: 'auto', containIntrinsicSize: '160px 200px', contain: 'layout paint style' }}>
+                <MarqueeDemo />
+              </div>
 
               {/* Project Showcase Section */}
-              <ProjectShowcase />
+              <div style={{ position: 'relative', contentVisibility: 'auto', containIntrinsicSize: '1200px 800px', contain: 'layout paint style' }}>
+                <ProjectShowcase />
+              </div>
 
               {/* Scroll Velocity Section */}
-              <ScrollVelocity
-                texts={['#WECODEFORFUN', '#WECODEFORFUN']} 
-                velocity={100} 
-                className="velocity-text"
-                damping={50}
-                stiffness={400}
-                numCopies={10}
-                velocityMapping={{ input: [0, 1000], output: [0, 10] }}
-              />
+              <div style={{ position: 'relative', contentVisibility: 'auto', containIntrinsicSize: '120px 400px', contain: 'layout paint style' }}>
+                <ScrollVelocity
+                  texts={['#WECODEFORFUN', '#WECODEFORFUN']} 
+                  velocity={100} 
+                  className="velocity-text"
+                  damping={50}
+                  stiffness={400}
+                  numCopies={10}
+                  velocityMapping={{ input: [0, 1000], output: [0, 10] }}
+                />
+              </div>
 
               {/* Why Choose Trawerse Section */}
-              <WhyChooseTrawerse />
+              <div style={{ position: 'relative', contentVisibility: 'auto', containIntrinsicSize: '800px 600px', contain: 'layout paint style' }}>
+                <WhyChooseTrawerse />
+              </div>
 
               {/* Testimonials Section */}
-              <Testimonials />
+              <div style={{ position: 'relative', contentVisibility: 'auto', containIntrinsicSize: '700px 600px', contain: 'layout paint style' }}>
+                <Testimonials />
+              </div>
 
               {/* Contact Section */}
-              <ContactSection />
+              <div style={{ position: 'relative', contentVisibility: 'auto', containIntrinsicSize: '900px 600px', contain: 'layout paint style' }}>
+                <ContactSection />
+              </div>
 
               {/* Footer Section */}
-              <Footer />
+              <div style={{ position: 'relative', contentVisibility: 'auto', containIntrinsicSize: '400px 600px', contain: 'layout paint style' }}>
+                <Footer />
+              </div>
             </>
           }
         />

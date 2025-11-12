@@ -1,16 +1,15 @@
 "use client"
 
-import React, { forwardRef, useRef } from "react"
+import React, { forwardRef, useRef, memo } from "react"
 
 import { cn } from "@/lib/utils"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCode, faLaptopCode, faMobile, faUser } from '@fortawesome/free-solid-svg-icons'
+import Image from "next/image"
 
-const Circle = forwardRef<
-  HTMLDivElement,
-  { className?: string; children?: React.ReactNode }
->(({ className, children }, ref) => {
+const Circle = forwardRef<HTMLDivElement, { className?: string; children?: React.ReactNode }>(
+  ({ className, children }, ref) => {
   return (
     <div
       ref={ref}
@@ -27,7 +26,7 @@ const Circle = forwardRef<
 
 Circle.displayName = "Circle"
 
-export function AnimatedBeamMultipleOutputDemo({
+export const AnimatedBeamMultipleOutputDemo = memo(function AnimatedBeamMultipleOutputDemo({
   className,
 }: {
   className?: string
@@ -61,7 +60,7 @@ export function AnimatedBeamMultipleOutputDemo({
         </div>
         <div className="flex flex-col mr-6 justify-center">
           <Circle ref={div6Ref} className="size-15">
-            <img src="/tw.svg" alt="Trawerse Logo" className="w-10 h-10" />
+            <Image src="/tw.svg" alt="Trawerse Logo" width={40} height={40} className="w-10 h-10" />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
@@ -113,4 +112,4 @@ export function AnimatedBeamMultipleOutputDemo({
       />
     </div>
   )
-}
+})

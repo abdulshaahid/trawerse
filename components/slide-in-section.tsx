@@ -18,9 +18,14 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
   const touchStartTime = useRef(0)
   const isTouching = useRef(false)
   const pendingNavigation = useRef<string | null>(null)
+  // Cooldown to avoid accidental return to hero immediately after entering new section
+  const backToHeroAllowedAt = useRef(0)
+  // Guard to force return to hero (e.g., on logo click) and suppress re-entry to new section
+  const forceToHero = useRef(false)
   const scrollThreshold = 5
   const transitionDuration = 600
 
+  // Scroll lock helpers (defined early so effects can use them)
   const lockScroll = useCallback((scrollPosition: number = 0) => {
     document.documentElement.style.overflow = 'hidden'
     // @ts-ignore - WebKit-specific property for iOS
@@ -31,6 +36,33 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     document.body.style.overflow = 'hidden'
     document.body.style.touchAction = 'none'
   }, [])
+
+  // Helper to get current header height as offset for smooth scrolling
+  const getHeaderOffset = useCallback(() => {
+    if (typeof document === 'undefined') return 84
+    const el = document.querySelector('header') as HTMLElement | null
+    return el?.offsetHeight ?? 84
+  }, [])
+
+  // Robust scroll-to helper with retries to land precisely (avoids overshoot/undershoot)
+  const smoothScrollToId = useCallback((sectionId: string) => {
+    const el = document.getElementById(sectionId)
+    if (!el) return
+    const computeTop = () => {
+      const HEADER_OFFSET = getHeaderOffset() + 8
+      return el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET
+    }
+    const scrollOnce = (behavior: ScrollBehavior = 'smooth') => {
+      const top = computeTop()
+      window.scrollTo({ top, behavior })
+    }
+    // Initial smooth scroll, then correction passes
+    scrollOnce('smooth')
+    requestAnimationFrame(() => scrollOnce('smooth'))
+    setTimeout(() => scrollOnce('smooth'), 140)
+    // Final precise snap without animation to eliminate drift on slower devices
+    setTimeout(() => scrollOnce('auto'), 520)
+  }, [getHeaderOffset])
 
   const unlockScroll = useCallback(() => {
     const scrollY = document.body.style.top
@@ -46,6 +78,35 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       window.scrollTo(0, parseInt(scrollY || '0') * -1)
     }
   }, [])
+
+  // Always start at hero on first mount/refresh
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('sectionState', 'hero')
+      window.scrollTo(0, 0)
+    }
+    setScrolled(false)
+    setTransitionComplete(false)
+  }, [])
+
+  // While on hero (not transitioned), lock scroll so the page never moves down
+  useEffect(() => {
+    if (!scrolled && !transitionComplete) {
+      lockScroll(0)
+    } else {
+      unlockScroll()
+    }
+    return () => {
+      // Safety: ensure unlock on unmount
+      unlockScroll()
+    }
+  }, [scrolled, transitionComplete, lockScroll, unlockScroll])
+
+  // Persist current section state for reloads
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    sessionStorage.setItem('sectionState', transitionComplete ? (scrolled ? 'new' : 'hero') : (scrolled ? 'transitioning' : 'hero'))
+  }, [scrolled, transitionComplete])
 
   const transitionToNewSection = useCallback(() => {
     if (isTransitioning || scrolled) return
@@ -64,6 +125,8 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
         setTransitionComplete(true)
         unlockScroll()
         window.scrollTo(0, 0)
+        // Prevent immediate bounce back to hero for fast consecutive scrolls
+        backToHeroAllowedAt.current = Date.now() + 800
         
         // Handle pending navigation after transition
         if (pendingNavigation.current) {
@@ -73,10 +136,7 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
           // Wait for DOM to update and scroll
           requestAnimationFrame(() => {
             setTimeout(() => {
-              const element = document.getElementById(targetId)
-              if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "start" })
-              }
+              smoothScrollToId(targetId)
             }, 100)
           })
         }
@@ -88,7 +148,8 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     if (isTransitioning || !transitionComplete) return
     
     setIsTransitioning(true)
-    lockScroll(0)
+    // Lock at current position to avoid visual upward movement before animation
+    lockScroll(window.scrollY)
     
     // Force reflow for iOS Safari to recognize the initial state
     requestAnimationFrame(() => {
@@ -99,6 +160,9 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       setTimeout(() => {
         setIsTransitioning(false)
         unlockScroll()
+        // Ensure scroll is truly at top and release guard
+        window.scrollTo(0, 0)
+        forceToHero.current = false
       }, transitionDuration)
     })
   }, [isTransitioning, transitionComplete, transitionDuration, lockScroll, unlockScroll])
@@ -107,8 +171,19 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
   const navigateToSection = useCallback((sectionId: string) => {
     if (sectionId === 'home' || sectionId === 'hero') {
       // Go back to hero
-      if (transitionComplete) {
+      forceToHero.current = true
+      // Cancel any pending navigation to other sections
+      pendingNavigation.current = null
+      if (!scrolled) {
+        // Already at hero
+        forceToHero.current = false
+        return
+      }
+      if (transitionComplete && scrolled) {
         transitionToHero()
+      } else if (scrolled && !isTransitioning) {
+        // If we're scrolled but not yet marked complete, delay slightly
+        setTimeout(() => transitionToHero(), 0)
       }
     } else {
       // Navigate to other sections
@@ -117,23 +192,20 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
         pendingNavigation.current = sectionId
         transitionToNewSection()
       } else {
-        // Already in new section, just scroll
-        const element = document.getElementById(sectionId)
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "start" })
-        }
+        // Already in new section, precise scroll
+        smoothScrollToId(sectionId)
       }
     }
-  }, [scrolled, transitionComplete, transitionToNewSection, transitionToHero])
+  }, [scrolled, isTransitioning, transitionComplete, transitionToNewSection, transitionToHero, smoothScrollToId])
 
   useEffect(() => {
     const handleScroll = () => {
-      if (isTransitioning || isTouching.current) return
+      if (isTransitioning || isTouching.current || forceToHero.current) return
       
       const currentScrollY = window.scrollY
 
       // On hero section, prevent scroll and trigger transition immediately
-      if (!scrolled && !transitionComplete && currentScrollY > scrollThreshold) {
+      if (!scrolled && !transitionComplete && currentScrollY > scrollThreshold && !forceToHero.current) {
         window.scrollTo(0, 0) // Prevent visible scroll
         transitionToNewSection()
       }
@@ -142,7 +214,7 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     }
 
     const handleWheel = (e: WheelEvent) => {
-      if (isTransitioning || isTouching.current) {
+      if (isTransitioning || isTouching.current || forceToHero.current) {
         if (e.cancelable) {
           e.preventDefault()
         }
@@ -150,7 +222,7 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       }
       
       // On hero section, prevent scroll and trigger transition immediately on downward scroll
-      if (!scrolled && !transitionComplete && e.deltaY > 0) {
+      if (!scrolled && !transitionComplete && e.deltaY > 0 && !forceToHero.current) {
         if (e.cancelable) {
           e.preventDefault()
         }
@@ -159,7 +231,12 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       }
       
       // Detect upward scroll at the top of new section to go back to hero
-      if (transitionComplete && window.scrollY <= 10 && e.deltaY < -15) {
+      if (
+        transitionComplete &&
+        window.scrollY <= 10 &&
+        e.deltaY < -15 &&
+        Date.now() >= backToHeroAllowedAt.current
+      ) {
         if (e.cancelable) {
           e.preventDefault()
         }
@@ -176,7 +253,7 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     }
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isTouching.current || isTransitioning) return
+      if (!isTouching.current || isTransitioning || forceToHero.current) return
       
       const touch = e.touches[0]
       const deltaY = touch.clientY - touchStartY.current
@@ -184,7 +261,7 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       const velocity = Math.abs(deltaY / deltaTime)
       
       // On hero section, prevent any scroll and trigger on upward swipe
-      if (!scrolled && !transitionComplete) {
+      if (!scrolled && !transitionComplete && !forceToHero.current) {
         // Prevent scroll on hero
         if (Math.abs(deltaY) > 5 && e.cancelable) {
           e.preventDefault()
@@ -198,7 +275,13 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       }
       
       // Swipe down from new section back to hero
-      if (transitionComplete && window.scrollY <= 10 && deltaY > 30 && velocity > 0.3) {
+      if (
+        transitionComplete &&
+        window.scrollY <= 10 &&
+        deltaY > 30 &&
+        velocity > 0.3 &&
+        Date.now() >= backToHeroAllowedAt.current
+      ) {
         if (e.cancelable) {
           e.preventDefault()
         }

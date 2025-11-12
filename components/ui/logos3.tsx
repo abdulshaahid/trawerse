@@ -1,6 +1,8 @@
 "use client";
 
 import AutoScroll from "embla-carousel-auto-scroll";
+import Image from "next/image";
+import React, { memo } from "react";
 
 import {
   Carousel,
@@ -20,7 +22,7 @@ interface Logos3Props {
   className?: string;
 }
 
-const Logos3 = ({
+const Logos3 = memo(({ 
   logos = [
     {
       id: "logo-1",
@@ -100,9 +102,11 @@ const Logos3 = ({
                 className="flex basis-auto justify-center pl-0"
               >
                 <div className="flex shrink-0 items-center justify-center px-5 md:px-8 lg:px-12">
-                  <img
+                  <Image
                     src={logo.image}
                     alt={logo.description}
+                    width={128}
+                    height={32}
                     className={logo.className}
                   />
                 </div>
@@ -115,6 +119,6 @@ const Logos3 = ({
       </div>
     </section>
   );
-};
+});
 
 export { Logos3 };

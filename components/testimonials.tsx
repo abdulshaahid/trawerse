@@ -2,6 +2,8 @@ import { Star } from "lucide-react";
 import { Marquee } from "@/components/ui/marquee";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import Image from "next/image";
+import React, { memo, useMemo } from "react";
 
 interface Review {
   name: string;
@@ -56,7 +58,7 @@ const reviews: Review[] = [
   },
 ];
 
-const ReviewCard = ({ img, name, username, body, rating }: Review) => {
+const ReviewCard = memo(({ img, name, username, body, rating }: Review) => {
   return (
     <figure
       className={cn(
@@ -71,7 +73,7 @@ const ReviewCard = ({ img, name, username, body, rating }: Review) => {
       }}
     >
       <div className="flex flex-row items-center gap-2">
-        <img className="rounded-full w-7 h-7 sm:w-8 sm:h-8" alt="" src={img} />
+        <Image className="rounded-full w-7 h-7 sm:w-8 sm:h-8" alt="" src={img} width={32} height={32} />
         <div className="flex flex-col">
           <figcaption className="text-xs sm:text-sm font-medium dark:text-white">
             {name}
@@ -94,12 +96,12 @@ const ReviewCard = ({ img, name, username, body, rating }: Review) => {
       </blockquote>
     </figure>
   );
-};
+});
 
 export function Testimonials() {
-  const firstRow = reviews.slice(0, 2);
-  const secondRow = reviews.slice(2, 4);
-  const thirdRow = reviews.slice(4, 6);
+  const firstRow = useMemo(() => reviews.slice(0, 2), []);
+  const secondRow = useMemo(() => reviews.slice(2, 4), []);
+  const thirdRow = useMemo(() => reviews.slice(4, 6), []);
 
   return (
     <section className="relative py-20 sm:py-32 overflow-hidden w-full">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, memo, useCallback, useRef } from "react";
+import { useMemo, useState, useEffect, memo, useCallback, useRef, startTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -328,7 +328,7 @@ const MinimalProjectCard = memo(({ project, onClick }: { project: Project; onCli
                 transition={{ duration: 0.2 }}
               >
                 {typeof project.icon === 'string' ? (
-                  <img src={project.icon} alt="" className={cn("h-10 w-10", project.iconColor)} />
+                  <Image src={project.icon} alt="" width={40} height={40} className={cn("h-10 w-10", project.iconColor)} />
                 ) : (
                   <project.icon className={cn("h-7 w-7", project.iconColor)} />
                 )}
@@ -497,7 +497,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                         transition={{ delay: 0.2, duration: 0.3 }}
                       >
                         {typeof project.icon === 'string' ? (
-                          <img src={project.icon} alt="" className="h-9 w-9" />
+                          <Image src={project.icon} alt="" width={36} height={36} className="h-9 w-9" />
                         ) : (
                           <project.icon className={cn("h-6 w-6", project.iconColor)} />
                         )}
@@ -664,7 +664,9 @@ export default function ProjectShowcase() {
 
   // Memoize card click handler
   const handleCardClick = useCallback((project: Project) => {
-    setSelectedProject(project);
+    startTransition(() => {
+      setSelectedProject(project);
+    });
   }, []);
 
   // Handle toggle with scroll preservation
@@ -672,13 +674,13 @@ export default function ProjectShowcase() {
     if (showAll && sectionRef.current) {
       // Store current position relative to section
       const sectionTop = sectionRef.current.getBoundingClientRect().top + window.scrollY;
-      setShowAll(false);
+      startTransition(() => setShowAll(false));
       // Restore scroll position after state update
       requestAnimationFrame(() => {
         window.scrollTo({ top: sectionTop - 100, behavior: 'smooth' });
       });
     } else {
-      setShowAll(true);
+      startTransition(() => setShowAll(true));
     }
   }, [showAll]);
 
@@ -717,7 +719,7 @@ export default function ProjectShowcase() {
           className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" 
         />
       </div>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl" style={{ contain: 'layout paint style' }}>
         <div className="mb-16 space-y-4">
           <motion.h2 
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold overflow-hidden"
@@ -757,6 +759,7 @@ export default function ProjectShowcase() {
               "grid grid-cols-1 md:pt-2 md:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-15 md:gap-y-18 will-change-contents",
               !showAll && "[mask-image:linear-gradient(to_bottom,#000_75%,transparent_100%)]"
             )}
+            style={{ contain: 'layout paint' }}
           >
             {/* Always visible cards - memoized to prevent re-renders */}
             {staticCards}
