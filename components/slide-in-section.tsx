@@ -89,15 +89,29 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     setTransitionComplete(false)
   }, [])
 
-  // While on hero (not transitioned), lock scroll so the page never moves down
+  // While on hero (not transitioned), aggressively lock scroll so the page never moves down
   useEffect(() => {
     if (!scrolled && !transitionComplete) {
       lockScroll(0)
+      // Additional aggressive scroll prevention
+      const preventScroll = (e: Event) => {
+        e.preventDefault()
+        e.stopPropagation()
+        window.scrollTo(0, 0)
+        return false
+      }
+      
+      // Prevent all scroll-related events on hero
+      document.addEventListener('scroll', preventScroll, { passive: false, capture: true })
+      document.addEventListener('wheel', preventScroll, { passive: false, capture: true })
+      document.addEventListener('touchmove', preventScroll, { passive: false, capture: true })
+      
+      return () => {
+        document.removeEventListener('scroll', preventScroll, { capture: true })
+        document.removeEventListener('wheel', preventScroll, { capture: true })
+        document.removeEventListener('touchmove', preventScroll, { capture: true })
+      }
     } else {
-      unlockScroll()
-    }
-    return () => {
-      // Safety: ensure unlock on unmount
       unlockScroll()
     }
   }, [scrolled, transitionComplete, lockScroll, unlockScroll])
@@ -199,73 +213,17 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
   }, [scrolled, isTransitioning, transitionComplete, transitionToNewSection, transitionToHero, smoothScrollToId])
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (isTransitioning || isTouching.current || forceToHero.current) return
-      
-      const currentScrollY = window.scrollY
-
-      // On hero section, aggressively prevent any scroll movement
-      if (!scrolled && !transitionComplete) {
-        if (currentScrollY > 0) {
-          // Force immediate scroll reset on hero
-          window.scrollTo(0, 0)
-        }
-        if (currentScrollY > scrollThreshold && !forceToHero.current) {
-          // Trigger transition only after scroll is locked
-          requestAnimationFrame(() => {
-            window.scrollTo(0, 0)
-            transitionToNewSection()
-          })
-        }
-        return
-      }
-      
-      // Additional safety: if somehow scrolled but not transitioned, reset
-      if (!scrolled && !transitionComplete && currentScrollY > 0) {
-        window.scrollTo(0, 0)
-        return
-      }
-      
-      // Legacy path for edge cases
-      if (!scrolled && !transitionComplete && currentScrollY > scrollThreshold && !forceToHero.current) {
+    // Separate event handlers for hero vs new section
+    const handleHeroWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!isTransitioning && !forceToHero.current && e.deltaY > 0) {
         transitionToNewSection()
       }
-      
-      lastScrollY.current = currentScrollY
+      return false
     }
 
-    const handleWheel = (e: WheelEvent) => {
-      if (isTransitioning || isTouching.current || forceToHero.current) {
-        if (e.cancelable) {
-          e.preventDefault()
-        }
-        return
-      }
-      
-      // On hero section, prevent scroll and trigger transition immediately on downward scroll
-      if (!scrolled && !transitionComplete && e.deltaY > 0 && !forceToHero.current) {
-        if (e.cancelable) {
-          e.preventDefault()
-        }
-        transitionToNewSection()
-        return
-      }
-      
-      // Detect upward scroll at the top of new section to go back to hero
-      if (
-        transitionComplete &&
-        window.scrollY <= 10 &&
-        e.deltaY < -15 &&
-        Date.now() >= backToHeroAllowedAt.current
-      ) {
-        if (e.cancelable) {
-          e.preventDefault()
-        }
-        transitionToHero()
-      }
-    }
-
-    const handleTouchStart = (e: TouchEvent) => {
+    const handleHeroTouchStart = (e: TouchEvent) => {
       if (!isTransitioning && !forceToHero.current) {
         isTouching.current = true
         touchStartY.current = e.touches[0].clientY
@@ -273,54 +231,86 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       }
     }
 
-    const handleTouchMove = (e: TouchEvent) => {
+    const handleHeroTouchMove = (e: TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      
       if (!isTouching.current || isTransitioning || forceToHero.current) return
+      
+      const touch = e.touches[0]
+      const deltaY = touch.clientY - touchStartY.current
+      
+      // Trigger transition on upward swipe (scroll down gesture)
+      if (deltaY < -10) {
+        isTouching.current = false
+        transitionToNewSection()
+      }
+      return false
+    }
+
+    const handleHeroTouchEnd = () => {
+      isTouching.current = false
+    }
+
+    // Regular handlers for new section
+    const handleNewSectionWheel = (e: WheelEvent) => {
+      // Detect upward scroll at the top of new section to go back to hero
+      if (
+        window.scrollY <= 10 &&
+        e.deltaY < -15 &&
+        Date.now() >= backToHeroAllowedAt.current
+      ) {
+        e.preventDefault()
+        transitionToHero()
+      }
+    }
+
+    const handleNewSectionTouchStart = (e: TouchEvent) => {
+      isTouching.current = true
+      touchStartY.current = e.touches[0].clientY
+      touchStartTime.current = Date.now()
+    }
+
+    const handleNewSectionTouchMove = (e: TouchEvent) => {
+      if (!isTouching.current) return
       
       const touch = e.touches[0]
       const deltaY = touch.clientY - touchStartY.current
       const deltaTime = Date.now() - touchStartTime.current
       const velocity = Math.abs(deltaY / deltaTime)
       
-      // On hero section, aggressively prevent any scroll movement
-      if (!scrolled && !transitionComplete && !forceToHero.current) {
-        // Always prevent scroll on hero, regardless of delta
-        if (e.cancelable) {
-          e.preventDefault()
-        }
-        // Force scroll position to top
-        window.scrollTo(0, 0)
-        
-        // Trigger transition on significant upward swipe
-        if (deltaY < -20 && velocity > 0.2) {
-          isTouching.current = false
-          requestAnimationFrame(() => {
-            window.scrollTo(0, 0)
-            transitionToNewSection()
-          })
-        }
-        return
-      }
-      
       // Swipe down from new section back to hero
       if (
-        transitionComplete &&
         window.scrollY <= 10 &&
         deltaY > 30 &&
         velocity > 0.3 &&
         Date.now() >= backToHeroAllowedAt.current
       ) {
-        if (e.cancelable) {
-          e.preventDefault()
-        }
+        e.preventDefault()
         isTouching.current = false
         transitionToHero()
       }
     }
 
-    const handleTouchEnd = () => {
-      setTimeout(() => {
-        isTouching.current = false
-      }, 100)
+    const handleNewSectionTouchEnd = () => {
+      isTouching.current = false
+    }
+
+    // Apply appropriate handlers based on current state
+    if (!scrolled && !transitionComplete) {
+      // Hero section - aggressive prevention
+      window.addEventListener("wheel", handleHeroWheel, { passive: false, capture: true })
+      window.addEventListener("touchstart", handleHeroTouchStart, { passive: true })
+      window.addEventListener("touchmove", handleHeroTouchMove, { passive: false, capture: true })
+      window.addEventListener("touchend", handleHeroTouchEnd, { passive: true })
+      window.addEventListener("touchcancel", handleHeroTouchEnd, { passive: true })
+    } else if (transitionComplete) {
+      // New section - normal handling
+      window.addEventListener("wheel", handleNewSectionWheel, { passive: false })
+      window.addEventListener("touchstart", handleNewSectionTouchStart, { passive: true })
+      window.addEventListener("touchmove", handleNewSectionTouchMove, { passive: false })
+      window.addEventListener("touchend", handleNewSectionTouchEnd, { passive: true })
+      window.addEventListener("touchcancel", handleNewSectionTouchEnd, { passive: true })
     }
 
     // Custom navigation event handler
@@ -329,21 +319,23 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       navigateToSection(customEvent.detail.sectionId)
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    window.addEventListener("wheel", handleWheel, { passive: false })
-    window.addEventListener("touchstart", handleTouchStart, { passive: true })
-    window.addEventListener("touchmove", handleTouchMove, { passive: false })
-    window.addEventListener("touchend", handleTouchEnd, { passive: true })
-    window.addEventListener("touchcancel", handleTouchEnd, { passive: true })
     window.addEventListener("navigateToSection", handleNavigateEvent as EventListener)
     
     return () => {
-      window.removeEventListener("scroll", handleScroll)
-      window.removeEventListener("wheel", handleWheel)
-      window.removeEventListener("touchstart", handleTouchStart)
-      window.removeEventListener("touchmove", handleTouchMove)
-      window.removeEventListener("touchend", handleTouchEnd)
-      window.removeEventListener("touchcancel", handleTouchEnd)
+      // Remove all possible event listeners
+      if (!scrolled && !transitionComplete) {
+        window.removeEventListener("wheel", handleHeroWheel, { capture: true })
+        window.removeEventListener("touchstart", handleHeroTouchStart)
+        window.removeEventListener("touchmove", handleHeroTouchMove, { capture: true })
+        window.removeEventListener("touchend", handleHeroTouchEnd)
+        window.removeEventListener("touchcancel", handleHeroTouchEnd)
+      } else if (transitionComplete) {
+        window.removeEventListener("wheel", handleNewSectionWheel)
+        window.removeEventListener("touchstart", handleNewSectionTouchStart)
+        window.removeEventListener("touchmove", handleNewSectionTouchMove)
+        window.removeEventListener("touchend", handleNewSectionTouchEnd)
+        window.removeEventListener("touchcancel", handleNewSectionTouchEnd)
+      }
       window.removeEventListener("navigateToSection", handleNavigateEvent as EventListener)
       // Reset scroll lock
       unlockScroll()
