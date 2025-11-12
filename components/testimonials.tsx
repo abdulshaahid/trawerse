@@ -1,11 +1,7 @@
-"use client"
-
-import { memo, useMemo } from "react"
 import { Star } from "lucide-react";
 import { Marquee } from "@/components/ui/marquee";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import Image from "next/image";
 
 interface Review {
   name: string;
@@ -60,9 +56,7 @@ const reviews: Review[] = [
   },
 ];
 
-const ReviewCard = memo(function ReviewCard({ img, name, username, body, rating }: Review) {
-  const ratingStars = useMemo(() => Array.from({ length: rating }), [rating]);
-
+const ReviewCard = ({ img, name, username, body, rating }: Review) => {
   return (
     <figure
       className={cn(
@@ -77,16 +71,7 @@ const ReviewCard = memo(function ReviewCard({ img, name, username, body, rating 
       }}
     >
       <div className="flex flex-row items-center gap-2">
-        <div className="relative w-7 h-7 sm:w-8 sm:h-8 overflow-hidden rounded-full flex-shrink-0">
-          <Image
-            src={img}
-            alt=""
-            fill
-            sizes="32px"
-            className="object-cover"
-            loading="lazy"
-          />
-        </div>
+        <img className="rounded-full w-7 h-7 sm:w-8 sm:h-8" alt="" src={img} />
         <div className="flex flex-col">
           <figcaption className="text-xs sm:text-sm font-medium dark:text-white">
             {name}
@@ -97,7 +82,7 @@ const ReviewCard = memo(function ReviewCard({ img, name, username, body, rating 
         </div>
       </div>
       <div className="flex gap-1 my-1.5 sm:my-2">
-        {ratingStars.map((_, i) => (
+        {Array.from({ length: rating }).map((_, i) => (
           <Star
             key={i}
             className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400"
@@ -109,12 +94,12 @@ const ReviewCard = memo(function ReviewCard({ img, name, username, body, rating 
       </blockquote>
     </figure>
   );
-});
+};
 
-export const Testimonials = memo(function Testimonials() {
-  const firstRow = useMemo(() => reviews.slice(0, 2), []);
-  const secondRow = useMemo(() => reviews.slice(2, 4), []);
-  const thirdRow = useMemo(() => reviews.slice(4, 6), []);
+export function Testimonials() {
+  const firstRow = reviews.slice(0, 2);
+  const secondRow = reviews.slice(2, 4);
+  const thirdRow = reviews.slice(4, 6);
 
   return (
     <section className="relative py-20 sm:py-32 overflow-hidden w-full">
@@ -190,4 +175,4 @@ export const Testimonials = memo(function Testimonials() {
       </motion.div>
     </section>
   );
-});
+}

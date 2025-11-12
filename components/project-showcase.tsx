@@ -328,14 +328,7 @@ const MinimalProjectCard = memo(({ project, onClick }: { project: Project; onCli
                 transition={{ duration: 0.2 }}
               >
                 {typeof project.icon === 'string' ? (
-                  <Image
-                    src={project.icon}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className={cn("h-10 w-10 object-contain", project.iconColor)}
-                    loading="lazy"
-                  />
+                  <img src={project.icon} alt="" className={cn("h-10 w-10", project.iconColor)} />
                 ) : (
                   <project.icon className={cn("h-7 w-7", project.iconColor)} />
                 )}
@@ -504,14 +497,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                         transition={{ delay: 0.2, duration: 0.3 }}
                       >
                         {typeof project.icon === 'string' ? (
-                          <Image
-                            src={project.icon}
-                            alt=""
-                            width={36}
-                            height={36}
-                            className="h-9 w-9 object-contain"
-                            loading="lazy"
-                          />
+                          <img src={project.icon} alt="" className="h-9 w-9" />
                         ) : (
                           <project.icon className={cn("h-6 w-6", project.iconColor)} />
                         )}

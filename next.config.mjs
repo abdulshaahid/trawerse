@@ -3,7 +3,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  swcMinify: true,
   images: {
     unoptimized: false,
     formats: ['image/avif', 'image/webp'],
@@ -21,14 +20,6 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'avatar.vercel.sh',
-      },
-      {
-        protocol: 'https',
-        hostname: 'flotilla.ae',
       },
     ],
   },
@@ -51,28 +42,6 @@ const nextConfig = {
       'gsap',
     ],
     webVitalsAttribution: ['CLS', 'LCP', 'FCP', 'FID', 'TTFB', 'INP'],
-  },
-  async headers() {
-    return [
-      {
-        source: '/:path*\\.(js|css|woff2|woff|png|jpg|jpeg|gif|webp|avif|svg)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/:path*\\.(json)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, stale-while-revalidate=604800',
-          },
-        ],
-      },
-    ]
   },
   // Enable static page generation where possible
   output: 'standalone',
