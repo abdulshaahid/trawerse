@@ -41,6 +41,16 @@ export default function Home() {
   const cursorY = useMotionValue(0)
   const [isTouching, setIsTouching] = useState(false)
   const [isDesktop, setIsDesktop] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     // Lazy load GSAP only when needed for scroll animations
@@ -81,10 +91,10 @@ export default function Home() {
     }
   }, [])
 
-  // Throttle mouse move for better performance using useCallback
+  // Throttle mouse move for better performance using useCallback (desktop only)
   const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    if (throttleTimeoutRef.current) return
+    if (isMobile || throttleTimeoutRef.current) return
     
     setIsDesktop(true)
     cursorX.set(event.clientX)
@@ -93,23 +103,17 @@ export default function Home() {
     throttleTimeoutRef.current = setTimeout(() => {
       throttleTimeoutRef.current = null
     }, 16) // ~60fps
-  }, [cursorX, cursorY])
+  }, [cursorX, cursorY, isMobile])
 
   const handleTouchStart = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
     setIsDesktop(false)
     setIsTouching(true)
-    const touch = event.touches[0]
-    cursorX.set(touch.clientX)
-    cursorY.set(touch.clientY)
-  }, [cursorX, cursorY])
+    // Don't track touch position for ambient light on mobile
+  }, [])
 
   const handleTouchMove = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
-    if (event.touches.length > 0) {
-      const touch = event.touches[0]
-      cursorX.set(touch.clientX)
-      cursorY.set(touch.clientY)
-    }
-  }, [cursorX, cursorY])
+    // Don't track touch movement for ambient light on mobile
+  }, [])
 
   const handleTouchEnd = useCallback(() => {
     setIsTouching(false)
@@ -128,7 +132,7 @@ export default function Home() {
       <DotPattern dotSize={0.9} dotSpacing={18} interactive={true} color="180, 180, 180" />
       
       {/* Universal Ambient cursor light - spans all sections (desktop only) */}
-      {isDesktop && (
+      {isDesktop && !isMobile && (
         <motion.div
           className="pointer-events-none fixed w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 z-[5] will-change-transform"
           style={{

@@ -204,9 +204,30 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       
       const currentScrollY = window.scrollY
 
-      // On hero section, prevent scroll and trigger transition immediately
+      // On hero section, aggressively prevent any scroll movement
+      if (!scrolled && !transitionComplete) {
+        if (currentScrollY > 0) {
+          // Force immediate scroll reset on hero
+          window.scrollTo(0, 0)
+        }
+        if (currentScrollY > scrollThreshold && !forceToHero.current) {
+          // Trigger transition only after scroll is locked
+          requestAnimationFrame(() => {
+            window.scrollTo(0, 0)
+            transitionToNewSection()
+          })
+        }
+        return
+      }
+      
+      // Additional safety: if somehow scrolled but not transitioned, reset
+      if (!scrolled && !transitionComplete && currentScrollY > 0) {
+        window.scrollTo(0, 0)
+        return
+      }
+      
+      // Legacy path for edge cases
       if (!scrolled && !transitionComplete && currentScrollY > scrollThreshold && !forceToHero.current) {
-        window.scrollTo(0, 0) // Prevent visible scroll
         transitionToNewSection()
       }
       
@@ -245,7 +266,7 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     }
 
     const handleTouchStart = (e: TouchEvent) => {
-      if (!isTransitioning) {
+      if (!isTransitioning && !forceToHero.current) {
         isTouching.current = true
         touchStartY.current = e.touches[0].clientY
         touchStartTime.current = Date.now()
@@ -260,18 +281,24 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       const deltaTime = Date.now() - touchStartTime.current
       const velocity = Math.abs(deltaY / deltaTime)
       
-      // On hero section, prevent any scroll and trigger on upward swipe
+      // On hero section, aggressively prevent any scroll movement
       if (!scrolled && !transitionComplete && !forceToHero.current) {
-        // Prevent scroll on hero
-        if (Math.abs(deltaY) > 5 && e.cancelable) {
+        // Always prevent scroll on hero, regardless of delta
+        if (e.cancelable) {
           e.preventDefault()
         }
+        // Force scroll position to top
+        window.scrollTo(0, 0)
         
-        // Swipe up to next section (deltaY < 0 means swiping up)
+        // Trigger transition on significant upward swipe
         if (deltaY < -20 && velocity > 0.2) {
           isTouching.current = false
-          transitionToNewSection()
+          requestAnimationFrame(() => {
+            window.scrollTo(0, 0)
+            transitionToNewSection()
+          })
         }
+        return
       }
       
       // Swipe down from new section back to hero

@@ -125,6 +125,12 @@ const DotPattern: React.FC<DotPatternProps> = ({
     const start = () => {
       if (canceled) return
 
+      // Check canvas support first (some older mobile browsers have issues)
+      if (!ctx || !canvas) {
+        console.warn('Canvas context not available, skipping dot pattern')
+        return
+      }
+
       // Responsive dot spacing - closer on mobile
       const isMobile = window.innerWidth < 640
       const responsiveSpacing = isMobile ? dotSpacing * 0.8 : dotSpacing
@@ -214,10 +220,19 @@ const DotPattern: React.FC<DotPatternProps> = ({
       animate()
     }
 
-    if ('requestIdleCallback' in window) {
-      ;(window as any).requestIdleCallback(() => !canceled && start())
+    // Start immediately on mobile for instant visibility
+    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window
+    
+    if (isMobile) {
+      // Immediate start on mobile
+      start()
     } else {
-      setTimeout(() => !canceled && start(), 50)
+      // Defer on desktop for performance
+      if ('requestIdleCallback' in window) {
+        ;(window as any).requestIdleCallback(() => !canceled && start(), { timeout: 1000 })
+      } else {
+        setTimeout(() => !canceled && start(), 50)
+      }
     }
 
     return () => {
