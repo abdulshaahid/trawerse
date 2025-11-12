@@ -29,9 +29,9 @@ export function WhyChooseTrawerse() {
             />
             <div className="relative mx-auto max-w-7xl px-3 sm:px-4 md:px-6">
                 {/* Section Header */}
-                <div className="mb-16 space-y-4">
+                <div className="mb-10 space-y-2">
                     <motion.h2
-                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold overflow-hidden"
+                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold overflow-hidden"
                         initial={{ opacity: 0, x: -100, filter: "blur(10px)" }}
                         whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
                         viewport={{ once: true, amount: 0.3 }}
