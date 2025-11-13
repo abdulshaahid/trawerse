@@ -202,7 +202,7 @@ const DotPattern: React.FC<DotPatternProps> = ({
         ctx.clearRect(0, 0, width, height)
         
         const isMobileView = window.innerWidth < 640
-        const baseOpacity = isMobileView ? 0.16 : 0.22
+        const baseOpacity = isMobileView ? 0.17 : 0.225
 
         dotsRef.current.forEach((dot) => {
           const opacity = baseOpacity

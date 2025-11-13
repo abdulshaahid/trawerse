@@ -266,32 +266,43 @@ const ServicesSection = () => {
             </div>
           </motion.div>
 
-          <motion.div
-            className="-mx-6 px-6 [mask-image:radial-gradient(ellipse_100%_100%_at_50%_0%,#000_70%,transparent_100%)] sm:mx-auto sm:max-w-md md:-mx-6 md:ml-auto md:mr-0 overflow-visible"
-            initial={{ opacity: 0, x: 60, rotateY: -20, filter: "blur(10px)" }}
-            whileInView={{ opacity: 1, x: 0, rotateY: 0, filter: "blur(0px)" }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{
-              duration: 1,
-              type: "spring",
-              stiffness: 70,
-              damping: 22,
+          <div
+            className="-mx-6 px-6 sm:mx-auto sm:max-w-md md:-mx-6 md:ml-auto md:mr-0 overflow-visible"
+            style={{
+              perspective: "1200px",
+              WebkitMaskImage:
+                'radial-gradient(ellipse 100% 100% at 50% 0%, #000 70%, transparent 100%)',
+              maskImage:
+                'radial-gradient(ellipse 100% 100% at 50% 0%, #000 70%, transparent 100%)',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
             }}
-            style={{ perspective: "1200px" }}
           >
             <motion.div
-              className="bg-[#0d0d0d] rounded-3xl border border-white/5 p-3 shadow-lg md:pb-12 overflow-visible"
-              initial={{ scale: 0.88, rotateX: 8, filter: "blur(8px)" }}
-              whileInView={{ scale: 1, rotateX: 0, filter: "blur(0px)" }}
-              viewport={{ once: true, amount: 0.25 }}
+              initial={{ opacity: 0, x: 60, rotateY: -20 }}
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{
-                delay: 0.2,
-                duration: 0.9,
+                duration: 1,
                 type: "spring",
-                stiffness: 80,
+                stiffness: 70,
                 damping: 22,
               }}
+              style={{ willChange: 'transform', transformOrigin: 'center center', transformStyle: 'preserve-3d' }}
             >
+              <motion.div
+                className="bg-[#0d0d0d] rounded-3xl border border-white/5 p-3 shadow-lg md:pb-12 overflow-visible"
+                initial={{ scale: 0.88, rotateX: 8 }}
+                whileInView={{ scale: 1, rotateX: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.9,
+                  type: "spring",
+                  stiffness: 80,
+                  damping: 22,
+                }}
+              >
               <div className="grid grid-cols-2 gap-2 overflow-visible">
                 <Service
                   icon={<Palette className="size-9" />}
@@ -330,8 +341,9 @@ const ServicesSection = () => {
                   delay={500}
                 />
               </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
