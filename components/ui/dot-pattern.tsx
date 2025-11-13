@@ -99,7 +99,7 @@ const DotPattern: React.FC<DotPatternProps> = ({
 
     // Set canvas size with performance optimizations
     const setCanvasSize = () => {
-      const dpr = isMobile ? Math.min(window.devicePixelRatio || 1, 2) : window.devicePixelRatio || 1
+      const dpr = window.devicePixelRatio || 1
       const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
       canvas.width = window.innerWidth * dpr
       canvas.height = height * dpr

@@ -72,19 +72,6 @@ const Service = memo(({
   return (
     <motion.div
       ref={cardRef}
-      drag="x"
-      dragConstraints={{ left: -20, right: 20 }}
-      dragElastic={0.2}
-      dragSnapToOrigin
-      dragTransition={{ bounceStiffness: 400, bounceDamping: 25 }}
-      dragDirectionLock
-      whileDrag={{
-        scale: 1.05,
-        cursor: "grabbing",
-        zIndex: 50,
-        rotateZ: 1,
-        boxShadow: "0 25px 50px -12px rgba(255, 255, 255, 0.15)",
-      }}
       initial={{
         opacity: 0,
         y: 60,
@@ -116,7 +103,7 @@ const Service = memo(({
         willChange: 'transform',
         transition: 'transform 0.3s ease-out',
       }}
-      className="group relative bg-[#121212] hover:bg-[#171717] space-y-4 rounded-2xl border border-[#1a1a1a] hover:border-white/5 p-4 transition-all duration-500 ease-out cursor-grab"
+      className="group relative bg-[#121212] hover:bg-[#171717] space-y-4 rounded-2xl border border-[#1a1a1a] hover:border-white/5 p-4 transition-all duration-500 ease-out cursor-default"
     >
       {/* Icon layer - deepest */}
       <motion.div
