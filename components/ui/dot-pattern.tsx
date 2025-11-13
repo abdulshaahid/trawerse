@@ -100,11 +100,14 @@ const DotPattern: React.FC<DotPatternProps> = ({
     // Set canvas size with performance optimizations
     const setCanvasSize = () => {
       const dpr = window.devicePixelRatio || 1
-      const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
-      canvas.width = window.innerWidth * dpr
-      canvas.height = height * dpr
-      canvas.style.width = `${window.innerWidth}px`
-      canvas.style.height = `${height}px`
+      // Use the canvas' CSS size (from fixed inset-0) to derive pixel dimensions
+      const cssWidth = canvas.clientWidth || window.innerWidth
+      const cssHeight = canvas.clientHeight || window.innerHeight
+      // Reset transform before applying DPR scale to avoid compounding on resize/hot reload
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      canvas.width = Math.round(cssWidth * dpr)
+      canvas.height = Math.round(cssHeight * dpr)
+      // Let CSS control layout sizing; no need to set style width/height explicitly
       ctx.scale(dpr, dpr)
     }
 
@@ -147,16 +150,18 @@ const DotPattern: React.FC<DotPatternProps> = ({
       }
 
       // Responsive dot spacing - closer on mobile
-      const isMobile = window.innerWidth < 640
-      const responsiveSpacing = isMobile ? dotSpacing * 0.8 : dotSpacing
+      const isMobileViewInit = window.innerWidth < 640
+      const responsiveSpacing = isMobileViewInit ? dotSpacing * 0.8 : dotSpacing
 
-      // Initialize dots with positions and velocities
-      const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
-      const cols = Math.ceil(window.innerWidth / responsiveSpacing)
+      // Initialize dots using viewport-sized canvas (avoid huge scrollHeight on iOS)
+      const dpr = window.devicePixelRatio || 1
+      const width = canvas.width / dpr
+      const height = canvas.height / dpr
+      const cols = Math.ceil(width / responsiveSpacing)
       const rows = Math.ceil(height / responsiveSpacing)
       
       // Reduce dots dramatically on mobile for performance
-      const maxDots = isMobile ? 800 : 2000
+      const maxDots = isMobileViewInit ? 800 : 2000
       const totalDots = Math.min(cols * rows, maxDots)
       
       dotsRef.current = []
@@ -191,8 +196,10 @@ const DotPattern: React.FC<DotPatternProps> = ({
         
         lastFrameTime = currentTime - (elapsed % frameInterval)
         
-        const height = Math.max(window.innerHeight, document.documentElement.scrollHeight)
-        ctx.clearRect(0, 0, window.innerWidth, height)
+        const dpr = window.devicePixelRatio || 1
+        const width = canvas.width / dpr
+        const height = canvas.height / dpr
+        ctx.clearRect(0, 0, width, height)
         
         const isMobileView = window.innerWidth < 640
         const baseOpacity = isMobileView ? 0.16 : 0.22
@@ -253,7 +260,7 @@ const DotPattern: React.FC<DotPatternProps> = ({
     }
 
     return () => {
-      window.removeEventListener("resize", setCanvasSize)
+      window.removeEventListener("resize", throttledResize)
       canceled = true
       if (interactive) {
         window.removeEventListener("pointermove", handlePointerMove)
