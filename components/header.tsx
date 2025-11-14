@@ -80,15 +80,15 @@ const Header = () => {
   }, []);
 
   return (
-    <motion.header
+   <motion.header
       className="fixed top-0 w-full z-[100] py-4 transform-gpu"
       style={{ willChange: "transform" }}
-      initial={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 
-        delay: 0.4, 
-        duration: 0.5, 
-        ease: "easeOut" 
+        delay: 0.15, 
+        duration: 0.4, 
+        ease: [0.25, 0.46, 0.45, 0.94]
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -104,6 +104,7 @@ const NewAbout = () => {
               <motion.div
                 className="absolute top-1/4 left-0 w-72 h-72 md:w-96 md:h-96 rounded-full bg-accent/18 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
+                initial={{ x: -100, opacity: 0 }}
                 animate={{
                   x: [-100, vw],
                   opacity: [0, 0.18, 0.18, 0],
@@ -117,6 +118,7 @@ const NewAbout = () => {
               <motion.div
                 className="absolute top-1/2 left-0 w-80 h-80 md:w-[400px] md:h-[400px] rounded-full bg-accent/15 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
+                initial={{ x: -120, opacity: 0 }}
                 animate={{
                   x: [-120, vw],
                   opacity: [0, 0.15, 0.15, 0],
@@ -131,6 +133,7 @@ const NewAbout = () => {
               <motion.div
                 className="absolute top-1/3 left-0 w-64 h-64 md:w-80 md:h-80 rounded-full bg-accent/20 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
+                initial={{ x: -80, opacity: 0 }}
                 animate={{
                   x: [-80, vw],
                   opacity: [0, 0.20, 0.20, 0],
@@ -145,6 +148,7 @@ const NewAbout = () => {
               <motion.div
                 className="absolute bottom-1/3 left-0 w-72 h-72 md:w-96 md:h-96 rounded-full bg-accent/16 blur-3xl pointer-events-none"
                 style={{ willChange: 'transform, opacity' }}
+                initial={{ x: -100, opacity: 0 }}
                 animate={{
                   x: [-100, vw],
                   opacity: [0, 0.16, 0.16, 0],

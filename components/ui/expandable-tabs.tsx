@@ -30,19 +30,6 @@ interface ExpandableTabsProps {
   isExpanded?: boolean;
 }
 
-const buttonVariants = {
-  initial: {
-    gap: 0,
-    paddingLeft: ".5rem",
-    paddingRight: ".5rem",
-  },
-  animate: (isSelected: boolean) => ({
-    gap: isSelected ? ".5rem" : 0,
-    paddingLeft: isSelected ? "1rem" : ".5rem",
-    paddingRight: isSelected ? "1rem" : ".5rem",
-  }),
-};
-
 const spanVariants = {
   initial: { width: 0, opacity: 0 },
   animate: { width: "auto", opacity: 1 },
@@ -50,10 +37,9 @@ const spanVariants = {
 };
 
 const transition = {
-  delay: 0.1,
   type: "spring" as const,
   bounce: 0,
-  duration: 0.6,
+  duration: 0.35,
 };
 
 export function ExpandableTabs({
@@ -99,11 +85,9 @@ export function ExpandableTabs({
         paddingRight: isExpanded ? "0.25rem" : "0.25rem",
         gap: isExpanded ? "1rem" : "0.5rem",
       }}
-      layout
       transition={{
         duration: 0.4,
         ease: "easeInOut",
-        layout: { duration: 0.4 },
       }}
     >
       {logo && (
@@ -118,33 +102,36 @@ export function ExpandableTabs({
         }
 
         const Icon = tab.icon;
+        const isSelected = selected === index;
+        
         return (
           <motion.button
             key={tab.title}
-            variants={buttonVariants}
-            initial={false}
-            animate="animate"
-            custom={selected === index}
             onClick={() => handleSelect(index)}
-            transition={transition}
-            layout
             className={cn(
-              "relative flex items-center rounded-3xl px-4 py-2 text-sm font-medium transition-all duration-300 flex-shrink-0",
-              selected === index
+              "relative flex items-center rounded-3xl text-sm font-medium transition-colors duration-300 flex-shrink-0",
+              isSelected
                 ? "text-white bg-white/0 backdrop-blur-sm shadow-md"
                 : "text-gray-300 hover:text-white hover:bg-white/15"
             )}
+            animate={{
+              gap: isSelected ? ".5rem" : 0,
+              paddingLeft: isSelected ? "1rem" : ".5rem",
+              paddingRight: isSelected ? "1rem" : ".5rem",
+              paddingTop: ".5rem",
+              paddingBottom: ".5rem",
+            }}
+            transition={transition}
           >
             <Icon size={20} className="flex-shrink-0" />
             <AnimatePresence initial={false}>
-              {selected === index && (
+              {isSelected && (
                 <motion.span
                   variants={spanVariants}
                   initial="initial"
                   animate="animate"
                   exit="exit"
                   transition={transition}
-                  layout
                   className="overflow-hidden whitespace-nowrap"
                 >
                   {tab.title}
