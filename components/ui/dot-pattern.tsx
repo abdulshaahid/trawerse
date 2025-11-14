@@ -18,7 +18,6 @@ interface Dot {
   originalY: number;
   vx: number;
   vy: number;
-  shimmerOffset: number;
 }
 
 const DotPattern: React.FC<DotPatternProps> = ({
@@ -32,7 +31,6 @@ const DotPattern: React.FC<DotPatternProps> = ({
   const mousePos = useRef({ x: -1000, y: -1000 });
   const animationFrameId = useRef<number | undefined>(undefined);
   const dotsRef = useRef<Dot[]>([]);
-  const timeRef = useRef(0);
   const isTouchDevice = useRef(false);
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
@@ -95,8 +93,6 @@ const DotPattern: React.FC<DotPatternProps> = ({
 
     // Detect mobile for performance optimizations
     const isMobile = window.innerWidth < 768 || "ontouchstart" in window;
-    const isLowEndDevice =
-      navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
 
     // Set canvas size with performance optimizations
     const setCanvasSize = () => {
@@ -186,7 +182,6 @@ const DotPattern: React.FC<DotPatternProps> = ({
             originalY: y,
             vx: 0,
             vy: 0,
-            shimmerOffset: Math.random() * Math.PI * 2,
           });
         }
       }

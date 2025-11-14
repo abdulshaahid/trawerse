@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, memo } from "react";
+import { useCallback, useMemo, memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Briefcase, Wrench, User, Star } from "lucide-react";
@@ -8,32 +8,6 @@ import { ExpandableTabs } from "@/components/ui/expandable-tabs";
 import { motion } from "framer-motion";
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    let ticking = false;
-    let lastScrollY = 0;
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      // Only update state if scroll position meaningfully changed
-      if (Math.abs(currentScrollY - lastScrollY) < 5) return;
-
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setIsScrolled(currentScrollY > 10);
-          lastScrollY = currentScrollY;
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   // Memoize navTabs to prevent recreation on every render
   const navTabs = useMemo(
     () => [
@@ -80,15 +54,15 @@ const Header = () => {
   }, []);
 
   return (
-   <motion.header
+    <motion.header
       className="fixed top-0 w-full z-[100] py-4 transform-gpu"
       style={{ willChange: "transform" }}
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        delay: 0.15, 
-        duration: 0.4, 
-        ease: [0.25, 0.46, 0.45, 0.94]
+      transition={{
+        delay: 0.15,
+        duration: 0.4,
+        ease: [0.25, 0.46, 0.45, 0.94],
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

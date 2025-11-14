@@ -66,7 +66,6 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
-  const [isTouching, setIsTouching] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -138,7 +137,6 @@ export default function Home() {
   const handleTouchStart = useCallback(
     (event: React.TouchEvent<HTMLDivElement>) => {
       setIsDesktop(false);
-      setIsTouching(true);
       // Don't track touch position for ambient light on mobile
     },
     []
@@ -151,9 +149,7 @@ export default function Home() {
     []
   );
 
-  const handleTouchEnd = useCallback(() => {
-    setIsTouching(false);
-  }, []);
+  const handleTouchEnd = useCallback(() => {}, []);
 
   return (
     <div
