@@ -18,14 +18,12 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
   const touchStartTime = useRef(0)
   const isTouching = useRef(false)
   const pendingNavigation = useRef<string | null>(null)
-  // Cooldown to avoid accidental return to hero immediately after entering new section
   const backToHeroAllowedAt = useRef(0)
-  // Guard to force return to hero (e.g., on logo click) and suppress re-entry to new section
   const forceToHero = useRef(false)
   const scrollThreshold = 5
   const transitionDuration = 600
 
-  // Scroll lock helpers (defined early so effects can use them)
+  // Scroll lock helpers
   const lockScroll = useCallback((scrollPosition: number = 0) => {
     document.documentElement.style.overflow = 'hidden'
     // @ts-ignore - WebKit-specific property for iOS
@@ -44,7 +42,7 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     return el?.offsetHeight ?? 84
   }, [])
 
-  // Robust scroll-to helper with retries to land precisely (avoids overshoot/undershoot)
+  // Robust scroll-to helper with retries to land precisely
   const smoothScrollToId = useCallback((sectionId: string) => {
     const el = document.getElementById(sectionId)
     if (!el) return
@@ -56,11 +54,9 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       const top = computeTop()
       window.scrollTo({ top, behavior })
     }
-    // Initial smooth scroll, then correction passes
     scrollOnce('smooth')
     requestAnimationFrame(() => scrollOnce('smooth'))
     setTimeout(() => scrollOnce('smooth'), 140)
-    // Final precise snap without animation to eliminate drift on slower devices
     setTimeout(() => scrollOnce('auto'), 520)
   }, [getHeaderOffset])
 
@@ -93,7 +89,6 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
   useEffect(() => {
     if (!scrolled && !transitionComplete) {
       lockScroll(0)
-      // Additional aggressive scroll prevention
       const preventScroll = (e: Event) => {
         e.preventDefault()
         e.stopPropagation()
@@ -101,7 +96,6 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
         return false
       }
       
-      // Prevent all scroll-related events on hero
       document.addEventListener('scroll', preventScroll, { passive: false, capture: true })
       document.addEventListener('wheel', preventScroll, { passive: false, capture: true })
       document.addEventListener('touchmove', preventScroll, { passive: false, capture: true })
@@ -126,55 +120,67 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     if (isTransitioning || scrolled) return
     
     setIsTransitioning(true)
-    lockScroll(window.scrollY)
     
-    // Force reflow for iOS Safari to recognize the initial state
-    requestAnimationFrame(() => {
-      // Trigger the actual transition
-      setScrolled(true)
-      setTransitionComplete(false)
+    // Immediately prevent all scrolling
+    const preventAnyScroll = (e: Event) => {
+      e.preventDefault()
+      e.stopPropagation()
+      return false
+    }
+    
+    // Lock everything
+    window.addEventListener('scroll', preventAnyScroll, { passive: false, capture: true })
+    window.addEventListener('wheel', preventAnyScroll, { passive: false, capture: true })
+    window.addEventListener('touchmove', preventAnyScroll, { passive: false, capture: true })
+    
+    // Lock scroll at position 0
+    lockScroll(0)
+    window.scrollTo(0, 0)
+    
+    // Instantly show new section
+    setScrolled(true)
+    setTransitionComplete(true)
+    
+    // Keep everything locked and wait for DOM to settle
+    setTimeout(() => {
+      // Remove scroll prevention
+      window.removeEventListener('scroll', preventAnyScroll, { capture: true })
+      window.removeEventListener('wheel', preventAnyScroll, { capture: true })
+      window.removeEventListener('touchmove', preventAnyScroll, { capture: true })
       
-      setTimeout(() => {
-        setIsTransitioning(false)
-        setTransitionComplete(true)
-        unlockScroll()
-        window.scrollTo(0, 0)
-        // Prevent immediate bounce back to hero for fast consecutive scrolls
-        backToHeroAllowedAt.current = Date.now() + 800
+      setIsTransitioning(false)
+      unlockScroll()
+      
+      // Ensure we're at top
+      window.scrollTo(0, 0)
+      
+      backToHeroAllowedAt.current = Date.now() + 800
+      
+      // Handle pending navigation
+      if (pendingNavigation.current) {
+        const targetId = pendingNavigation.current
+        pendingNavigation.current = null
         
-        // Handle pending navigation after transition
-        if (pendingNavigation.current) {
-          const targetId = pendingNavigation.current
-          pendingNavigation.current = null
-          
-          // Wait for DOM to update and scroll
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              smoothScrollToId(targetId)
-            }, 100)
-          })
-        }
-      }, transitionDuration)
-    })
-  }, [isTransitioning, scrolled, transitionDuration, lockScroll, unlockScroll])
+        setTimeout(() => {
+          smoothScrollToId(targetId)
+        }, 100)
+      }
+    }, 100)
+  }, [isTransitioning, scrolled, lockScroll, unlockScroll, smoothScrollToId])
 
   const transitionToHero = useCallback(() => {
     if (isTransitioning || !transitionComplete) return
     
     setIsTransitioning(true)
-    // Lock at current position to avoid visual upward movement before animation
     lockScroll(window.scrollY)
     
-    // Force reflow for iOS Safari to recognize the initial state
     requestAnimationFrame(() => {
-      // Trigger the actual transition
       setScrolled(false)
       setTransitionComplete(false)
       
       setTimeout(() => {
         setIsTransitioning(false)
         unlockScroll()
-        // Ensure scroll is truly at top and release guard
         window.scrollTo(0, 0)
         forceToHero.current = false
       }, transitionDuration)
@@ -184,36 +190,28 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
   // Handle navigation to sections
   const navigateToSection = useCallback((sectionId: string) => {
     if (sectionId === 'home' || sectionId === 'hero') {
-      // Go back to hero
       forceToHero.current = true
-      // Cancel any pending navigation to other sections
       pendingNavigation.current = null
       if (!scrolled) {
-        // Already at hero
         forceToHero.current = false
         return
       }
       if (transitionComplete && scrolled) {
         transitionToHero()
       } else if (scrolled && !isTransitioning) {
-        // If we're scrolled but not yet marked complete, delay slightly
         setTimeout(() => transitionToHero(), 0)
       }
     } else {
-      // Navigate to other sections
       if (!scrolled && !transitionComplete) {
-        // Store pending navigation and trigger transition
         pendingNavigation.current = sectionId
         transitionToNewSection()
       } else {
-        // Already in new section, precise scroll
         smoothScrollToId(sectionId)
       }
     }
   }, [scrolled, isTransitioning, transitionComplete, transitionToNewSection, transitionToHero, smoothScrollToId])
 
   useEffect(() => {
-    // Separate event handlers for hero vs new section
     const handleHeroWheel = (e: WheelEvent) => {
       e.preventDefault()
       e.stopPropagation()
@@ -240,7 +238,6 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       const touch = e.touches[0]
       const deltaY = touch.clientY - touchStartY.current
       
-      // Trigger transition on upward swipe (scroll down gesture)
       if (deltaY < -10) {
         isTouching.current = false
         transitionToNewSection()
@@ -252,9 +249,7 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       isTouching.current = false
     }
 
-    // Regular handlers for new section
     const handleNewSectionWheel = (e: WheelEvent) => {
-      // Detect upward scroll at the top of new section to go back to hero
       if (
         window.scrollY <= 10 &&
         e.deltaY < -15 &&
@@ -279,7 +274,6 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       const deltaTime = Date.now() - touchStartTime.current
       const velocity = Math.abs(deltaY / deltaTime)
       
-      // Swipe down from new section back to hero
       if (
         window.scrollY <= 10 &&
         deltaY > 30 &&
@@ -296,16 +290,13 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       isTouching.current = false
     }
 
-    // Apply appropriate handlers based on current state
     if (!scrolled && !transitionComplete) {
-      // Hero section - aggressive prevention
       window.addEventListener("wheel", handleHeroWheel, { passive: false, capture: true })
       window.addEventListener("touchstart", handleHeroTouchStart, { passive: true })
       window.addEventListener("touchmove", handleHeroTouchMove, { passive: false, capture: true })
       window.addEventListener("touchend", handleHeroTouchEnd, { passive: true })
       window.addEventListener("touchcancel", handleHeroTouchEnd, { passive: true })
     } else if (transitionComplete) {
-      // New section - normal handling
       window.addEventListener("wheel", handleNewSectionWheel, { passive: false })
       window.addEventListener("touchstart", handleNewSectionTouchStart, { passive: true })
       window.addEventListener("touchmove", handleNewSectionTouchMove, { passive: false })
@@ -313,7 +304,6 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
       window.addEventListener("touchcancel", handleNewSectionTouchEnd, { passive: true })
     }
 
-    // Custom navigation event handler
     const handleNavigateEvent = (e: Event) => {
       const customEvent = e as CustomEvent<{ sectionId: string }>
       navigateToSection(customEvent.detail.sectionId)
@@ -322,7 +312,6 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
     window.addEventListener("navigateToSection", handleNavigateEvent as EventListener)
     
     return () => {
-      // Remove all possible event listeners
       if (!scrolled && !transitionComplete) {
         window.removeEventListener("wheel", handleHeroWheel, { capture: true })
         window.removeEventListener("touchstart", handleHeroTouchStart)
@@ -337,14 +326,13 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
         window.removeEventListener("touchcancel", handleNewSectionTouchEnd)
       }
       window.removeEventListener("navigateToSection", handleNavigateEvent as EventListener)
-      // Reset scroll lock
       unlockScroll()
     }
   }, [scrolled, isTransitioning, transitionComplete, transitionToNewSection, transitionToHero, unlockScroll, navigateToSection])
 
   return (
     <>
-      {/* Hero section - always present, slides in/out */}
+      {/* Hero section - slides out with animation when going back */}
       <div
         className="fixed top-0 left-0 overflow-hidden h-[100dvh]"
         style={{
@@ -365,8 +353,8 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
           zIndex: scrolled ? 0 : 10,
           pointerEvents: scrolled ? "none" : "auto",
           visibility: scrolled && transitionComplete ? 'hidden' : 'visible',
-          WebkitTransition: `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), -webkit-filter ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), -webkit-transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1)`,
-          transition: `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), filter ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+          WebkitTransition: scrolled ? 'none' : `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), -webkit-filter ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), -webkit-transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1)`,
+          transition: scrolled ? 'none' : `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), filter ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
           willChange: isTransitioning ? 'transform, opacity, filter' : 'auto',
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
@@ -377,33 +365,20 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
         {heroContent}
       </div>
 
-      {/* New page section - slides in from right, becomes relative after transition */}
+      {/* New page section - appears instantly, no slide-in animation */}
       <div
         ref={newPageRef}
         className={`${transitionComplete ? 'relative' : 'fixed'} ${transitionComplete ? '' : 'top-0 left-0'} min-h-screen ${className || ''}`}
         style={{
           width: transitionComplete ? '100%' : '100vw',
-          WebkitTransform: transitionComplete 
-            ? 'none' 
-            : (scrolled ? "translate3d(0, 0, 0)" : "translate3d(100%, 0, 0)"),
-          transform: transitionComplete 
-            ? 'none' 
-            : (scrolled ? "translate3d(0, 0, 0)" : "translate3d(100%, 0, 0)"),
-          opacity: transitionComplete ? 1 : (scrolled ? 1 : 0),
+          opacity: scrolled ? 1 : 0,
           zIndex: scrolled && !transitionComplete ? 5 : 1,
-          WebkitTransition: transitionComplete 
-            ? 'none' 
-            : `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), -webkit-transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1)`,
-          transition: transitionComplete 
-            ? 'none' 
-            : `transform ${transitionDuration}ms cubic-bezier(0.19, 1, 0.22, 1), opacity ${transitionDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
-          willChange: isTransitioning ? 'transform, opacity' : 'auto',
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
-          WebkitFontSmoothing: 'antialiased',
-          MozOsxFontSmoothing: 'grayscale',
+          display: scrolled ? 'block' : 'none',
           WebkitOverflowScrolling: 'touch',
           pointerEvents: scrolled || transitionComplete ? 'auto' : 'none',
+          position: transitionComplete ? 'relative' : 'fixed',
+          top: 0,
+          left: 0,
         } as React.CSSProperties}
       >
         {(scrolled || transitionComplete) && restContent}
@@ -415,4 +390,4 @@ const SlideInSection = ({ heroContent, restContent, className }: SlideInSectionP
   )
 }
 
-export default memo(SlideInSection);
+export default memo(SlideInSection)
