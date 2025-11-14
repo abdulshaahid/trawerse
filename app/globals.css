@@ -20,7 +20,7 @@
   --accent: oklch(0.64 0.18 155);
   --accent-foreground: oklch(1 0 0);
   --accent-light: oklch(0.72 0.16 155);
-  --accent-dark: oklch(0.52 0.20 155);
+  --accent-dark: oklch(0.52 0.2 155);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.92 0 0);
@@ -58,7 +58,7 @@
   --accent: oklch(0.64 0.18 155);
   --accent-foreground: oklch(0.98 0 0);
   --accent-light: oklch(0.72 0.16 155);
-  --accent-dark: oklch(0.52 0.20 155);
+  --accent-dark: oklch(0.52 0.2 155);
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.15 0 0);
@@ -183,14 +183,28 @@
 }
 
 .multicolor-text {
-  background: linear-gradient(90deg, #11ae62 0%, #0d8a4d 25%, #11ae62 50%, #0d8a4d 75%, #11ae62 100%);
+  background: linear-gradient(
+    90deg,
+    #11ae62 0%,
+    #0d8a4d 25%,
+    #11ae62 50%,
+    #0d8a4d 75%,
+    #11ae62 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-rainbow {
-  background: linear-gradient(90deg, #11ae62 0%, #15d978 25%, #11ae62 50%, #0d8a4d 75%, #11ae62 100%);
+  background: linear-gradient(
+    90deg,
+    #11ae62 0%,
+    #15d978 25%,
+    #11ae62 50%,
+    #0d8a4d 75%,
+    #11ae62 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -360,16 +374,16 @@
 /* Hide scrollbar for IE, Edge, and Firefox */
 html,
 body {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
-  overflow-x: hidden;        /* Prevent horizontal scroll */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Ensure all scrollable elements hide scrollbar on mobile */
 * {
-  -webkit-overflow-scrolling: touch;  /* Smooth scrolling on iOS */
-  scrollbar-width: none;              /* Firefox */
-  -ms-overflow-style: none;           /* IE and Edge */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
 *::-webkit-scrollbar {
@@ -389,7 +403,7 @@ body {
     perspective: 1000px;
     will-change: auto;
   }
-  
+
   /* Optimize frequently animated elements */
   .transform-gpu {
     transform: translate3d(0, 0, 0);
@@ -409,10 +423,10 @@ body {
   }
 
   /* Optimize rendering performance */
-  img, 
-  picture, 
-  video, 
-  canvas, 
+  img,
+  picture,
+  video,
+  canvas,
   svg {
     display: block;
     max-width: 100%;
@@ -431,7 +445,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeSpeed;
   }
-  
+
   /* Optimize touch actions for mobile */
   button,
   a,
@@ -439,21 +453,21 @@ body {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
-  
+
   /* Contain layout shifts */
   main {
     contain: layout style paint;
   }
-  
+
   /* Hardware acceleration hints */
   .will-change-transform {
     will-change: transform;
   }
-  
+
   .will-change-opacity {
     will-change: opacity;
   }
-  
+
   .will-change-auto {
     will-change: auto;
   }
@@ -465,26 +479,26 @@ body {
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
   }
-  
+
   .smooth-scroll {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .contain-strict {
     contain: strict;
   }
-  
+
   .contain-content {
     contain: content;
   }
-  
+
   /* Ensure backdrop-filter works on mobile browsers */
   .backdrop-blur-2xl {
     -webkit-backdrop-filter: blur(40px);
     backdrop-filter: blur(40px);
   }
-  
+
   /* Mobile Safari specific fix */
   @supports (-webkit-backdrop-filter: blur(1px)) {
     .backdrop-blur-2xl {
@@ -492,18 +506,18 @@ body {
       backdrop-filter: blur(40px) saturate(180%);
     }
   }
-  
+
   /* Ensure smooth transitions */
   * {
     -webkit-tap-highlight-color: transparent;
   }
-  
+
   /* Slide transition classes */
   .hero-slide-transition {
     -webkit-transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1) !important;
     transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1) !important;
   }
-  
+
   .section-slide-transition {
     -webkit-transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1) !important;
     transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1) !important;

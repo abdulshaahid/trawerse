@@ -49,7 +49,12 @@ const spanVariants = {
   exit: { width: 0, opacity: 0 },
 };
 
-const transition = { delay: 0.1, type: "spring" as const, bounce: 0, duration: 0.6 };
+const transition = {
+  delay: 0.1,
+  type: "spring" as const,
+  bounce: 0,
+  duration: 0.6,
+};
 
 export function ExpandableTabs({
   tabs,
@@ -85,17 +90,21 @@ export function ExpandableTabs({
         "bg-white/8 backdrop-blur-xl border border-white/4 shadow-lg",
         className
       )}
-      style={{ 
-        width: 'fit-content',
-        maxWidth: '100%'
+      style={{
+        width: "fit-content",
+        maxWidth: "100%",
       }}
       animate={{
-        paddingLeft: isExpanded ? '1.5rem' : '0.25rem',
-        paddingRight: isExpanded ? '0.25rem' : '0.25rem',
-        gap: isExpanded ? '1rem' : '0.5rem',
+        paddingLeft: isExpanded ? "1.5rem" : "0.25rem",
+        paddingRight: isExpanded ? "0.25rem" : "0.25rem",
+        gap: isExpanded ? "1rem" : "0.5rem",
       }}
       layout
-      transition={{ duration: 0.4, ease: "easeInOut", layout: { duration: 0.4 } }}
+      transition={{
+        duration: 0.4,
+        ease: "easeInOut",
+        layout: { duration: 0.4 },
+      }}
     >
       {logo && (
         <>
@@ -148,7 +157,14 @@ export function ExpandableTabs({
       {rightContent && (
         <>
           <Separator />
-          <div className={cn("flex items-center flex-shrink-0", isExpanded ? "pr-0" : "")}>{rightContent}</div>
+          <div
+            className={cn(
+              "flex items-center flex-shrink-0",
+              isExpanded ? "pr-0" : ""
+            )}
+          >
+            {rightContent}
+          </div>
         </>
       )}
     </motion.div>
