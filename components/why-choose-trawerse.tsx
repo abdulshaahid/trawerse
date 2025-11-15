@@ -11,7 +11,7 @@ import { motion } from 'framer-motion'
 
 export function WhyChooseTrawerse() {
     return (
-        <section id="features" className="relative bg-gray-50 mt-12 py-16 md:py-32 dark:bg-transparent overflow-hidden">
+        <section id="features" className="relative mt-12 py-16 md:py-32 overflow-hidden">
             {/* Background animated blobs */}
             <motion.div 
                 className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl"
@@ -74,7 +74,7 @@ export function WhyChooseTrawerse() {
                             transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                             whileHover={{ y: -10, scale: 1.02, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
-                            <Card className="relative w-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] dark:bg-white/[0.02] border-white/5 group  transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                            <Card className="relative w-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 group transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
                                 <CardContent className="relative m-auto w-full pt-6 pb-16">
                                     <motion.h2 
                                         className="text-2xl font-semibold text-center mb-2"
@@ -138,7 +138,7 @@ export function WhyChooseTrawerse() {
                             transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                             whileHover={{ y: -10, scale: 1.02, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
-                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] dark:bg-white/[0.02] border-white/5 group  transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 group transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
                                 <CardContent className="pt-6">
                                     <motion.div 
                                         className="space-y-2 mb-4 text-center"
@@ -147,7 +147,7 @@ export function WhyChooseTrawerse() {
                                         viewport={{ once: true }}
                                         transition={{ delay: 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                                     >
-                                        <h2 className="text-xl font-medium transition dark:text-white">Security-Driven Development</h2>
+                                        <h2 className="text-xl font-medium transition text-white">Security-Driven Development</h2>
                                         <p className="text-sm text-foreground/70">Building secure, robust systems from the ground up</p>
                                     </motion.div>
                                     <motion.div 
@@ -172,7 +172,7 @@ export function WhyChooseTrawerse() {
                             transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                             whileHover={{ y: -10, scale: 1.02, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
-                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] dark:bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
                                 <CardContent className="pt-6">
                                     <motion.div 
                                         className="space-y-2 mb-4 text-center"
@@ -206,7 +206,7 @@ export function WhyChooseTrawerse() {
                             transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
                             whileHover={{ y: -6, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
-                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] dark:bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
                                 <CardContent className="grid h-full pt-6 sm:grid-cols-2">
                                     <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                                         <motion.div 
@@ -236,7 +236,7 @@ export function WhyChooseTrawerse() {
                             transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                             whileHover={{ y: -6, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
-                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] dark:bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
                                 <CardContent className="grid h-full pt-6 sm:grid-cols-2">
                                     <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                                         
@@ -254,7 +254,7 @@ export function WhyChooseTrawerse() {
                                     <div className="relative flex h-full items-center justify-center mt-3 sm:-my-6 sm:-mr-4 lg:-mt-9 min-h-[280px]">
                                         {/* Center icon */}
                                         <motion.div 
-                                            className="absolute size-16 rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-lg overflow-hidden"
+                                            className="absolute size-16 rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900  flex items-center justify-center shadow-lg overflow-hidden"
                                             initial={{ scale: 0, rotate: -180, opacity: 0 }}
                                             whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
                                             viewport={{ once: true }}
@@ -267,19 +267,19 @@ export function WhyChooseTrawerse() {
                                     
                                     {/* Outer orbit - 4 icons */}
                                     <OrbitingCircles iconSize={48} radius={120} duration={25}>
-                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-xl overflow-hidden relative">
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900  flex items-center justify-center shadow-xl overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
                                             <FontAwesomeIcon icon={faCode} className="text-emerald-400 text-xl relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-xl overflow-hidden relative">
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900  flex items-center justify-center shadow-xl overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
                                             <FontAwesomeIcon icon={faTerminal} className="text-blue-400 text-xl relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-xl overflow-hidden relative">
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900  flex items-center justify-center shadow-xl overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
                                             <FontAwesomeIcon icon={faServer} className="text-purple-400 text-xl relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-xl overflow-hidden relative">
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900  flex items-center justify-center shadow-xl overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
                                             <FontAwesomeIcon icon={faDatabase} className="text-orange-400 text-xl relative z-10" />
                                         </div>
@@ -287,15 +287,15 @@ export function WhyChooseTrawerse() {
                                     
                                     {/* Inner orbit - 3 icons, faster */}
                                     <OrbitingCircles iconSize={36} radius={75} reverse speed={1.5} duration={20}>
-                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-lg overflow-hidden relative">
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900  flex items-center justify-center shadow-lg overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
                                             <FontAwesomeIcon icon={faCodeBranch} className="text-pink-400 text-lg relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-lg overflow-hidden relative">
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900  flex items-center justify-center shadow-lg overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
                                             <FontAwesomeIcon icon={faRocket} className="text-amber-400 text-lg relative z-10" />
                                         </div>
-                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center shadow-lg overflow-hidden relative">
+                                        <div className="size-full rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900  flex items-center justify-center shadow-lg overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60" />
                                             <FontAwesomeIcon icon={faCode} className="text-cyan-400 text-lg relative z-10" />
                                         </div>

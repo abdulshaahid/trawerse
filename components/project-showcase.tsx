@@ -790,7 +790,7 @@ export default function ProjectShowcase() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   // Detect screen size
   useEffect(() => {
@@ -818,13 +818,18 @@ export default function ProjectShowcase() {
   const handleToggle = useCallback(() => {
     if (showAll && sectionRef.current) {
       // Store current position relative to section
-      const sectionTop =
-        sectionRef.current.getBoundingClientRect().top + window.scrollY;
-      startTransition(() => setShowAll(false));
-      // Restore scroll position after state update
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: sectionTop - 100, behavior: "smooth" });
-      });
+      try {
+        const sectionTop =
+          sectionRef.current.getBoundingClientRect().top + window.scrollY;
+        startTransition(() => setShowAll(false));
+        // Restore scroll position after state update
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: sectionTop - 100, behavior: "smooth" });
+        });
+      } catch (error) {
+        // Fallback if ref is not available
+        startTransition(() => setShowAll(false));
+      }
     } else {
       startTransition(() => setShowAll(true));
     }

@@ -18,16 +18,10 @@ const MarqueeDemo = dynamic(() => import("@/components/ui/marquee-demo"), {
   ssr: false,
   loading: () => <div className="h-32" />,
 });
-const ScrollVelocity = dynamic(
-  () =>
-    import("@/components/ui/scroll-velocity").then((mod) => ({
-      default: mod.default,
-    })),
-  {
-    ssr: false,
-    loading: () => <div className="h-24" />,
-  }
-);
+const ScrollVelocity = dynamic(() => import("@/components/ui/scroll-velocity"), {
+  ssr: false,
+  loading: () => <div className="h-24" />,
+});
 const Testimonials = dynamic(() => import("@/components/testimonials"), {
   ssr: false,
   loading: () => <div className="min-h-[60vh]" />,

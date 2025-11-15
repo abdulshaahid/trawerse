@@ -14,7 +14,7 @@ const Circle = forwardRef<HTMLDivElement, { className?: string; children?: React
     <div
       ref={ref}
       className={cn(
-        "z-10 flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 shadow-lg overflow-hidden relative",
+        "z-10 flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-zinc-950 to-zinc-900 shadow-lg overflow-hidden relative",
         className
       )}
     >

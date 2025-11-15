@@ -72,7 +72,7 @@ const MetricBar = ({ metric, delay }: { metric: Metric; delay: number }) => {
     >
       <div className="flex items-center gap-3">
         <div 
-          className="flex items-center justify-center w-7 h-7 rounded-md bg-zinc-900 dark:bg-zinc-800 transition-transform group-hover:scale-110"
+          className="flex items-center justify-center w-7 h-7 rounded-md bg-zinc-900 bg-zinc-800 transition-transform group-hover:scale-110"
           style={{ color: metric.color }}
         >
           <Icon className="w-4 h-4" />
@@ -92,7 +92,7 @@ const MetricBar = ({ metric, delay }: { metric: Metric; delay: number }) => {
             </motion.span>
           </div>
           
-          <div className="relative h-2 bg-zinc-900/40 dark:bg-zinc-800/40 rounded-full overflow-hidden">
+          <div className="relative h-2 bg-zinc-900/40 bg-zinc-800/40 rounded-full overflow-hidden">
             <motion.div
               className="absolute inset-y-0 left-0 rounded-full"
               style={{ 

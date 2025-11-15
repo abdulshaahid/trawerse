@@ -152,7 +152,7 @@ const ResourceCard = ({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       <motion.div
-        className="flex items-center justify-center w-7 h-7 rounded-md bg-gradient-to-br from-zinc-950 to-zinc-900 dark:from-zinc-950 dark:to-zinc-900 overflow-hidden relative"
+        className="flex items-center justify-center w-7 h-7 rounded-md bg-gradient-to-br from-zinc-950 to-zinc-900 overflow-hidden relative"
         animate={{
           scale: isHovered ? 1.1 : 1,
         }}

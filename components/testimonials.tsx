@@ -81,10 +81,10 @@ const ReviewCard = memo(({ img, name, username, body, rating }: Review) => {
           height={32}
         />
         <div className="flex flex-col">
-          <figcaption className="text-xs sm:text-sm font-medium dark:text-white">
+          <figcaption className="text-xs sm:text-sm font-medium text-white">
             {name}
           </figcaption>
-          <p className="text-[10px] sm:text-xs font-medium dark:text-white/40">
+          <p className="text-[10px] sm:text-xs font-medium text-white/40">
             {username}
           </p>
         </div>
@@ -97,7 +97,7 @@ const ReviewCard = memo(({ img, name, username, body, rating }: Review) => {
           />
         ))}
       </div>
-      <blockquote className="mt-1.5 sm:mt-2 text-xs sm:text-sm dark:text-white/80">
+      <blockquote className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-white/80">
         {body}
       </blockquote>
     </figure>
