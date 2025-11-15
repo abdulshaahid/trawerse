@@ -908,7 +908,8 @@ export default function ProjectShowcase() {
             className={cn(
               "grid grid-cols-1 md:pt-2 md:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-15 md:gap-y-18 will-change-contents",
               !showAll &&
-                "[mask-image:linear-gradient(to_bottom,#000_75%,transparent_100%)]"
+                "[mask-image:linear-gradient(to_bottom,#000_75%,transparent_100%)]",
+              showAll && "pb-16"
             )}
             style={{ contain: "layout paint" }}
           >
@@ -954,8 +955,8 @@ export default function ProjectShowcase() {
           {hasMore && (
             <motion.div
               className={cn(
-                "absolute left-1/2 -translate-x-1/2 translate-y-1/2 z-20",
-                showAll && "mt-20"
+                "absolute left-1/2 -translate-x-1/2 z-20",
+                showAll ? "bottom-0 mt-8" : "translate-y-1/2"
               )}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
