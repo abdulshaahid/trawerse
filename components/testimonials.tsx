@@ -73,7 +73,13 @@ const ReviewCard = memo(({ img, name, username, body, rating }: Review) => {
       }}
     >
       <div className="flex flex-row items-center gap-2">
-        <Image className="rounded-full w-7 h-7 sm:w-8 sm:h-8" alt="" src={img} width={32} height={32} />
+        <Image
+          className="rounded-full w-7 h-7 sm:w-8 sm:h-8"
+          alt=""
+          src={img}
+          width={32}
+          height={32}
+        />
         <div className="flex flex-col">
           <figcaption className="text-xs sm:text-sm font-medium dark:text-white">
             {name}
@@ -115,15 +121,13 @@ export function Testimonials() {
           transition={{
             duration: 0.8,
             ease: [0.22, 1, 0.36, 1],
-            delay: 0.2
+            delay: 0.2,
           }}
         >
           <span className="bg-gradient-to-b from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
             Built with passion.{" "}
           </span>
-          <span className="text-accent">
-            Loved by clients.
-          </span>
+          <span className="text-accent">Loved by clients.</span>
         </motion.h2>
         <motion.p
           className="text-white/70 text-lg md:text-xl max-w-2xl"
@@ -133,10 +137,11 @@ export function Testimonials() {
           transition={{
             duration: 0.7,
             ease: [0.22, 1, 0.36, 1],
-            delay: 0.4
+            delay: 0.4,
           }}
         >
-          From startups to enterprises — our work speaks through the people who use it. Here's what they say about partnering with Trawerse.
+          From startups to enterprises — our work speaks through the people who
+          use it. Here's what they say about partnering with Trawerse.
         </motion.p>
       </div>
 
@@ -155,7 +160,7 @@ export function Testimonials() {
         transition={{
           duration: 0.8,
           ease: [0.22, 1, 0.36, 1],
-          delay: 0.6
+          delay: 0.6,
         }}
       >
         <Marquee pauseOnHover className="[--duration:25s]">

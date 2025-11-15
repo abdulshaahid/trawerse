@@ -1,45 +1,50 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ArrowRight, Mail, Phone, MapPin } from "lucide-react"
-import { useState } from "react"
+import { motion } from "framer-motion";
+import { ArrowRight, Mail, Phone, MapPin } from "lucide-react";
+import { useState } from "react";
 
 export function ContactSection() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
-    message: ""
-  })
+    message: "",
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle form submission
-    console.log(formData)
-  }
+    console.log(formData);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
-    <section id="contact" className="relative py-20 sm:py-32 overflow-hidden w-full">
+    <section
+      id="contact"
+      className="relative py-20 sm:py-32 overflow-hidden w-full"
+    >
       {/* Background gradient blobs */}
-      <motion.div 
+      <motion.div
         className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
-        initial={{ opacity: 0, scale: 0.8 }} 
-        whileInView={{ opacity: 1, scale: 1 }} 
-        viewport={{ once: true }} 
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
         transition={{ duration: 1.2, ease: "easeOut" }}
       />
-      <motion.div 
+      <motion.div
         className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/3 rounded-full blur-3xl"
-        initial={{ opacity: 0, scale: 0.8 }} 
-        whileInView={{ opacity: 1, scale: 1 }} 
-        viewport={{ once: true }} 
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
         transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
       />
 
@@ -55,19 +60,18 @@ export function ContactSection() {
               transition={{
                 duration: 0.8,
                 ease: [0.22, 1, 0.36, 1],
-                delay: 0.2
+                delay: 0.2,
               }}
             >
               <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold">
                 <span className="bg-gradient-to-b from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
                   Contact{" "}
                 </span>
-                <span className="text-accent">
-                  Us
-                </span>
+                <span className="text-accent">Us</span>
               </h2>
               <p className="text-white/70 text-lg md:text-xl max-w-lg">
-                Let&apos;s turn your vision into reality. Whether you&apos;re starting from scratch or need to elevate your existing platform.
+                Let&apos;s turn your vision into reality. Whether you&apos;re
+                starting from scratch or need to elevate your existing platform.
               </p>
             </motion.div>
 
@@ -80,7 +84,7 @@ export function ContactSection() {
               transition={{
                 duration: 0.7,
                 ease: [0.22, 1, 0.36, 1],
-                delay: 0.4
+                delay: 0.4,
               }}
             >
               <div className="flex items-center gap-4">
@@ -123,14 +127,16 @@ export function ContactSection() {
             transition={{
               duration: 0.8,
               ease: [0.22, 1, 0.36, 1],
-              delay: 0.6
+              delay: 0.6,
             }}
           >
             <div className="relative w-full overflow-hidden rounded-3xl bg-[#111111]/90 p-6 shadow-2xl">
-              
               <form onSubmit={handleSubmit} className="relative space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-white/80 mb-2">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-white/80 mb-2"
+                  >
                     Name
                   </label>
                   <input
@@ -146,7 +152,10 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-white/70 mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-white/70 mb-2"
+                  >
                     Email
                   </label>
                   <input
@@ -162,7 +171,10 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-white/70 mb-2">
+                  <label
+                    htmlFor="subject"
+                    className="block text-sm font-medium text-white/70 mb-2"
+                  >
                     Subject
                   </label>
                   <input
@@ -178,7 +190,10 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-white/70 mb-2">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-white/70 mb-2"
+                  >
                     Message
                   </label>
                   <textarea
@@ -208,7 +223,7 @@ export function ContactSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 export default ContactSection;
