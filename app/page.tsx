@@ -25,7 +25,10 @@ const MarqueeDemo = dynamic(
   }
 );
 const ScrollVelocity = dynamic(
-  () => import("@/components/ui/scroll-velocity"),
+  () =>
+    import("@/components/ui/scroll-velocity").then((mod) => ({
+      default: mod.default,
+    })),
   {
     ssr: false,
     loading: () => <div className="h-24" />,

@@ -52,21 +52,6 @@ const nextConfig = {
   },
   // Enable static page generation where possible
   output: "standalone",
-  // Use Turbopack (default in Next.js 16) for faster builds
-  turbopack: {
-    // Configure Turbopack HMR to avoid module factory deletion issues
-    resolveExtensions: [
-      ".ts",
-      ".tsx",
-      ".js",
-      ".jsx",
-      ".json",
-      ".mjs",
-      ".css",
-    ],
-  },
-  // Note: Turbopack handles chunking automatically and more efficiently than webpack
-  // The previous webpack chunking config is no longer needed
   async headers() {
     return [
       {
