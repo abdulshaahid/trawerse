@@ -32,6 +32,7 @@ const DotPattern: React.FC<DotPatternProps> = ({
   const animationFrameId = useRef<number | undefined>(undefined);
   const dotsRef = useRef<Dot[]>([]);
   const isTouchDevice = useRef(false);
+  const fadeOpacity = useRef(0);
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
     const canvas = canvasRef.current;
@@ -190,6 +191,8 @@ const DotPattern: React.FC<DotPatternProps> = ({
       let lastFrameTime = 0;
       const targetFPS = 30;
       const frameInterval = 1000 / targetFPS;
+      const startTime = Date.now();
+      const fadeInDuration = 800; // 800ms smooth fade-in
 
       const animate = (currentTime: number = 0) => {
         const elapsed = currentTime - lastFrameTime;
@@ -201,6 +204,10 @@ const DotPattern: React.FC<DotPatternProps> = ({
 
         lastFrameTime = currentTime - (elapsed % frameInterval);
 
+        // Calculate fade-in progress
+        const timeSinceStart = Date.now() - startTime;
+        fadeOpacity.current = Math.min(timeSinceStart / fadeInDuration, 1);
+
         const dpr = window.devicePixelRatio || 1;
         const width = canvas.width / dpr;
         const height = canvas.height / dpr;
@@ -210,7 +217,7 @@ const DotPattern: React.FC<DotPatternProps> = ({
         const baseOpacity = isMobileView ? 0.17 : 0.225;
 
         dotsRef.current.forEach((dot) => {
-          const opacity = baseOpacity;
+          const opacity = baseOpacity * fadeOpacity.current;
 
           if (interactive) {
             const dx = mousePos.current.x - dot.x;
@@ -251,20 +258,8 @@ const DotPattern: React.FC<DotPatternProps> = ({
       animate();
     };
 
-    // Start immediately on mobile for instant visibility
-    if (isMobile) {
-      // Immediate start on mobile
-      start();
-    } else {
-      // Defer on desktop for performance
-      if ("requestIdleCallback" in window) {
-        (window as any).requestIdleCallback(() => !canceled && start(), {
-          timeout: 1000,
-        });
-      } else {
-        setTimeout(() => !canceled && start(), 50);
-      }
-    }
+    // Start immediately for instant visibility with smooth fade-in
+    start();
 
     return () => {
       window.removeEventListener("resize", throttledResize);
@@ -304,6 +299,8 @@ const DotPattern: React.FC<DotPatternProps> = ({
         top: 0,
         left: 0,
         pointerEvents: "none", // Allow events to pass through to elements below
+        opacity: 1,
+        transition: "opacity 0.3s ease-out",
       }}
     />
   );

@@ -14,16 +14,10 @@ import SlideInSection from "@/components/slide-in-section";
 import FloatingContact from "@/components/floating-contact";
 
 // Lazy load heavy components below the fold with optimized loading strategies
-const MarqueeDemo = dynamic(
-  () =>
-    import("@/components/ui/marquee-demo").then((mod) => ({
-      default: mod.MarqueeDemo,
-    })),
-  {
-    ssr: false,
-    loading: () => <div className="h-32" />,
-  }
-);
+const MarqueeDemo = dynamic(() => import("@/components/ui/marquee-demo"), {
+  ssr: false,
+  loading: () => <div className="h-32" />,
+});
 const ScrollVelocity = dynamic(
   () =>
     import("@/components/ui/scroll-velocity").then((mod) => ({
@@ -34,36 +28,18 @@ const ScrollVelocity = dynamic(
     loading: () => <div className="h-24" />,
   }
 );
-const Testimonials = dynamic(
-  () =>
-    import("@/components/testimonials").then((mod) => ({
-      default: mod.Testimonials,
-    })),
-  {
-    ssr: false,
-    loading: () => <div className="min-h-[60vh]" />,
-  }
-);
-const ContactSection = dynamic(
-  () =>
-    import("@/components/contact-section").then((mod) => ({
-      default: mod.ContactSection,
-    })),
-  {
-    ssr: false,
-    loading: () => <div className="min-h-screen" />,
-  }
-);
-const Footer = dynamic(
-  () =>
-    import("@/components/ui/footer-section").then((mod) => ({
-      default: mod.Footer,
-    })),
-  {
-    ssr: false,
-    loading: () => <div className="h-64" />,
-  }
-);
+const Testimonials = dynamic(() => import("@/components/testimonials"), {
+  ssr: false,
+  loading: () => <div className="min-h-[60vh]" />,
+});
+const ContactSection = dynamic(() => import("@/components/contact-section"), {
+  ssr: false,
+  loading: () => <div className="min-h-screen" />,
+});
+const Footer = dynamic(() => import("@/components/ui/footer-section"), {
+  ssr: false,
+  loading: () => <div className="h-64" />,
+});
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);

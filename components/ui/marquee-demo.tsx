@@ -150,3 +150,5 @@ export function MarqueeDemo() {
     </Marquee>
   )
 }
+
+export default MarqueeDemo;

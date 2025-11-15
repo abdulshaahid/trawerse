@@ -86,6 +86,7 @@ const Footer = memo(function Footer() {
 });
 
 export { Footer };
+export default Footer;
 
 type ViewAnimationProps = {
 	delay?: number;
