@@ -225,6 +225,8 @@ const projects: Project[] = [
 ];
 
 const MinimalProjectCard = memo(({ project, onClick }: { project: Project; onClick: () => void }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
   const timeText = useMemo(() => {
     const now = new Date();
     const h = now.getHours();
@@ -381,6 +383,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
   const [copied, setCopied] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const timeText = useMemo(() => {
     const now = new Date();
@@ -466,6 +469,18 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                       setMousePosition({ x: 0.5, y: 0.5 });
                     }}
                   >
+                    {/* Skeleton loader */}
+                    {!imageLoaded && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 via-neutral-700 to-neutral-800 animate-pulse">
+                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)] animate-shimmer" 
+                          style={{
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 2s infinite',
+                          }}
+                        />
+                      </div>
+                    )}
+                    
                     {/* Image */}
                     <div className="relative w-full h-full rounded-xl overflow-hidden shadow-[0_20px_50px_-12px_rgba(74,222,128,0.25)]">
                       <Image 
@@ -473,12 +488,14 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project; isOpen: 
                         alt={project.title} 
                         fill 
                         sizes="(max-width: 1024px) 100vw, 400px" 
-                        className="object-cover"
+                        className={cn(
+                          "object-cover transition-opacity duration-500",
+                          imageLoaded ? "opacity-100" : "opacity-0"
+                        )}
                         priority={project.id === "1" || project.id === "2"}
                         quality={project.id === "1" || project.id === "2" ? 85 : 75}
                         loading={project.id === "1" || project.id === "2" ? "eager" : "lazy"}
-                        placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyatmnhFPtUeWNlWkHhteHHtVeFkPNH3eQ=="
+                        onLoad={() => setImageLoaded(true)}
                       />
                       
                       {/* Shine effect on hover */}
