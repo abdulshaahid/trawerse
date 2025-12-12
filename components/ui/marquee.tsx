@@ -42,12 +42,12 @@ export function Marquee({
   repeat,
   ...props
 }: MarqueeProps) {
-  // Optimize repeat count for mobile devices - use fewer copies for better performance
+  // Optimize repeat count for mobile devices - ensure enough copies for seamless loop
   const effectiveRepeat = useMemo(() => {
     if (repeat !== undefined) return repeat
-    // Check if mobile viewport
+    // Use 4 copies minimum for seamless scrolling on all devices
     if (typeof window !== 'undefined') {
-      return window.innerWidth < 768 ? 2 : 4
+      return window.innerWidth < 768 ? 4 : 4
     }
     return 4
   }, [repeat])
@@ -66,7 +66,6 @@ export function Marquee({
       style={{
         // Performance optimizations for GPU acceleration
         willChange: 'transform',
-        contain: 'paint layout',
         ...props.style
       }}
     >
