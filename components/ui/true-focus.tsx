@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
 interface TrueFocusProps {
   sentence?: string;
@@ -13,13 +12,6 @@ interface TrueFocusProps {
   wordClassName?: string;
 }
 
-interface FocusRect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
 const TrueFocus: React.FC<TrueFocusProps> = ({
   sentence = 'True Focus',
   manualMode = false,
@@ -31,13 +23,15 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
   className = '',
   wordClassName = 'text-[3rem] font-black'
 }) => {
-  const words = sentence.split(' ');
+  const words = useMemo(() => sentence.split(' '), [sentence]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [lastActiveIndex, setLastActiveIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const [focusRect, setFocusRect] = useState<FocusRect>({ x: 0, y: 0, width: 0, height: 0 });
+  const [focusStyle, setFocusStyle] = useState({ left: 0, top: 0, width: 0, height: 0, opacity: 0 });
+  const animationFrameRef = useRef<number | undefined>(undefined);
 
+  // Auto-cycling effect
   useEffect(() => {
     if (!manualMode) {
       const interval = setInterval(
@@ -51,20 +45,36 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
     }
   }, [manualMode, animationDuration, pauseBetweenAnimations, words.length]);
 
+  // Position update with RAF batching
   useEffect(() => {
     if (currentIndex === null || currentIndex === -1) return;
     if (!wordRefs.current[currentIndex] || !containerRef.current) return;
 
-    const parentRect = containerRef.current.getBoundingClientRect();
-    const activeRect = wordRefs.current[currentIndex]!.getBoundingClientRect();
+    // Cancel any pending animation frame
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
 
-    setFocusRect({
-      x: activeRect.left - parentRect.left,
-      y: activeRect.top - parentRect.top,
-      width: activeRect.width,
-      height: activeRect.height
+    // Batch DOM reads in RAF
+    animationFrameRef.current = requestAnimationFrame(() => {
+      const parentRect = containerRef.current!.getBoundingClientRect();
+      const activeRect = wordRefs.current[currentIndex]!.getBoundingClientRect();
+
+      setFocusStyle({
+        left: activeRect.left - parentRect.left,
+        top: activeRect.top - parentRect.top,
+        width: activeRect.width,
+        height: activeRect.height,
+        opacity: 1
+      });
     });
-  }, [currentIndex, words.length]);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [currentIndex]);
 
   const handleMouseEnter = (index: number) => {
     if (manualMode) {
@@ -74,13 +84,20 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
   };
 
   const handleMouseLeave = () => {
-    if (manualMode) {
-      setCurrentIndex(lastActiveIndex!);
+    if (manualMode && lastActiveIndex !== null) {
+      setCurrentIndex(lastActiveIndex);
     }
   };
 
   return (
-    <div className={`relative flex gap-2 sm:gap-3 md:gap-4 justify-center lg:justify-start items-center flex-wrap lg:flex-nowrap ${className}`} ref={containerRef}>
+    <div 
+      className={`relative flex gap-2 sm:gap-3 md:gap-4 justify-center lg:justify-start items-center flex-wrap lg:flex-nowrap ${className}`} 
+      ref={containerRef}
+      style={{
+        // Performance optimization
+        willChange: 'contents',
+      }}
+    >
       {words.map((word, index) => {
         const isActive = index === currentIndex;
         return (
@@ -90,18 +107,12 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
               wordRefs.current[index] = el;
             }}
             className={`relative cursor-pointer ${wordClassName}`}
-            style={
-              {
-                filter: manualMode
-                  ? isActive
-                    ? `blur(0px)` 
-                    : `blur(${blurAmount}px)` 
-                  : isActive
-                    ? `blur(0px)` 
-                    : `blur(${blurAmount}px)`,
-                transition: `filter ${animationDuration}s ease` 
-              } as React.CSSProperties
-            }
+            style={{
+              filter: isActive ? 'blur(0px)' : `blur(${blurAmount}px)`,
+              transition: `filter ${animationDuration}s ease`,
+              // GPU acceleration hint
+              transform: 'translateZ(0)',
+            } as React.CSSProperties}
             onMouseEnter={() => handleMouseEnter(index)}
             onMouseLeave={handleMouseLeave}
           >
@@ -110,50 +121,36 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
         );
       })}
 
-      <motion.div
-        className="absolute top-0 left-0 pointer-events-none box-border border-0"
-        animate={{
-          x: focusRect.x,
-          y: focusRect.y,
-          width: focusRect.width,
-          height: focusRect.height,
-          opacity: currentIndex >= 0 ? 1 : 0
+      {/* Simplified focus indicator using CSS transforms instead of Framer Motion */}
+      <div
+        className="absolute top-0 left-0 pointer-events-none"
+        style={{
+          transform: `translate(${focusStyle.left}px, ${focusStyle.top}px)`,
+          width: focusStyle.width,
+          height: focusStyle.height,
+          opacity: focusStyle.opacity,
+          transition: `transform ${animationDuration}s ease, width ${animationDuration}s ease, height ${animationDuration}s ease, opacity ${animationDuration}s ease`,
+          willChange: 'transform, width, height',
         }}
-        transition={{
-          duration: animationDuration
-        }}
-        style={
-          {
-            '--border-color': borderColor,
-            '--glow-color': glowColor
-          } as React.CSSProperties
-        }
       >
+        {/* Corner indicators - simplified to single elements */}
         <span
           className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] left-[-10px] border-r-0 border-b-0"
-          style={{
-            borderColor: 'var(--border-color)'
-          }}
-        ></span>
+          style={{ borderColor }}
+        />
         <span
           className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] right-[-10px] border-l-0 border-b-0"
-          style={{
-            borderColor: 'var(--border-color)'
-          }}
-        ></span>
+          style={{ borderColor }}
+        />
         <span
           className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-10px] left-[-10px] border-r-0 border-t-0"
-          style={{
-            borderColor: 'var(--border-color)'
-          }}
-        ></span>
+          style={{ borderColor }}
+        />
         <span
           className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-10px] right-[-10px] border-l-0 border-t-0"
-          style={{
-            borderColor: 'var(--border-color)'
-          }}
-        ></span>
-      </motion.div>
+          style={{ borderColor }}
+        />
+      </div>
     </div>
   );
 };
