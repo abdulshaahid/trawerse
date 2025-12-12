@@ -77,14 +77,12 @@ const Service = memo(({
         y: 60,
         scale: 0.85,
         rotateX: -15,
-        filter: "blur(10px)",
       }}
       whileInView={{
         opacity: 1,
         y: 0,
         scale: 1,
         rotateX: 0,
-        filter: "blur(0px)",
       }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{
@@ -154,8 +152,8 @@ const ServicesSection = () => {
           {/* Heading for mobile - shows above service boxes */}
           <motion.h2
             className="block md:hidden text-center text-white/90 text-balance text-4xl font-semibold leading-tight mb-8"
-            initial={{ opacity: 0, y: 30, scale: 0.95, filter: "blur(8px)" }}
-            whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{
               delay: 0.1,
@@ -170,8 +168,8 @@ const ServicesSection = () => {
 
           <motion.div
             className="order-last mt-12 flex flex-col justify-between md:order-first md:mt-0"
-            initial={{ opacity: 0, x: -60, filter: "blur(8px)" }}
-            whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.15 }}
             transition={{
               duration: 0.9,
@@ -188,13 +186,11 @@ const ServicesSection = () => {
                   opacity: 0,
                   y: 30,
                   scale: 0.95,
-                  filter: "blur(8px)",
                 }}
                 whileInView={{
                   opacity: 1,
                   y: 0,
                   scale: 1,
-                  filter: "blur(0px)",
                 }}
                 viewport={{ once: true, amount: 0.8 }}
                 transition={{
@@ -210,8 +206,8 @@ const ServicesSection = () => {
 
               <motion.p
                 className="text-muted-foreground text-base md:text-lg max-w-xl"
-                initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
-                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.8 }}
                 transition={{
                   delay: 0.25,
@@ -232,13 +228,11 @@ const ServicesSection = () => {
                   opacity: 0,
                   y: 20,
                   scale: 0.95,
-                  filter: "blur(6px)",
                 }}
                 whileInView={{
                   opacity: 1,
                   y: 0,
                   scale: 1,
-                  filter: "blur(0px)",
                 }}
                 viewport={{ once: true, amount: 0.8 }}
                 transition={{

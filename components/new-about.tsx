@@ -242,10 +242,9 @@ const NewAbout = () => {
           <div className="scale-50 sm:scale-65 md:scale-100">
             <CurvedLoop
               marqueeText="Trawerse ✦ Premium Web Development ✦ Crafting Digital Excellence ✦ Modern Design ✦ High Performance ✦"
-              speed={7}
+              speed={4}
               curveAmount={100}
               direction="left"
-              interactive={true}
               className="text-accent/80 text-sm sm:text-base md:text-4xl lg:text-5xl xl:text-6xl font-bold"
             />
           </div>

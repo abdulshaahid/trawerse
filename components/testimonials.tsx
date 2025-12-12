@@ -115,8 +115,8 @@ export function Testimonials() {
       <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-6 mb-10 space-y-2">
         <motion.h2
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold overflow-hidden"
-          initial={{ opacity: 0, x: -100, filter: "blur(10px)" }}
-          whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, x: -100 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{
             duration: 0.8,
@@ -131,8 +131,8 @@ export function Testimonials() {
         </motion.h2>
         <motion.p
           className="text-white/70 text-lg md:text-xl max-w-2xl"
-          initial={{ opacity: 0, x: -80, filter: "blur(8px)" }}
-          whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, x: -80 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{
             duration: 0.7,
@@ -154,8 +154,8 @@ export function Testimonials() {
           WebkitMaskImage:
             "linear-gradient(to right, transparent, black 20%, black 80%, transparent)",
         }}
-        initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-        whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{
           duration: 0.8,

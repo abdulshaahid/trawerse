@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
+import React, { useRef, useLayoutEffect, useState, useMemo, useCallback, useEffect } from 'react';
 import {
   motion,
   useScroll,
@@ -61,7 +61,7 @@ function useElementWidth<T extends HTMLElement>(ref: React.RefObject<T | null>):
     let timeoutId: NodeJS.Timeout;
     const debouncedUpdate = () => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(updateWidth, 100);
+      timeoutId = setTimeout(updateWidth, 150); // Increased debounce time
     };
     
     window.addEventListener('resize', debouncedUpdate, { passive: true });
@@ -74,6 +74,27 @@ function useElementWidth<T extends HTMLElement>(ref: React.RefObject<T | null>):
   return width;
 }
 
+// Custom hook for Intersection Observer to pause animations when off-screen
+function useIsVisible(ref: React.RefObject<HTMLElement | null>): boolean {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setIsVisible(entries[0].isIntersecting);
+      },
+      { rootMargin: '100px', threshold: 0.01 } // Start animating slightly before visible
+    );
+    
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return isVisible;
+}
+
 export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
   scrollContainerRef,
   texts = [],
@@ -81,14 +102,26 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
   className = '',
   damping = 50,
   stiffness = 400,
-  numCopies = 6,
+  numCopies = 4, // Reduced from 6 to 4 for better performance
   velocityMapping = { input: [0, 1000], output: [0, 5] },
   parallaxClassName = 'parallax',
   scrollerClassName = 'scroller',
   parallaxStyle,
   scrollerStyle
 }) => {
-  const VelocityText = React.memo(({
+  // Detect mobile device for performance optimizations
+  const isMobile = useMemo(() => 
+    typeof window !== 'undefined' && window.innerWidth < 768,
+    []
+  );
+
+  // Reduce copies even further on mobile devices
+  const effectiveCopies = useMemo(() => {
+    if (numCopies !== undefined && numCopies !== 4) return numCopies;
+    return isMobile ? 3 : 4;
+  }, [numCopies, isMobile]);
+
+  const VelocityText = React.memo((({
     children,
     baseVelocity = velocity,
     scrollContainerRef,
@@ -103,6 +136,9 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
     scrollerStyle
   }: VelocityTextProps) => {
     const baseX = useMotionValue(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const isVisible = useIsVisible(containerRef);
+    
     const scrollOptions = useMemo(() => 
       scrollContainerRef ? { container: scrollContainerRef } : {}, 
       [scrollContainerRef]
@@ -136,7 +172,20 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
     });
 
     const directionFactor = useRef<number>(1);
+    
+    // Frame throttling for mobile devices
+    const frameCountRef = useRef(0);
+    
     useAnimationFrame((t, delta) => {
+      // Only animate if visible
+      if (!isVisible) return;
+      
+      // Throttle to 30fps on mobile (skip every other frame)
+      if (isMobile) {
+        frameCountRef.current++;
+        if (frameCountRef.current % 2 === 0) return;
+      }
+      
       const cappedDelta = Math.min(delta, 50);
       let moveBy = directionFactor.current * baseVelocity * (cappedDelta / 1000);
 
@@ -151,7 +200,7 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
       baseX.set(baseX.get() + moveBy);
     });
 
-    // Function to format text with different opacity parts
+    // Function to format text with different opacity parts - memoized
     const formatText = useCallback((text: React.ReactNode) => {
       const textStr = String(text).trim();
       if (textStr === '#WECODEFORFUN') {
@@ -181,13 +230,29 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
     }, [numCopies, className, children, formatText]);
 
     return (
-      <div className={parallaxClassName} style={parallaxStyle}>
-        <motion.div className={scrollerClassName} style={{ x, ...scrollerStyle }}>
+      <div 
+        ref={containerRef}
+        className={parallaxClassName} 
+        style={{
+          ...parallaxStyle,
+          // Performance optimizations - removed 'contain' to fix sizing
+          willChange: isVisible ? 'transform' : 'auto',
+        }}
+      >
+        <motion.div 
+          className={scrollerClassName} 
+          style={{ 
+            x, 
+            ...scrollerStyle,
+            // Force GPU acceleration
+            willChange: isVisible ? 'transform' : 'auto',
+          }}
+        >
           {spans}
         </motion.div>
       </div>
     );
-  });
+  }) as React.FC<VelocityTextProps>);
 
   VelocityText.displayName = 'VelocityText';
 
@@ -201,7 +266,7 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
           scrollContainerRef={scrollContainerRef}
           damping={damping}
           stiffness={stiffness}
-          numCopies={numCopies}
+          numCopies={effectiveCopies}
           velocityMapping={velocityMapping}
           parallaxClassName={parallaxClassName}
           scrollerClassName={scrollerClassName}

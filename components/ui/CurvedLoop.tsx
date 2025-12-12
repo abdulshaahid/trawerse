@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo, useId, FC, PointerEvent } from 'react';
+import { useRef, useEffect, useState, useMemo, useId, FC } from 'react';
 import './CurvedLoop.css';
 
 interface CurvedLoopProps {
@@ -7,7 +7,6 @@ interface CurvedLoopProps {
   className?: string;
   curveAmount?: number;
   direction?: 'left' | 'right';
-  interactive?: boolean;
 }
 
 const CurvedLoop: FC<CurvedLoopProps> = ({
@@ -16,7 +15,6 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
   className,
   curveAmount = 400,
   direction = 'left',
-  interactive = true
 }) => {
   const text = useMemo(() => {
     const hasTrailing = /\s|\u00A0$/.test(marqueeText);
@@ -28,15 +26,15 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
   const pathRef = useRef<SVGPathElement | null>(null);
   const [spacing, setSpacing] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
   const uid = useId();
   const pathId = `curve-${uid}`;
   const waveHeight = curveAmount;
   const pathD = `M-200,75 Q100,${75 - waveHeight} 400,75 T1000,75 T1600,75 T2200,75`;
 
-  const dragRef = useRef(false);
-  const lastXRef = useRef(0);
-  const dirRef = useRef<'left' | 'right'>(direction);
-  const velRef = useRef(0);
+  // Performance optimization: Cache the current offset value
+  const cachedOffsetRef = useRef(0);
 
   const textLength = spacing;
   const totalText = textLength
@@ -45,6 +43,21 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
         .join('')
     : text;
   const ready = spacing > 0;
+
+  // Intersection Observer to pause animations when off-screen
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setIsVisible(entries[0].isIntersecting);
+      },
+      { rootMargin: '50px', threshold: 0.1 }
+    );
+    
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (measureRef.current) setSpacing(measureRef.current.getComputedTextLength());
@@ -55,68 +68,57 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
     if (textPathRef.current) {
       const initial = -spacing;
       textPathRef.current.setAttribute('startOffset', initial + 'px');
+      cachedOffsetRef.current = initial;
       setOffset(initial);
     }
   }, [spacing]);
 
+  // Simple one-direction animation loop
   useEffect(() => {
-    if (!spacing || !ready) return;
+    if (!spacing || !ready || !isVisible) return;
+    
     let frame = 0;
     const step = () => {
-      if (!dragRef.current && textPathRef.current) {
-        const delta = dirRef.current === 'right' ? speed : -speed;
-        const currentOffset = parseFloat(textPathRef.current.getAttribute('startOffset') || '0');
-        let newOffset = currentOffset + delta;
+      if (textPathRef.current) {
+        const delta = direction === 'right' ? speed : -speed;
+        let newOffset = cachedOffsetRef.current + delta;
         const wrapPoint = spacing;
+        
         if (newOffset <= -wrapPoint) newOffset += wrapPoint;
         if (newOffset > 0) newOffset -= wrapPoint;
+        
+        cachedOffsetRef.current = newOffset;
         textPathRef.current.setAttribute('startOffset', newOffset + 'px');
       }
       frame = requestAnimationFrame(step);
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [spacing, speed, ready]);
-
-  const onPointerDown = (e: PointerEvent) => {
-    if (!interactive) return;
-    dragRef.current = true;
-    lastXRef.current = e.clientX;
-    velRef.current = 0;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  };
-
-  const onPointerMove = (e: PointerEvent) => {
-    if (!interactive || !dragRef.current || !textPathRef.current) return;
-    const dx = e.clientX - lastXRef.current;
-    lastXRef.current = e.clientX;
-    velRef.current = dx;
-    const currentOffset = parseFloat(textPathRef.current.getAttribute('startOffset') || '0');
-    let newOffset = currentOffset + dx;
-    const wrapPoint = spacing;
-    if (newOffset <= -wrapPoint) newOffset += wrapPoint;
-    if (newOffset > 0) newOffset -= wrapPoint;
-    textPathRef.current.setAttribute('startOffset', newOffset + 'px');
-  };
-
-  const endDrag = () => {
-    if (!interactive) return;
-    dragRef.current = false;
-    dirRef.current = velRef.current > 0 ? 'right' : 'left';
-  };
-
-  const cursorStyle = interactive ? (dragRef.current ? 'grabbing' : 'grab') : 'auto';
+  }, [spacing, speed, ready, isVisible, direction]);
 
   return (
     <div
+      ref={containerRef}
       className="curved-loop-jacket"
-      style={{ visibility: ready ? 'visible' : 'hidden', cursor: cursorStyle }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={endDrag}
-      onPointerLeave={endDrag}
+      style={{
+        visibility: ready ? 'visible' : 'hidden',
+        // Performance optimizations - lightweight, non-interactive
+        willChange: 'transform',
+        transform: 'translate3d(0, 0, 0)', // Force GPU acceleration
+        userSelect: 'none',
+        pointerEvents: 'none', // Non-interactive
+      }}
     >
-      <svg className="curved-loop-svg" viewBox="-100 0 1840 150" preserveAspectRatio="xMidYMid slice">
+      <svg
+        className="curved-loop-svg"
+        viewBox="-100 0 1840 150"
+        preserveAspectRatio="xMidYMid slice"
+        style={{
+          // Additional SVG performance hints
+          shapeRendering: 'geometricPrecision',
+          textRendering: 'geometricPrecision',
+        }}
+      >
         <text ref={measureRef} xmlSpace="preserve" style={{ visibility: 'hidden', opacity: 0, pointerEvents: 'none' }}>
           {text}
         </text>

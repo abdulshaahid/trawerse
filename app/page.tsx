@@ -209,8 +209,6 @@ export default function Home() {
                 style={{
                   position: "relative",
                   contentVisibility: "auto",
-                  containIntrinsicSize: "120px 400px",
-                  contain: "layout paint style",
                 }}
               >
                 <ScrollVelocity

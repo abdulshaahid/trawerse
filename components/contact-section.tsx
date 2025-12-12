@@ -54,8 +54,8 @@ export function ContactSection() {
           <div className="space-y-8">
             <motion.div
               className="space-y-4"
-              initial={{ opacity: 0, x: -100, filter: "blur(10px)" }}
-              whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+              initial={{ opacity: 0, x: -100 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{
                 duration: 0.8,
@@ -78,8 +78,8 @@ export function ContactSection() {
             {/* Contact Info */}
             <motion.div
               className="space-y-6"
-              initial={{ opacity: 0, x: -80, filter: "blur(8px)" }}
-              whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+              initial={{ opacity: 0, x: -80 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{
                 duration: 0.7,
@@ -121,8 +121,8 @@ export function ContactSection() {
 
           {/* Right side - Contact Form with Glass Effect */}
           <motion.div
-            initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{
               duration: 0.8,

@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef } from "react"
+import { ComponentPropsWithoutRef, useMemo } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -28,7 +28,7 @@ interface MarqueeProps extends ComponentPropsWithoutRef<"div"> {
   vertical?: boolean
   /**
    * Number of times to repeat the content
-   * @default 4
+   * @default 4 (desktop), 2 (mobile)
    */
   repeat?: number
 }
@@ -39,9 +39,19 @@ export function Marquee({
   pauseOnHover = false,
   children,
   vertical = false,
-  repeat = 4,
+  repeat,
   ...props
 }: MarqueeProps) {
+  // Optimize repeat count for mobile devices - use fewer copies for better performance
+  const effectiveRepeat = useMemo(() => {
+    if (repeat !== undefined) return repeat
+    // Check if mobile viewport
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 ? 2 : 4
+    }
+    return 4
+  }, [repeat])
+
   return (
     <div
       {...props}
@@ -53,8 +63,14 @@ export function Marquee({
         },
         className
       )}
+      style={{
+        // Performance optimizations for GPU acceleration
+        willChange: 'transform',
+        contain: 'paint layout',
+        ...props.style
+      }}
     >
-      {Array(repeat)
+      {Array(effectiveRepeat)
         .fill(0)
         .map((_, i) => (
           <div
@@ -65,6 +81,11 @@ export function Marquee({
               "group-hover:[animation-play-state:paused]": pauseOnHover,
               "[animation-direction:reverse]": reverse,
             })}
+            style={{
+              // Force GPU acceleration with 3D transform
+              transform: 'translate3d(0, 0, 0)',
+              willChange: 'transform',
+            }}
           >
             {children}
           </div>
