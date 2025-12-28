@@ -25,20 +25,18 @@ const footerLinks: FooterSection[] = [
   {
     label: "Company",
     links: [
-      { title: "FAQs", href: "/faqs" },
-      { title: "About Us", href: "/about" },
-      { title: "Privacy Policy", href: "/privacy" },
-      { title: "Terms of Services", href: "/terms" },
+      { title: "About", href: "#about" },
+      { title: "Services", href: "#services" },
+      { title: "Projects", href: "#work" },
+      { title: "Features", href: "#features" },
     ],
   },
 
   {
     label: "Social Links",
     links: [
-      { title: "Facebook", href: "#", icon: FacebookIcon },
-      { title: "Instagram", href: "#", icon: InstagramIcon },
-      { title: "Youtube", href: "#", icon: YoutubeIcon },
-      { title: "LinkedIn", href: "#", icon: LinkedinIcon },
+      { title: "Instagram", href: "https://instagram.com/trawerse.dev", icon: InstagramIcon },
+      { title: "LinkedIn", href: "https://www.linkedin.com/company/trawerse-dev/", icon: LinkedinIcon },
     ],
   },
 ];
