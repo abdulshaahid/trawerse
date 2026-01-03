@@ -35,6 +35,7 @@ import {
   User,
   Stethoscope,
   Clock,
+  FileText,
 } from "lucide-react";
 
 interface Project {
@@ -126,6 +127,53 @@ const projects: Project[] = [
   },
   {
     id: "4",
+    title: "Al Najwa Gold - 3D Interactive Landing Page",
+    category: "Landing Page",
+    clientName: "Al Najwa Gold",
+    image: "/assets/projects/aln.avif",
+    description:
+      "A stunning 3D interactive landing page for Al Najwa Gold, a Dubai-based gold dealing company, featuring immersive 3D visuals and smooth animations that showcase luxury and elegance.",
+    technologies: [
+      "Next.js",
+      "TypeScript",
+      "Three.js",
+      "Tailwind CSS",
+      "Framer Motion",
+    ],
+    liveUrl: "https://alnajwagold.com",
+    githubUrl: "Private Repository",
+    statusText: "Live & Running",
+    statusColor: "bg-lime-500",
+    glowText: "Where luxury meets innovation",
+    icon: "/assets/projects/alnlogo.png",
+    iconColor: "",
+    iconBgColor: "",
+  },
+  {
+    id: "5",
+    title: "Taj Al Safa - Document Clearing Landing Page",
+    category: "Landing Page",
+    clientName: "Taj Al Safa",
+    image: "/assets/projects/taj.avif",
+    description:
+      "A professional landing page for Taj Al Safa, a Dubai-based document clearing company, designed with clarity and efficiency to help clients navigate document services seamlessly.",
+    technologies: [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+    ],
+    liveUrl: "https://tajalsafauae.com",
+    githubUrl: "Private Repository",
+    statusText: "Live & Running",
+    statusColor: "bg-lime-500",
+    glowText: "Streamlining document processes",
+    icon: "/assets/projects/tajlogo.png",
+    iconColor: "",
+    iconBgColor: "",
+  },
+  {
+    id: "6",
     title: "Avoid Sun - Location-Based Travel Comfort App",
     category: "Web Application",
     clientName: "Owned by Trawerse",
@@ -149,7 +197,7 @@ const projects: Project[] = [
     iconBgColor: "bg-orange-500/20",
   },
   {
-    id: "5",
+    id: "7",
     title: "Stain - VS Code Productivity Extension",
     category: "VS Code Extension",
     clientName: "Owned by Trawerse",
@@ -168,7 +216,7 @@ const projects: Project[] = [
     iconBgColor: "",
   },
   {
-    id: "6",
+    id: "8",
     title: "Abdul Shaahid - Personal Portfolio",
     category: "Personal Website",
     clientName: "Owned by Abdul Shaahid",
@@ -185,7 +233,7 @@ const projects: Project[] = [
     iconBgColor: "bg-cyan-500/20",
   },
   {
-    id: "7",
+    id: "9",
     title: "Doctime - Online Doctor Consultation Platform",
     category: "Web Application",
     clientName: "Owned by Trawerse",
@@ -209,7 +257,7 @@ const projects: Project[] = [
     iconBgColor: "bg-rose-500/20",
   },
   {
-    id: "8",
+    id: "10",
     title: "TimeMachine - Watch E-Commerce Platform",
     category: "E-Commerce",
     clientName: "Owned by Trawerse",
@@ -275,13 +323,14 @@ const MinimalProjectCard = memo(
           }}
         >
           <motion.div
-            className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-2 text-center text-sm font-medium text-black"
+            className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-2 text-center text-sm font-medium text-black px-4"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <Zap className="h-4 w-4" /> {project.glowText}
+            <Zap className="h-4 w-4 shrink-0" />
+            <span className="truncate">{project.glowText}</span>
           </motion.div>
         </motion.div>
 
@@ -473,14 +522,32 @@ function ProjectModal({
     if (now - lastUpdate.current < 32) return; // Throttle to 30fps
     lastUpdate.current = now;
 
+    // Store element reference and mouse coordinates before RAF to avoid stale closure issues
+    const target = e.currentTarget;
+    if (!target) return;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+
     if (rafId.current) cancelAnimationFrame(rafId.current);
     rafId.current = requestAnimationFrame(() => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
+      // Double-check element is still available
+      if (!target || !target.getBoundingClientRect) return;
+      const rect = target.getBoundingClientRect();
+      const x = (clientX - rect.left) / rect.width;
+      const y = (clientY - rect.top) / rect.height;
       setMousePosition({ x, y });
     });
   };
+
+  // Cleanup RAF on unmount
+  useEffect(() => {
+    return () => {
+      if (rafId.current) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
+      }
+    };
+  }, []);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
