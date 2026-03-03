@@ -9,6 +9,28 @@ import SystemMonitor from '@/components/ui/system-monitor'
 import ScalabilityMetrics from '@/components/ui/scalability-metrics'
 import { motion } from 'framer-motion'
 
+// Reusable subtle moving ambient light for bento cards
+function AmbientLight({ color = 'rgba(255,255,255,0.07)', duration = 8 }: { color?: string; duration?: number }) {
+    return (
+        <motion.div
+            className="absolute w-96 h-96 rounded-full pointer-events-none z-0"
+            style={{
+                background: `radial-gradient(circle, ${color} 0%, transparent 50%)`,
+                filter: 'blur(30px)',
+            }}
+            animate={{
+                left: ['-10%', '60%', '40%', '-5%', '-10%'],
+                top: ['-15%', '10%', '55%', '40%', '-15%'],
+            }}
+            transition={{
+                duration,
+                repeat: Infinity,
+                ease: 'easeInOut',
+            }}
+        />
+    )
+}
+
 export function WhyChooseTrawerse() {
     return (
         <section id="features" className="relative mt-12 py-16 md:py-32 overflow-hidden">
@@ -75,6 +97,7 @@ export function WhyChooseTrawerse() {
                             whileHover={{ y: -10, scale: 1.02, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
                             <Card className="relative w-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 group transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                                <AmbientLight color="rgba(139, 92, 246, 0.15)" duration={9} />
                                 <CardContent className="relative m-auto w-full pt-6 pb-16">
                                     <motion.h2 
                                         className="text-2xl font-semibold text-center mb-2"
@@ -139,6 +162,7 @@ export function WhyChooseTrawerse() {
                             whileHover={{ y: -10, scale: 1.02, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
                             <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 group transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                                <AmbientLight color="rgba(59, 130, 246, 0.15)" duration={10} />
                                 <CardContent className="pt-6">
                                     <motion.div 
                                         className="space-y-2 mb-4 text-center"
@@ -172,20 +196,21 @@ export function WhyChooseTrawerse() {
                             transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                             whileHover={{ y: -10, scale: 1.02, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
-                            <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
-                                <CardContent className="pt-6">
+                            <Card className="group relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                                <AmbientLight color="rgba(16, 185, 129, 0.15)" duration={8} />
+                                <CardContent className="pt-5 pb-2">
                                     <motion.div 
-                                        className="space-y-2 mb-4 text-center"
+                                        className="space-y-1 mb-2 text-center"
                                         initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
                                         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                                         viewport={{ once: true }}
                                         transition={{ delay: 0.6, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                                     >
-                                        <h2 className="text-2xl font-medium transition">Feature-Rich & Scalable</h2>
+                                        <h2 className="text-xl font-medium transition text-white">Feature-Rich & Scalable</h2>
                                         <p className="text-sm text-foreground/70">Built to perform and grow with your vision</p>
                                     </motion.div>
                                     <motion.div 
-                                        className="mt-4"
+                                        className="mt-0"
                                         initial={{ opacity: 0, scale: 0.92 }}
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true }}
@@ -207,6 +232,7 @@ export function WhyChooseTrawerse() {
                             whileHover={{ y: -6, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
                             <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                                <AmbientLight color="rgba(168, 85, 247, 0.15)" duration={11} />
                                 <CardContent className="grid h-full pt-6 sm:grid-cols-2">
                                     <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                                         <motion.div 
@@ -237,6 +263,7 @@ export function WhyChooseTrawerse() {
                             whileHover={{ y: -6, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
                             <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                                <AmbientLight color="rgba(245, 158, 11, 0.15)" duration={9} />
                                 <CardContent className="grid h-full pt-6 sm:grid-cols-2">
                                     <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                                         

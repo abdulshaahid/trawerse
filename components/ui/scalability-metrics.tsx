@@ -1,17 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Zap, TrendingUp, Boxes, Infinity } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { motion, useMotionValue, useTransform, animate, useInView } from "framer-motion"
+import { Zap, TrendingUp, Boxes, Activity, ArrowUpRight } from "lucide-react"
 
 interface Metric {
   id: string
   label: string
   value: number
-  maxValue: number
+  suffix: string
   icon: React.ComponentType<{ className?: string }>
   color: string
-  suffix: string
+  glowColor: string
+  description: string
 }
 
 const metrics: Metric[] = [
@@ -19,112 +20,191 @@ const metrics: Metric[] = [
     id: "performance",
     label: "Performance",
     value: 99,
-    maxValue: 100,
+    suffix: "%",
     icon: Zap,
     color: "#10b981",
-    suffix: "%"
+    glowColor: "rgba(16, 185, 129, 0.4)",
+    description: "Lighthouse score"
   },
   {
     id: "features",
     label: "Features",
     value: 150,
-    maxValue: 150,
+    suffix: "+",
     icon: Boxes,
     color: "#3b82f6",
-    suffix: "+"
+    glowColor: "rgba(59, 130, 246, 0.4)",
+    description: "Components built"
   },
   {
     id: "uptime",
     label: "Uptime",
     value: 99.9,
-    maxValue: 100,
+    suffix: "%",
     icon: TrendingUp,
     color: "#a855f7",
-    suffix: "%"
+    glowColor: "rgba(168, 85, 247, 0.4)",
+    description: "Service reliability"
   },
   {
-    id: "scalability",
-    label: "Scalability",
-    value: 100,
-    maxValue: 100,
-    icon: Infinity,
+    id: "speed",
+    label: "Deploy",
+    value: 2.1,
+    suffix: "s",
+    icon: Activity,
     color: "#f59e0b",
-    suffix: "∞"
+    glowColor: "rgba(245, 158, 11, 0.4)",
+    description: "Avg deploy time"
   }
 ]
 
-const MetricBar = ({ metric, delay }: { metric: Metric; delay: number }) => {
-  const [isVisible, setIsVisible] = useState(false)
-  const Icon = metric.icon
-  const percentage = (metric.value / metric.maxValue) * 100
+// Animated counter component
+function AnimatedNumber({ value, suffix, color, decimals = 0 }: { value: number; suffix: string; color: string; decimals?: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const isInView = useInView(ref, { once: true })
+  const motionVal = useMotionValue(0)
+  const rounded = useTransform(motionVal, (v) => decimals > 0 ? v.toFixed(decimals) : Math.round(v).toString())
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), delay)
-    return () => clearTimeout(timer)
-  }, [delay])
+    if (isInView) {
+      const controls = animate(motionVal, value, {
+        duration: 1.8,
+        ease: [0.16, 1, 0.3, 1],
+      })
+      return () => controls.stop()
+    }
+  }, [isInView, motionVal, value])
+
+  useEffect(() => {
+    const unsubscribe = rounded.on("change", (v) => {
+      if (ref.current) {
+        ref.current.textContent = v + suffix
+      }
+    })
+    return () => unsubscribe()
+  }, [rounded, suffix])
+
+  return (
+    <span
+      ref={ref}
+      className="text-xl font-bold tabular-nums tracking-tight"
+      style={{ color }}
+    >
+      0{suffix}
+    </span>
+  )
+}
+
+// Radial progress ring
+function RadialRing({ progress, color, glowColor, size = 52, strokeWidth = 3.5 }: {
+  progress: number
+  color: string
+  glowColor: string
+  size?: number
+  strokeWidth?: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true })
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+
+  return (
+    <div ref={ref} className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="transform -rotate-90">
+        {/* Background ring */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth={strokeWidth}
+        />
+        {/* Animated progress ring */}
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: circumference }}
+          animate={isInView ? { strokeDashoffset: circumference * (1 - progress / 100) } : { strokeDashoffset: circumference }}
+          transition={{ duration: 1.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            filter: `drop-shadow(0 0 6px ${glowColor})`,
+          }}
+        />
+      </svg>
+      {/* Center glow pulse */}
+      <motion.div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
+        }}
+        animate={{
+          opacity: [0.15, 0.35, 0.15],
+          scale: [0.8, 1.1, 0.8],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </div>
+  )
+}
+
+function MetricCard({ metric, delay }: { metric: Metric; delay: number }) {
+  const Icon = metric.icon
+  const displayProgress = metric.id === "speed" ? 95 : metric.id === "features" ? 100 : metric.value
+  const decimals = metric.id === "uptime" ? 1 : metric.id === "speed" ? 1 : 0
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: delay / 1000, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="group"
+      className="group relative flex items-center gap-3 p-1.5 rounded-xl transition-colors"
+      initial={{ opacity: 0, x: -30, filter: "blur(4px)" }}
+      whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+      viewport={{ once: true }}
+      transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ 
+        backgroundColor: "rgba(255,255,255,0.03)",
+        x: 4,
+        transition: { duration: 0.25 }
+      }}
     >
-      <div className="flex items-center gap-3">
-        <div 
-          className="flex items-center justify-center w-7 h-7 rounded-md bg-zinc-900 bg-zinc-800 transition-transform group-hover:scale-110"
-          style={{ color: metric.color }}
-        >
-          <Icon className="w-4 h-4" />
+      {/* Radial Ring */}
+      <div className="relative flex-shrink-0">
+        <RadialRing
+          progress={displayProgress}
+          color={metric.color}
+          glowColor={metric.glowColor}
+          size={38}
+          strokeWidth={2.5}
+        />
+        {/* Icon in center */}
+        <div className="absolute inset-0 flex items-center justify-center" style={{ color: metric.color }}>
+          <Icon className="w-3.5 h-3.5" />
         </div>
-        
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 mb-1.5">
-            <span className="text-sm font-medium text-foreground/70 truncate">{metric.label}</span>
-            <motion.span
-              className="text-sm font-bold tabular-nums"
-              style={{ color: metric.color }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: (delay + 200) / 1000, type: "spring", stiffness: 300, damping: 15 }}
-            >
-              {metric.id === "uptime" ? metric.value.toFixed(1) : metric.value}{metric.suffix}
-            </motion.span>
-          </div>
-          
-          <div className="relative h-2 bg-zinc-900/40 bg-zinc-800/40 rounded-full overflow-hidden">
-            <motion.div
-              className="absolute inset-y-0 left-0 rounded-full"
-              style={{ 
-                background: `linear-gradient(90deg, ${metric.color}bb, ${metric.color})`,
-                boxShadow: `0 0 8px ${metric.color}55`
-              }}
-              initial={{ width: 0 }}
-              animate={{ width: isVisible ? `${percentage}%` : 0 }}
-              transition={{ 
-                delay: delay / 1000,
-                duration: 1.2,
-                ease: [0.34, 1.56, 0.64, 1]
-              }}
-            />
-            
-            {/* Shimmer effect */}
-            <motion.div
-              className="absolute inset-0 opacity-40"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${metric.color}66, transparent)`,
-              }}
-              initial={{ x: "-100%" }}
-              animate={{ x: "200%" }}
-              transition={{
-                delay: (delay + 1200) / 1000,
-                duration: 1.8,
-                repeat: Infinity,
-                repeatDelay: 2.5,
-                ease: "linear"
-              }}
-            />
-          </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-medium text-white/50 uppercase tracking-wider">{metric.label}</span>
+          <motion.div
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            initial={false}
+          >
+            <ArrowUpRight className="w-3 h-3" style={{ color: metric.color }} strokeWidth={2} />
+          </motion.div>
+        </div>
+        <div className="flex items-baseline gap-1.5 mt-0">
+          <AnimatedNumber value={metric.value} suffix={metric.suffix} color={metric.color} decimals={decimals} />
+          <span className="text-[10px] text-white/30">{metric.description}</span>
         </div>
       </div>
     </motion.div>
@@ -133,12 +213,33 @@ const MetricBar = ({ metric, delay }: { metric: Metric; delay: number }) => {
 
 export default function ScalabilityMetrics() {
   return (
-    <div className="w-full h-full flex flex-col justify-center px-5 py-4 pb-8 md:pb-4 space-y-3.5">
+    <div className="w-full h-full flex flex-col justify-center px-1 py-1 pb-2 md:pb-1 space-y-0">
+      {/* Mini header */}
+      <motion.div 
+        className="flex items-center gap-2 mb-0.5 px-2"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full"
+          style={{ backgroundColor: "#10b981" }}
+          animate={{
+            opacity: [1, 0.4, 1],
+            scale: [1, 0.85, 1],
+          }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <span className="text-[10px] font-medium text-white/30 uppercase tracking-widest">Live metrics</span>
+      </motion.div>
+
+      {/* Metric cards */}
       {metrics.map((metric, index) => (
-        <MetricBar 
-          key={metric.id} 
-          metric={metric} 
-          delay={index * 120}
+        <MetricCard
+          key={metric.id}
+          metric={metric}
+          delay={0.15 + index * 0.1}
         />
       ))}
     </div>
