@@ -17,7 +17,7 @@ const FloatingContact = () => {
     {
       name: "Email Us",
       icon: Mail,
-      href: "mailto:hello@trawerse.com",
+      href: "mailto:trawerse.dev@gmail.com",
     },
     {
       name: "Call Now",

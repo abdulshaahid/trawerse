@@ -3,12 +3,11 @@ import React, { memo } from "react";
 import type { ComponentProps, ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  FacebookIcon,
   InstagramIcon,
   LinkedinIcon,
-  YoutubeIcon,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface FooterLink {
   title: string;
@@ -25,13 +24,31 @@ const footerLinks: FooterSection[] = [
   {
     label: "Company",
     links: [
-      { title: "About", href: "#about" },
-      { title: "Services", href: "#services" },
-      { title: "Projects", href: "#work" },
-      { title: "Features", href: "#features" },
+      { title: "About", href: "/about" },
+      { title: "Services", href: "/services" },
+      { title: "Blog", href: "/blog" },
+      { title: "Contact", href: "/contact" },
     ],
   },
-
+  {
+    label: "Services",
+    links: [
+      { title: "Web Development", href: "/services/web-development" },
+      { title: "Mobile Apps", href: "/services/mobile-app-development" },
+      { title: "SaaS Development", href: "/services/saas-development" },
+      { title: "Startup MVPs", href: "/services/startup-mvp-development" },
+      { title: "UI/UX Design", href: "/services/ui-ux-design" },
+      { title: "Custom Software", href: "/services/custom-software-development" },
+    ],
+  },
+  {
+    label: "Resources",
+    links: [
+      { title: "FAQ", href: "/faq" },
+      { title: "Privacy Policy", href: "/privacy" },
+      { title: "Terms of Service", href: "/terms" },
+    ],
+  },
   {
     label: "Social Links",
     links: [
@@ -80,17 +97,32 @@ const Footer = memo(function Footer() {
               <div className="mb-10 md:mb-0">
                 <h3 className="text-xs">{section.label}</h3>
                 <ul className="text-muted-foreground mt-4 space-y-2 text-sm">
-                  {section.links.map((link) => (
-                    <li key={link.title}>
-                      <a
-                        href={link.href}
-                        className="hover:text-foreground inline-flex items-center transition-all duration-300"
-                      >
-                        {link.icon && <link.icon className="me-1 size-4" />}
-                        {link.title}
-                      </a>
-                    </li>
-                  ))}
+                  {section.links.map((link) => {
+                    const isExternal = link.href.startsWith("http");
+                    return (
+                      <li key={link.title}>
+                        {isExternal ? (
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-foreground inline-flex items-center transition-all duration-300"
+                          >
+                            {link.icon && <link.icon className="me-1 size-4" />}
+                            {link.title}
+                          </a>
+                        ) : (
+                          <Link
+                            href={link.href}
+                            className="hover:text-foreground inline-flex items-center transition-all duration-300"
+                          >
+                            {link.icon && <link.icon className="me-1 size-4" />}
+                            {link.title}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </AnimatedContainer>

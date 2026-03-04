@@ -263,7 +263,7 @@ export function WhyChooseTrawerse() {
                             whileHover={{ y: -6, transition: { duration: 0.3, ease: "easeOut" } }}
                         >
                             <Card className="relative w-full h-full overflow-hidden rounded-3xl backdrop-blur-2xl bg-white/[0.02] border-white/5 transition-all duration-700" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
-                                <AmbientLight color="rgba(245, 158, 11, 0.15)" duration={9} />
+                                <AmbientLight color="rgba(16, 185, 129, 0.15)" duration={8} />
                                 <CardContent className="grid h-full pt-6 sm:grid-cols-2">
                                     <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                                         

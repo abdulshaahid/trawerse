@@ -2,31 +2,9 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, Mail, Phone, MapPin } from "lucide-react";
-import { useState } from "react";
+import { COMPANY } from "@/lib/constants";
 
 export function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log(formData);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   return (
     <section
       id="contact"
@@ -93,7 +71,7 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-white/50 text-sm">Email</p>
-                  <p className="text-white font-medium">hello@trawerse.com</p>
+                  <p className="text-white font-medium">{COMPANY.email}</p>
                 </div>
               </div>
 
@@ -103,7 +81,7 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-white/50 text-sm">Phone</p>
-                  <p className="text-white font-medium">+91 6282 669 441</p>
+                  <p className="text-white font-medium">{COMPANY.phone}</p>
                 </div>
               </div>
 
@@ -113,7 +91,7 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-white/50 text-sm">Location</p>
-                  <p className="text-white font-medium">Kerala, India</p>
+                  <p className="text-white font-medium">{COMPANY.address.state}, {COMPANY.address.country}</p>
                 </div>
               </div>
             </motion.div>
@@ -131,7 +109,7 @@ export function ContactSection() {
             }}
           >
             <div className="relative w-full overflow-hidden rounded-3xl bg-[#111111]/90 p-6 shadow-2xl">
-              <form onSubmit={handleSubmit} className="relative space-y-4">
+              <form action={`mailto:${COMPANY.email}`} method="POST" encType="text/plain" className="relative space-y-4">
                 <div>
                   <label
                     htmlFor="name"
@@ -143,8 +121,6 @@ export function ContactSection() {
                     type="text"
                     id="name"
                     name="name"
-                    value={formData.name}
-                    onChange={handleChange}
                     className="w-full px-4 py-2.5 rounded-3xl bg-white/[0.05] border border-white/5 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                     placeholder="Your name"
                     required
@@ -162,8 +138,6 @@ export function ContactSection() {
                     type="email"
                     id="email"
                     name="email"
-                    value={formData.email}
-                    onChange={handleChange}
                     className="w-full px-4 py-2.5 rounded-3xl bg-white/[0.05] border border-white/5 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                     placeholder="your.email@example.com"
                     required
@@ -181,8 +155,6 @@ export function ContactSection() {
                     type="text"
                     id="subject"
                     name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
                     className="w-full px-4 py-2.5 rounded-3xl bg-white/[0.05] border border-white/5 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                     placeholder="How can we help?"
                     required
@@ -199,8 +171,6 @@ export function ContactSection() {
                   <textarea
                     id="message"
                     name="message"
-                    value={formData.message}
-                    onChange={handleChange}
                     rows={4}
                     className="w-full px-4 py-2.5 rounded-3xl bg-white/[0.05] border border-white/5 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all resize-none"
                     placeholder="Tell us about your project..."
