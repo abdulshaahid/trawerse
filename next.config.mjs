@@ -53,7 +53,31 @@ const nextConfig = {
   // Enable static page generation where possible
   output: "standalone",
   async headers() {
+    // ── Security & SEO headers applied to all routes ──
+    const securityHeaders = [
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "X-Frame-Options", value: "DENY" },
+      { key: "X-XSS-Protection", value: "1; mode=block" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "X-DNS-Prefetch-Control", value: "on" },
+      {
+        key: "Strict-Transport-Security",
+        value: "max-age=63072000; includeSubDomains; preload",
+      },
+      {
+        key: "Permissions-Policy",
+        value:
+          "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+      },
+    ];
+
     return [
+      // Security headers on all pages
+      {
+        source: "/(.*)",
+        headers: securityHeaders,
+      },
+      // Immutable cache for static images
       {
         source: "/:all*(svg|jpg|jpeg|png|gif|webp|avif)",
         locale: false,
@@ -64,6 +88,7 @@ const nextConfig = {
           },
         ],
       },
+      // Immutable cache for Next.js static assets
       {
         source: "/_next/static/:path*",
         headers: [
@@ -73,6 +98,7 @@ const nextConfig = {
           },
         ],
       },
+      // Immutable cache for optimized images
       {
         source: "/_next/image",
         headers: [

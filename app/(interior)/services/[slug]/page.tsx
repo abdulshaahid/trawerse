@@ -11,6 +11,8 @@ import {
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { FAQAccordion } from "@/components/faq-accordion";
 import { CTASection } from "@/components/cta-section";
+import { RelatedArticles } from "@/components/RelatedArticles";
+import { getRelatedBlogsForService } from "@/lib/seo/linking";
 
 // ─── Static Generation ───────────────────────────────────────────────────────
 
@@ -431,6 +433,9 @@ export default async function ServicePage({
     .map((rs) => SERVICES.find((s) => s.slug === rs))
     .filter(Boolean);
 
+  // Get related blog posts for this service (internal cross-linking)
+  const relatedBlogs = getRelatedBlogsForService(slug, 3);
+
   return (
     <article className="max-w-4xl mx-auto px-4 py-12">
       {/* Schema */}
@@ -439,6 +444,7 @@ export default async function ServicePage({
           name: service.title,
           description: service.description,
           url: `/services/${service.slug}`,
+          keywords: service.keywords,
         })}
       />
       <JsonLd data={faqSchema(content.faqs)} />
@@ -550,6 +556,12 @@ export default async function ServicePage({
           )}
         </div>
       </section>
+
+      {/* Related Blog Posts (internal cross-linking for topical authority) */}
+      <RelatedArticles
+        posts={relatedBlogs}
+        title={`${service.shortTitle} Insights`}
+      />
 
       {/* CTA */}
       <CTASection

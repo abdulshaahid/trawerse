@@ -29,7 +29,15 @@ export function generatePageMetadata({
   authors,
 }: GenerateMetadataOptions): Metadata {
   const url = `${SITE_URL}${path}`;
-  const image = ogImage || `${SITE_URL}/og-default.png`;
+
+  // Dynamic OG image: use provided ogImage, or generate one via /api/og
+  const image = ogImage
+    ? ogImage
+    : `${SITE_URL}/api/og?${new URLSearchParams({
+        title,
+        type: type === "article" ? "blog" : "page",
+        description: description.substring(0, 120),
+      }).toString()}`;
 
   return {
     title,
@@ -108,7 +116,7 @@ export function organizationSchema() {
     sameAs: Object.values(COMPANY.social),
     address: {
       "@type": "PostalAddress",
-      addressLocality: COMPANY.address.city,
+      addressLocality: COMPANY.address.state,
       addressRegion: COMPANY.address.state,
       addressCountry: COMPANY.address.country,
     },
@@ -152,6 +160,7 @@ export function serviceSchema(service: {
   name: string;
   description: string;
   url: string;
+  keywords?: string[];
 }) {
   return {
     "@context": "https://schema.org",
@@ -169,6 +178,22 @@ export function serviceSchema(service: {
       name: "Worldwide",
     },
     serviceType: service.name,
+    priceRange: "$$$",
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `${service.name} Solutions`,
+      itemListElement: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: service.name,
+            description: service.description,
+          },
+        },
+      ],
+    },
+    ...(service.keywords && { keywords: service.keywords.join(", ") }),
   };
 }
 
@@ -195,6 +220,9 @@ export function articleSchema(article: {
   datePublished: string;
   dateModified: string;
   author: string;
+  wordCount?: number;
+  keywords?: string[];
+  articleSection?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -202,7 +230,12 @@ export function articleSchema(article: {
     headline: article.title,
     description: article.description,
     url: `${SITE_URL}${article.url}`,
-    image: article.image,
+    image: {
+      "@type": "ImageObject",
+      url: article.image,
+      width: 1200,
+      height: 630,
+    },
     datePublished: article.datePublished,
     dateModified: article.dateModified,
     author: {
@@ -221,6 +254,10 @@ export function articleSchema(article: {
       "@type": "WebPage",
       "@id": `${SITE_URL}${article.url}`,
     },
+    inLanguage: "en-US",
+    ...(article.wordCount && { wordCount: article.wordCount }),
+    ...(article.keywords && { keywords: article.keywords.join(", ") }),
+    ...(article.articleSection && { articleSection: article.articleSection }),
   };
 }
 
@@ -234,7 +271,7 @@ export function localBusinessSchema() {
     email: COMPANY.email,
     address: {
       "@type": "PostalAddress",
-      addressLocality: COMPANY.address.city,
+      addressLocality: COMPANY.address.state,
       addressRegion: COMPANY.address.state,
       addressCountry: COMPANY.address.country,
     },

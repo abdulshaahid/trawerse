@@ -5,7 +5,7 @@ import { getAllPosts } from "@/lib/blog";
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date().toISOString();
 
-  // Static pages
+  // Static pages with strategic priority values
   const staticPages: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  // Service pages
+  // Service pages — high priority, stable update cadence
   const servicePages: MetadataRoute.Sitemap = SERVICES.map((service) => ({
     url: `${SITE_URL}/services/${service.slug}`,
     lastModified: now,
@@ -25,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  // Blog posts
+  // Blog posts — with image sitemaps for Google Images indexing
   let blogPages: MetadataRoute.Sitemap = [];
   try {
     const posts = getAllPosts();
@@ -33,7 +33,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${SITE_URL}/blog/${post.slug}`,
       lastModified: post.date || now,
       changeFrequency: "weekly" as const,
-      priority: 0.7,
+      priority: post.featured ? 0.8 : 0.7,
+      // Image sitemap entries for richer indexing
+      ...(post.image && {
+        images: [
+          post.image.startsWith("http")
+            ? post.image
+            : `${SITE_URL}${post.image}`,
+        ],
+      }),
     }));
   } catch {
     // Blog content directory may not exist yet
@@ -41,3 +49,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...staticPages, ...servicePages, ...blogPages];
 }
+

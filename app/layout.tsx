@@ -38,17 +38,44 @@ export const metadata: Metadata = {
   authors: [{ name: "passionate developers" }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
+  manifest: "/site.webmanifest",
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+  appleWebApp: {
+    title: SITE_NAME,
+    statusBarStyle: "black-translucent",
+    capable: true,
+  },
   icons: {
     icon: "/favicon.ico",
+    shortcut: "/favicon-96x96.png",
+    apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    type: "website",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
     siteName: SITE_NAME,
     locale: "en_US",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} - ${SITE_TAGLINE}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
     creator: "@trawersedev",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -61,6 +88,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  alternates: {
+    canonical: "/",
+  },
 }
 
 export default function RootLayout({
@@ -71,6 +101,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        {/* ── Resource Hints for Critical Third-Party Origins ── */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
+        <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
+
+        {/* ── Structured Data ── */}
         <JsonLd data={organizationSchema()} />
         <JsonLd data={websiteSchema()} />
       </head>

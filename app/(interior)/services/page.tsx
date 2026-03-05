@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { generatePageMetadata, JsonLd, serviceSchema } from "@/lib/seo";
+import { servicesListSchema } from "@/lib/seo/schema";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { CTASection } from "@/components/cta-section";
 import { SERVICES } from "@/lib/constants";
@@ -42,6 +43,9 @@ export default function ServicesPage() {
     <div className="max-w-6xl mx-auto px-4 py-12">
       <Breadcrumbs items={[{ label: "Services", href: "/services" }]} />
 
+      {/* ItemList schema for rich search results */}
+      <JsonLd data={servicesListSchema()} />
+
       {/* Hero Section */}
       <header className="mb-16 max-w-3xl">
         <p className="text-accent text-sm font-medium uppercase tracking-wider mb-4">
@@ -73,6 +77,7 @@ export default function ServicesPage() {
                   name: service.title,
                   description: service.description,
                   url: `/services/${service.slug}`,
+                  keywords: service.keywords,
                 })}
               />
               {Icon && (

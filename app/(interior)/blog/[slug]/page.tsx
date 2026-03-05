@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkGfm from "remark-gfm";
+import readingTime from "reading-time";
 import {
   generatePageMetadata,
   JsonLd,
@@ -12,12 +13,14 @@ import {
 } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { CTASection } from "@/components/cta-section";
+import { RelatedServices } from "@/components/RelatedArticles";
 import {
   getAllPosts,
   getPostBySlug,
   getRelatedPosts,
   generateTableOfContents,
 } from "@/lib/blog";
+import { getRelatedServicesForBlog } from "@/lib/seo/linking";
 import { SITE_URL } from "@/lib/constants";
 
 export function generateStaticParams() {
@@ -34,11 +37,19 @@ export async function generateMetadata({
   const post = getPostBySlug(slug);
   if (!post) return {};
 
+  // Dynamic OG image for this blog post
+  const ogImage = `${SITE_URL}/api/og?${new URLSearchParams({
+    title: post.title,
+    type: "blog",
+    description: post.description.substring(0, 120),
+  }).toString()}`;
+
   return generatePageMetadata({
     title: post.title,
     description: post.description,
     path: `/blog/${post.slug}`,
     keywords: post.tags,
+    ogImage,
     type: "article",
     publishedTime: post.date,
     modifiedTime: post.date,
@@ -118,7 +129,12 @@ export default async function BlogPostPage({
   }
 
   const relatedPosts = getRelatedPosts(slug, 3);
+  const relatedServices = getRelatedServicesForBlog({
+    category: post.category,
+    tags: post.tags,
+  });
   const toc = generateTableOfContents(post.content);
+  const stats = readingTime(post.content);
 
   return (
     <article className="max-w-4xl mx-auto px-4 py-12">
@@ -134,6 +150,9 @@ export default async function BlogPostPage({
           datePublished: post.date,
           dateModified: post.date,
           author: post.author,
+          wordCount: stats.words,
+          keywords: post.tags,
+          articleSection: post.category,
         })}
       />
 
@@ -275,6 +294,12 @@ export default async function BlogPostPage({
           </div>
         </section>
       )}
+
+      {/* Service Cross-Links (internal linking for topical authority) */}
+      <RelatedServices
+        services={relatedServices}
+        title="Related Services"
+      />
 
       {/* CTA */}
       <CTASection
