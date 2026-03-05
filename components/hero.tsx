@@ -264,7 +264,7 @@ const FLOATING_ICONS_CONFIG = [
     Icon: IconYouTube,
     className: "top-[9%] right-[7%] md:top-[9%] md:right-[10%]",
   },
-  { Icon: IconX, className: "top-[45%] left-[5%] md:top-[25%] md:left-[55%]" },
+  { Icon: IconX, className: "top-[48%] left-[5%] md:top-[25%] md:left-[55%]" },
   {
     Icon: IconMicrosoft,
     className: "bottom-[8%] left-[10%] md:bottom-[15%] md:left-[5%]",
@@ -275,11 +275,11 @@ const FLOATING_ICONS_CONFIG = [
   },
   {
     Icon: IconGitHub,
-    className: "top-[15%] left-[28%] md:top-[55%] md:left-[65%]",
+    className: "top-[15%] left-[28%] md:top-[60%] md:left-[65%]",
   },
   {
     Icon: IconDiscord,
-    className: "top-[45%] right-[5%] md:top-[49%] md:right-[12%]",
+    className: "top-[48%] right-[5%] md:top-[49%] md:right-[12%]",
   },
   {
     Icon: IconLinear,
@@ -459,6 +459,7 @@ FloatingIcon.displayName = "FloatingIcon";
 
 const Hero = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subheadlineRef = useRef<HTMLParagraphElement>(null);
@@ -488,12 +489,20 @@ const Hero = () => {
       // Timeline with faster sequences
       const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-      // Logo - start immediately
+      // Badge - start immediately
+      tl.fromTo(
+        badgeRef.current,
+        { opacity: 0, y: -15, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4 },
+        0
+      );
+
+      // Logo - start almost immediately after
       tl.fromTo(
         logoRef.current,
         { opacity: 0, y: -15, scale: 0.9 },
         { opacity: 1, y: 0, scale: 1, duration: 0.4 },
-        0
+        0.1
       );
 
       // Title - minimal delay
@@ -501,7 +510,7 @@ const Hero = () => {
         titleRef.current,
         { opacity: 0, y: 20 },
         { opacity: 1, y: 0, duration: 0.4 },
-        0.1
+        0.2
       );
 
       // Subheadline - reduced delay
@@ -509,7 +518,7 @@ const Hero = () => {
         subheadlineRef.current,
         { opacity: 0, y: 15 },
         { opacity: 1, y: 0, duration: 0.4 },
-        0.2
+        0.3
       );
 
       // CTA container - reduced delay
@@ -517,7 +526,7 @@ const Hero = () => {
         ctaRef.current,
         { opacity: 0, y: 10 },
         { opacity: 1, y: 0, duration: 0.3 },
-        0.3
+        0.4
       );
 
       // CTA buttons - faster stagger
@@ -532,7 +541,7 @@ const Hero = () => {
           stagger: 0.08,
           ease: "back.out(1.2)",
         },
-        0.35
+        0.45
       );
     }, containerRef);
 
@@ -712,8 +721,7 @@ const Hero = () => {
               className="flex items-center justify-center lg:justify-start gap-3 mb-4 sm:mb-6 opacity-0"
               style={{ willChange: "opacity" }}
             >
-              <div className="w-6 h-6 text-accent text-xl">✦</div>
-              <div className="w-6 h-6 text-accent text-xl">✦</div>
+              
             </div>
 
             {/* Main headline - START HIDDEN */}
@@ -722,6 +730,51 @@ const Hero = () => {
               className="mb-4 sm:mb-6 leading-tight opacity-0"
               style={{ willChange: "opacity, transform" }}
             >
+              {/* Trusted Badge - START HIDDEN */}
+              <div
+                ref={badgeRef}
+                className="relative inline-flex items-center gap-2 md:gap-3 mb-6 opacity-0 py-1 px-2 rounded-full overflow-hidden"
+                style={{ willChange: "opacity, transform" }}
+              >
+                {/* Shimmering Background */}
+                <div className="absolute inset-0 bg-white/5 border border-white/5 backdrop-blur-lg rounded-full" />
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg]"
+                  animate={{
+                    x: ["-150%", "150%"],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+
+                <div className="relative flex -space-x-2">
+                  {["Felix", "Luna", "Milo", "Zara"].map((seed, i) => (
+                    <img
+                      key={i}
+                      src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${seed}&size=64`}
+                      alt="User avatar"
+                      className="w-7 h-7 rounded-full object-cover border border-[#121212] bg-[#282828] relative"
+                      style={{ zIndex: 4 - i }}
+                    />
+                  ))}
+                </div>
+                <p
+                  className="relative text-foreground/80 md:text-left pr-1"
+                  style={{
+                    fontSize: "clamp(0.8rem, 2.2vw, 0.95rem)",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  <span className="text-foreground font-semibold">
+                    Trusted by
+                  </span>{" "}
+                  Businesses
+                </p>
+              </div>
+
               <div
                 ref={logoRef}
                 className="mb-4 opacity-0"
@@ -754,8 +807,8 @@ const Hero = () => {
               className="text-base sm:text-lg md:text-xl lg:text-xl text-foreground/70 max-w-3xl mx-auto lg:mx-0 mb-6 sm:mb-8 leading-relaxed opacity-0"
               style={{ willChange: "opacity, transform" }}
             >
-              We don't just make websites, we craft experiences with unmatched
-              quality.
+              "We don't just make websites, we craft experiences with unmatched
+              quality."
             </p>
 
             {/* CTA Buttons - START HIDDEN */}
