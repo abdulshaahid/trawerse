@@ -11,7 +11,7 @@ export const COMPANY = {
   legalName: "Trawerse Dev",
   foundingDate: "2024",
   founder: "passionate developers",
-  email: "trawerse.dev@gmail.com",
+  email: "hello@trawerse.com",
   phone: "+91 6282 669 441",
   address: {
     

@@ -32,8 +32,7 @@ export default function AboutPage() {
           <span className="gradient-text">That Brands Love</span> to Show Off
         </h1>
         <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-          Trawerse is a premium digital product development studio headquartered
-          in Bangalore, India. We specialize in creating high-performance
+          Trawerse is a premium digital product development studio. We specialize in creating high-performance
           websites, mobile applications, SaaS platforms, and custom software
           solutions that help businesses scale and succeed in the digital
           landscape.

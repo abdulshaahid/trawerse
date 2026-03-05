@@ -12,7 +12,7 @@ const FAQ_ITEMS = [
   {
     question: "How much does it cost to build a website or app with Trawerse?",
     answer:
-      "Project costs vary depending on complexity, features, and timeline. A typical website project starts from $5,000, mobile apps from $15,000, and SaaS platforms from $25,000. We provide detailed, transparent estimates after understanding your requirements during a free consultation call.",
+      "Project costs vary depending on complexity, features, and timeline. We provide detailed, transparent estimates after understanding your requirements during a free consultation call.",
   },
   {
     question: "How long does it take to build a web application?",
@@ -52,7 +52,7 @@ const FAQ_ITEMS = [
   {
     question: "How do I get started with Trawerse?",
     answer:
-      "Getting started is easy! Simply fill out our contact form or email us at trawerse.dev@gmail.com with a brief description of your project. We'll schedule a free 30-minute consultation call to discuss your requirements, answer any questions, and provide a preliminary estimate. No commitment required.",
+      "Getting started is easy! Simply fill out our contact form or email us at hello@trawerse.com with a brief description of your project. We'll schedule a free 30-minute consultation call to discuss your requirements, answer any questions, and provide a preliminary estimate. No commitment required.",
   },
 ];
 

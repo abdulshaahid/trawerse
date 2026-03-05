@@ -91,7 +91,7 @@ const SERVICE_CONTENT: Record<
       {
         question: "What does a custom website cost?",
         answer:
-          "Custom website projects typically start from $5,000 for a marketing site and can range up to $50,000+ for complex web applications. We provide detailed, transparent estimates based on your specific requirements. Contact us for a free consultation and quote.",
+          "Custom website projects vary depending on complexity. We provide detailed, transparent estimates based on your specific requirements. Contact us for a free consultation and quote.",
       },
     ],
     relatedServices: ["ui-ux-design", "saas-development", "custom-software-development"],
@@ -135,7 +135,7 @@ const SERVICE_CONTENT: Record<
       {
         question: "How much does it cost to build a mobile app?",
         answer:
-          "Mobile app development costs typically range from $15,000 to $100,000+ depending on complexity, features, and platform requirements. A simple app with basic features starts around $15,000, while a complex app with custom backends, real-time features, and integrations can cost $50,000-100,000+.",
+          "Mobile app development costs vary heavily depending on complexity, features, and platform requirements. We provide detailed, transparent estimates based on your specific requirements.",
       },
       {
         question: "How long does it take to develop a mobile app?",
@@ -194,7 +194,7 @@ const SERVICE_CONTENT: Record<
       {
         question: "How much does it cost to build a SaaS platform?",
         answer:
-          "SaaS development typically costs between $25,000 and $150,000+ depending on complexity. An MVP SaaS with core features starts around $25,000-50,000, while a full-featured platform with integrations, advanced analytics, and enterprise features can cost $75,000-150,000+.",
+          "SaaS development costs vary depending on complexity. We provide detailed, transparent estimates based on your specific requirements.",
       },
       {
         question: "How long does it take to build a SaaS product?",
@@ -253,7 +253,7 @@ const SERVICE_CONTENT: Record<
       {
         question: "How much does MVP development cost?",
         answer:
-          "MVP development typically costs between $10,000 and $40,000 depending on the complexity and feature set. A lean MVP with essential features can be built for $10,000-20,000, while a more feature-rich MVP may cost $25,000-40,000.",
+          "MVP development costs vary depending on the complexity and feature set. We provide detailed, transparent estimates based on your specific requirements.",
       },
       {
         question: "How fast can you build an MVP?",
@@ -322,7 +322,7 @@ const SERVICE_CONTENT: Record<
       {
         question: "How much does UI/UX design cost?",
         answer:
-          "UI/UX design projects range from $5,000 for a small project to $30,000+ for a comprehensive product design including research, design system, and prototype. The cost depends on scope, complexity, and the number of screens. Contact us for a custom quote.",
+          "UI/UX design project costs depend heavily on scope, complexity, and the number of screens. Contact us for a custom quote.",
       },
       {
         question: "Can you redesign my existing product?",
@@ -371,7 +371,7 @@ const SERVICE_CONTENT: Record<
       {
         question: "How much does custom software development cost?",
         answer:
-          "Custom software projects range from $20,000 for simple internal tools to $200,000+ for complex enterprise systems. The cost depends heavily on the scope of features, number of integrations, compliance requirements, and expected user scale. We provide detailed estimates after understanding your requirements.",
+          "Custom software project costs depend heavily on the scope of features, number of integrations, compliance requirements, and expected user scale. We provide detailed estimates after understanding your requirements.",
       },
       {
         question: "How long does custom software development take?",
