@@ -2,7 +2,7 @@
 
 export const SITE_URL = "https://trawerse.com";
 export const SITE_NAME = "Trawerse";
-export const SITE_TAGLINE = "Premium Digital Product Development Studio";
+export const SITE_TAGLINE = "Premium Development Studio";
 export const SITE_DESCRIPTION =
   "Trawerse is a premium web development company and digital product studio. We build high-performance websites, mobile apps, SaaS platforms, and custom software for startups and enterprises.";
 

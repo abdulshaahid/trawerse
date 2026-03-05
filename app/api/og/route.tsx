@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   const title = searchParams.get("title") || "Trawerse";
   const type = searchParams.get("type") || "page";
   const description =
-    searchParams.get("description") || "Premium Digital Product Development Studio";
+    searchParams.get("description") || "Premium Development Studio";
 
   // Type-specific badge and accent
   const badgeMap: Record<string, { label: string; color: string }> = {

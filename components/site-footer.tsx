@@ -22,7 +22,7 @@ export function SiteFooter() {
               />
             </Link>
             <p className="text-muted-foreground text-sm max-w-xs leading-relaxed">
-              Premium digital product development studio. We build
+              Premium development studio. We build
               high-performance websites, mobile apps, and SaaS platforms.
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground pt-4 border-t border-white/5">

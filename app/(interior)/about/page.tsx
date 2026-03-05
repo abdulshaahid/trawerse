@@ -4,7 +4,7 @@ import { CTASection } from "@/components/cta-section";
 import { COMPANY } from "@/lib/constants";
 
 export const metadata = generatePageMetadata({
-  title: "About Trawerse — Premium Digital Product Development Studio",
+  title: "About Trawerse — Premium Development Studio",
   description:
     "Learn about Trawerse, a premium web development studio founded by passionate developers. We build high-performance websites, mobile apps, SaaS platforms, and custom software for startups and enterprises worldwide.",
   path: "/about",
@@ -32,7 +32,7 @@ export default function AboutPage() {
           <span className="gradient-text">That Brands Love</span> to Show Off
         </h1>
         <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-          Trawerse is a premium digital product development studio. We specialize in creating high-performance
+          Trawerse is a premium development studio. We specialize in creating high-performance
           websites, mobile applications, SaaS platforms, and custom software
           solutions that help businesses scale and succeed in the digital
           landscape.

@@ -151,7 +151,7 @@ export function enhancedOrganizationSchema() {
       },
     ],
     sameAs: Object.values(COMPANY.social),
-    slogan: "Premium Digital Product Development Studio",
+    slogan: "Premium Development Studio",
     knowsAbout: [
       "Web Development",
       "Mobile App Development",
