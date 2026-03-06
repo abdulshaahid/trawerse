@@ -12,6 +12,7 @@ import Header from "@/components/header";
 import Hero from "@/components/hero";
 import SlideInSection from "@/components/slide-in-section";
 import FloatingContact from "@/components/floating-contact";
+import { AmbientLightWrapper } from "@/components/ui/ambient-light-wrapper";
 
 // Lazy load heavy components below the fold with optimized loading strategies
 const MarqueeDemo = dynamic(() => import("@/components/ui/marquee-demo"), {
@@ -158,6 +159,7 @@ export default function Home() {
         />
       )}
 
+      <AmbientLightWrapper />
       <Header />
       <FloatingContact />
       <main className="relative z-10">
