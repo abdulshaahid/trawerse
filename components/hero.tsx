@@ -733,7 +733,7 @@ const Hero = () => {
               {/* Trusted Badge - START HIDDEN */}
               <div
                 ref={badgeRef}
-                className="relative inline-flex items-center gap-2 md:gap-3 mb-6 opacity-0 py-1 px-2 rounded-full overflow-hidden"
+                className="relative inline-flex items-center gap-2 md:gap-3 mb-6 opacity-0 py-1 px-1 rounded-full overflow-hidden"
                 style={{ willChange: "opacity, transform" }}
               >
                 {/* Shimmering Background */}
@@ -756,7 +756,7 @@ const Hero = () => {
                       key={i}
                       src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${seed}&size=64`}
                       alt="User avatar"
-                      className="w-7 h-7 rounded-full object-cover border border-[#121212] bg-[#282828] relative"
+                      className="w-6 h-6 rounded-full object-cover border border-[#121212] bg-[#282828] relative"
                       style={{ zIndex: 4 - i }}
                     />
                   ))}
@@ -792,11 +792,11 @@ const Hero = () => {
               <TrueFocus
                 sentence="Builds Your Dream, Perfectly."
                 manualMode={false}
-                blurAmount={3}
-                borderColor="#4ADE80"
+                blurAmount={4}
+                borderColor="rgba(74, 222, 128, 0.71)"
                 glowColor="rgba(74, 222, 128, 0.6)"
-                animationDuration={0.8}
-                pauseBetweenAnimations={1.2}
+                animationDuration={0.6}
+                pauseBetweenAnimations={0.5}
                 wordClassName="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground"
               />
             </h1>
