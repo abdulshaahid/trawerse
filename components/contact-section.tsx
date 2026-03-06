@@ -47,7 +47,7 @@ export function ContactSection() {
                 </span>
                 <span className="text-accent">Us</span>
               </h2>
-              <p className="text-white/70 text-lg md:text-xl max-w-lg">
+              <p className="text-white/70 text-base md:text-lg max-w-lg">
                 Let&apos;s turn your vision into reality. Whether you&apos;re
                 starting from scratch or need to elevate your existing platform.
               </p>

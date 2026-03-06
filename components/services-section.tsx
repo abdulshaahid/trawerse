@@ -10,9 +10,39 @@ import {
   Code,
   Layers,
   Database,
-  LayoutDashboard,
+  Smartphone,
   Settings,
 } from "lucide-react";
+
+// Icon animation variants
+const iconAnimations = {
+  float: {
+    y: [0, -6, 0],
+    transition: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
+  },
+  pulse: {
+    scale: [1, 1.15, 1],
+    transition: { duration: 2.5, repeat: Infinity, ease: "easeInOut" as const },
+  },
+  rotate: {
+    rotate: [0, 8, -8, 0],
+    transition: { duration: 4, repeat: Infinity, ease: "easeInOut" as const },
+  },
+  bounce: {
+    y: [0, -8, 0],
+    scale: [1, 1.08, 1],
+    transition: { duration: 2, repeat: Infinity, ease: "easeInOut" as const },
+  },
+  swing: {
+    rotate: [0, 12, -12, 0],
+    x: [0, 3, -3, 0],
+    transition: { duration: 3.5, repeat: Infinity, ease: "easeInOut" as const },
+  },
+  spin: {
+    rotate: [0, 360],
+    transition: { duration: 8, repeat: Infinity, ease: "linear" as const },
+  },
+};
 
 // Optimized Service Card with CSS-based animations
 const Service = memo(({
@@ -20,11 +50,13 @@ const Service = memo(({
   name,
   description,
   delay = 0,
+  animationType = "float",
 }: {
   icon: React.ReactNode;
   name: string;
   description: string;
   delay?: number;
+  animationType?: keyof typeof iconAnimations;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -110,14 +142,14 @@ const Service = memo(({
           transform: "translateZ(60px) translateX(var(--translate-x, 0px)) translateY(var(--translate-y, 0px))",
           willChange: 'transform',
         }}
-        animate={{
-          rotate: isHovered ? 5 : 0,
-          scale: isHovered ? 1.12 : 1,
-        }}
-        transition={{
-          duration: 0.5,
-          ease: [0.34, 1.56, 0.64, 1],
-        }}
+        animate={isHovered
+          ? { rotate: 5, scale: 1.12 }
+          : iconAnimations[animationType]
+        }
+        transition={isHovered
+          ? { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }
+          : iconAnimations[animationType].transition
+        }
       >
         {icon}
       </motion.div>
@@ -303,36 +335,42 @@ const ServicesSection = () => {
                   name="Web Design & Development"
                   description="Custom websites built with modern technologies and best practices."
                   delay={100}
+                  animationType="float"
                 />
                 <Service
                   icon={<Layers className="size-9" />}
                   name="UI/UX Design"
                   description="Intuitive user experiences that delight and convert."
                   delay={180}
+                  animationType="pulse"
                 />
                 <Service
                   icon={<Code className="size-9" />}
                   name="Web Applications"
                   description="Scalable web apps built with cutting-edge frameworks."
                   delay={260}
+                  animationType="rotate"
+                />
+                <Service
+                  icon={<Smartphone className="size-9" />}
+                  name="Mobile App, SaaS & Softwares"
+                  description="Custom mobile apps, scalable SaaS platforms, and robust software solutions."
+                  delay={340}
+                  animationType="bounce"
                 />
                 <Service
                   icon={<Database className="size-9" />}
                   name="CRM & Systems"
                   description="Custom CRM and enterprise solutions for your business."
-                  delay={340}
-                />
-                <Service
-                  icon={<LayoutDashboard className="size-9" />}
-                  name="Dashboards"
-                  description="Data-driven dashboards with real-time insights."
                   delay={420}
+                  animationType="swing"
                 />
                 <Service
                   icon={<Settings className="size-9" />}
                   name="Hosting & Maintenance"
                   description="Reliable hosting with ongoing support and maintenance."
                   delay={500}
+                  animationType="spin"
                 />
               </div>
               </motion.div>

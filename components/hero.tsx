@@ -12,7 +12,7 @@ import { ArrowDown, Eye, Code2, Palette, Layout, Database, Server, Smartphone, G
 // Static floating icons configuration (moved outside for performance)
 const FLOATING_ICONS_CONFIG = [
   { Icon: Globe, className: "top-[9%] left-[5%] md:top-[8%] md:left-[10%]" },
-  { Icon: Smartphone, className: "top-[21%] right-[7%] md:top-[12%] md:left-[28%]" },
+  { Icon: Smartphone, className: "top-[21%] right-[5%] md:top-[12%] md:left-[28%]" },
   { Icon: Palette, className: "top-[15%] right-[30%] md:top-[12%] md:left-[48%]" },
   { Icon: Code2, className: "top-[21%] left-[5%] md:top-[14%] md:left-[68%]" },
   { Icon: Layout, className: "top-[9%] right-[7%] md:top-[9%] md:right-[10%]" },
