@@ -7,7 +7,6 @@ import gsap from "gsap";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { GooeyText } from "@/components/ui/gooey-text-morphing";
 import TrueFocus from "@/components/ui/true-focus";
-import { Component as GlowBackground } from "@/components/ui/background-components";
 import { ArrowDown, Eye, Code2, Palette, Layout, Database, Server, Smartphone, Globe, Cpu, Layers, Monitor, PenTool, Terminal, Cloud, Shield } from "lucide-react";
 
 // Static floating icons configuration (moved outside for performance)
@@ -424,8 +423,7 @@ const Hero = () => {
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 z-0">
-        {/* Soft yellow center background component */}
-        <GlowBackground className="absolute inset-0 -z-10 !min-h-0 mix-blend-screen opacity-100" />
+        {/* Subtle gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-accent/5 -z-10" />
 
         {/* Floating Icons */}
