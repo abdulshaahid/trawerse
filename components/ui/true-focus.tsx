@@ -135,19 +135,19 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
       >
         {/* Corner indicators - simplified to single elements */}
         <span
-          className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] left-[-10px] border-r-0 border-b-0"
+          className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-6px] md:top-[-8px] left-[-6px] md:left-[-8px] border-r-0 border-b-0"
           style={{ borderColor }}
         />
         <span
-          className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] right-[-10px] border-l-0 border-b-0"
+          className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-6px] md:top-[-8px] right-[-6px] md:right-[-8px] border-l-0 border-b-0"
           style={{ borderColor }}
         />
         <span
-          className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-10px] left-[-10px] border-r-0 border-t-0"
+          className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-6px] md:bottom-[-8px] left-[-6px] md:left-[-8px] border-r-0 border-t-0"
           style={{ borderColor }}
         />
         <span
-          className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-10px] right-[-10px] border-l-0 border-t-0"
+          className="absolute w-4 h-4 border-[3px] rounded-[3px] bottom-[-6px] md:bottom-[-8px] right-[-6px] md:right-[-8px] border-l-0 border-t-0"
           style={{ borderColor }}
         />
       </div>
